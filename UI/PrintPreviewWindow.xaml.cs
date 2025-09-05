@@ -65,7 +65,11 @@ namespace EvoDesigner.UI
             currentRecordIndex--;
             UpdateNavigationButtons();
             UpdateRecordCounter();
+            
+            // Force immediate UI update
+            this.UpdateLayout();
             RenderPreview();
+            this.UpdateLayout();
         }
 
         private void NextRecord_Click(object sender, RoutedEventArgs e)
@@ -75,7 +79,11 @@ namespace EvoDesigner.UI
             currentRecordIndex++;
             UpdateNavigationButtons();
             UpdateRecordCounter();
+            
+            // Force immediate UI update
+            this.UpdateLayout();
             RenderPreview();
+            this.UpdateLayout();
         }
 
         private string GetElementContent(LabelElement element, int elementIndex)
@@ -86,10 +94,15 @@ namespace EvoDesigner.UI
             
             // Find field mapping for this element
             var mapping = template.FieldMappings.FirstOrDefault(m => m.ElementIndex == elementIndex);
-            if (mapping != null && dataTable.Columns.Contains(mapping.FieldName))
+            if (mapping != null && !string.IsNullOrEmpty(mapping.FieldName) && dataTable.Columns.Contains(mapping.FieldName))
             {
                 var currentRow = dataTable.Rows[currentRecordIndex];
-                return currentRow[mapping.FieldName]?.ToString() ?? element.Content ?? "";
+                var fieldValue = currentRow[mapping.FieldName]?.ToString() ?? "";
+                
+                // Debug output to console
+                System.Diagnostics.Debug.WriteLine($"Element {elementIndex}: Mapping found for field '{mapping.FieldName}', Record {currentRecordIndex}, Value: '{fieldValue}'");
+                
+                return !string.IsNullOrEmpty(fieldValue) ? fieldValue : element.Content ?? "";
             }
             
             return element.Content ?? "";
@@ -104,6 +117,9 @@ namespace EvoDesigner.UI
         {
             try
             {
+                // Debug output to confirm rendering is happening
+                System.Diagnostics.Debug.WriteLine($"RenderPreview called for record {currentRecordIndex}");
+                
                 // Update label size information in header
                 LabelSizeInfo.Text = $"Label Size: {template.LabelWidth}mm × {template.LabelHeight}mm";
                 
@@ -113,8 +129,25 @@ namespace EvoDesigner.UI
                 double canvasWidthPx = MeasurementService.MmToScreenPixels(template.LabelWidth);
                 double canvasHeightPx = MeasurementService.MmToScreenPixels(template.LabelHeight);
                 
+                // Ensure minimum canvas size
+                canvasWidthPx = Math.Max(canvasWidthPx, 200);
+                canvasHeightPx = Math.Max(canvasHeightPx, 100);
+                
                 PreviewCanvas.Width = canvasWidthPx;
                 PreviewCanvas.Height = canvasHeightPx;
+                
+                // Add a debug border to show canvas bounds
+                var debugBorder = new Rectangle
+                {
+                    Width = canvasWidthPx,
+                    Height = canvasHeightPx,
+                    Stroke = Brushes.LightGray,
+                    StrokeThickness = 1,
+                    Fill = Brushes.Transparent
+                };
+                Canvas.SetLeft(debugBorder, 0);
+                Canvas.SetTop(debugBorder, 0);
+                PreviewCanvas.Children.Add(debugBorder);
                 
                 int elementIndex = 0;
                 foreach (var el in template.Elements)
@@ -165,24 +198,79 @@ namespace EvoDesigner.UI
                             var rect = new Rectangle { Width = el.Width, Height = el.Height };
                             try 
                             {
-                                if (!string.IsNullOrEmpty(el.Content) && System.IO.File.Exists(el.Content))
+                                // First check if we have base64 image data
+                                if (!string.IsNullOrEmpty(el.ImageData))
+                                {
+                                    // Convert base64 to BitmapImage
+                                    byte[] imageBytes = Convert.FromBase64String(el.ImageData);
+                                    using (var ms = new System.IO.MemoryStream(imageBytes))
+                                    {
+                                        var bitmapImage = new BitmapImage();
+                                        bitmapImage.BeginInit();
+                                        bitmapImage.StreamSource = ms;
+                                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                        bitmapImage.EndInit();
+                                        
+                                        var imgBrush = new ImageBrush();
+                                        imgBrush.ImageSource = bitmapImage;
+                                        imgBrush.Stretch = Stretch.Uniform; // Fit image within bounds, maintain aspect ratio
+                                        imgBrush.AlignmentX = AlignmentX.Center;
+                                        imgBrush.AlignmentY = AlignmentY.Center;
+                                        rect.Fill = imgBrush;
+                                    }
+                                }
+                                // Fallback to file path if no base64 data
+                                else if (!string.IsNullOrEmpty(el.Content) && System.IO.File.Exists(el.Content))
                                 {
                                     var imgBrush = new ImageBrush();
                                     imgBrush.ImageSource = new BitmapImage(new System.Uri(el.Content));
+                                    imgBrush.Stretch = Stretch.Uniform; // Fit image within bounds, maintain aspect ratio
+                                    imgBrush.AlignmentX = AlignmentX.Center;
+                                    imgBrush.AlignmentY = AlignmentY.Center;
                                     rect.Fill = imgBrush;
                                 }
                                 else
                                 {
+                                    // No image data available - show placeholder
                                     rect.Fill = Brushes.LightGray;
                                     rect.Stroke = Brushes.DarkGray;
                                     rect.StrokeThickness = 1;
+                                    
+                                    // Add "No Image" text overlay
+                                    var noImageText = new TextBlock
+                                    {
+                                        Text = "No Image",
+                                        FontSize = 10,
+                                        Foreground = Brushes.DarkGray,
+                                        HorizontalAlignment = HorizontalAlignment.Center,
+                                        VerticalAlignment = VerticalAlignment.Center,
+                                        TextAlignment = TextAlignment.Center
+                                    };
+                                    Canvas.SetLeft(noImageText, el.X + el.Width / 2 - 25);
+                                    Canvas.SetTop(noImageText, el.Y + el.Height / 2 - 7);
+                                    PreviewCanvas.Children.Add(noImageText);
                                 }
                             } 
-                            catch 
+                            catch (Exception ex)
                             { 
-                                rect.Fill = Brushes.LightGray; 
+                                // Error loading image - show error placeholder
+                                rect.Fill = Brushes.LightCoral; 
                                 rect.Stroke = Brushes.Red;
                                 rect.StrokeThickness = 1;
+                                
+                                // Add error text overlay
+                                var errorText = new TextBlock
+                                {
+                                    Text = "Image Error",
+                                    FontSize = 9,
+                                    Foreground = Brushes.DarkRed,
+                                    HorizontalAlignment = HorizontalAlignment.Center,
+                                    VerticalAlignment = VerticalAlignment.Center,
+                                    TextAlignment = TextAlignment.Center
+                                };
+                                Canvas.SetLeft(errorText, el.X + el.Width / 2 - 30);
+                                Canvas.SetTop(errorText, el.Y + el.Height / 2 - 7);
+                                PreviewCanvas.Children.Add(errorText);
                             }
                             uiEl = rect;
                             break;
@@ -244,6 +332,24 @@ namespace EvoDesigner.UI
                     }
                     
                     elementIndex++;
+                }
+                
+                // If no elements were added, show a helpful message
+                if (elementIndex == 0)
+                {
+                    var noElementsText = new TextBlock
+                    {
+                        Text = "No elements to preview.\nPlease add text, images, or barcodes to your label design.",
+                        FontSize = 14,
+                        Foreground = Brushes.Gray,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextAlignment = TextAlignment.Center,
+                        TextWrapping = TextWrapping.Wrap
+                    };
+                    Canvas.SetLeft(noElementsText, canvasWidthPx / 2 - 150);
+                    Canvas.SetTop(noElementsText, canvasHeightPx / 2 - 20);
+                    PreviewCanvas.Children.Add(noElementsText);
                 }
             }
             catch (System.Exception ex)

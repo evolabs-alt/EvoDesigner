@@ -111,7 +111,17 @@ namespace EvoDesigner.UI
                 else
                 {
                     elementType = "Image";
-                    currentContent = imageElement.Tag != null ? $" (Source: {imageElement.Tag})" : "";
+                    if (imageElement.Tag != null)
+                    {
+                        string imagePath = imageElement.Tag.ToString() ?? "";
+                        // Show only filename instead of full path
+                        string fileName = System.IO.Path.GetFileName(imagePath);
+                        currentContent = string.IsNullOrEmpty(fileName) ? "" : $" (Source: {fileName})";
+                    }
+                    else
+                    {
+                        currentContent = "";
+                    }
                 }
             }
             else if (element is System.Windows.Shapes.Rectangle)

@@ -20,9 +20,11 @@ E:\Repos\EvoDesigner\bin\Debug\net9.0-windows\runtimes\win-x64\native\krbcc64.dl
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\EvoDesigner.csproj.AssemblyReference.cache
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\UI\DataSourceWindow.baml
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\UI\FieldMappingWindow.baml
+E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\UI\LabelResizeWindow.baml
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\UI\PrintPreviewWindow.baml
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\UI\DataSourceWindow.g.cs
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\UI\FieldMappingWindow.g.cs
+E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\UI\LabelResizeWindow.g.cs
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\UI\MainWindow.g.cs
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\UI\PrintPreviewWindow.g.cs
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\App.g.cs
@@ -34,6 +36,7 @@ E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\EvoDesigner.GeneratedMSBuildEditor
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\EvoDesigner.AssemblyInfoInputs.cache
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\EvoDesigner.AssemblyInfo.cs
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\EvoDesigner.csproj.CoreCompileInputs.cache
+E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\EvoDesigner.sourcelink.json
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\EvoDesig.39162C20.Up2Date
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\EvoDesigner.dll
 E:\Repos\EvoDesigner\obj\Debug\net9.0-windows\refint\EvoDesigner.dll

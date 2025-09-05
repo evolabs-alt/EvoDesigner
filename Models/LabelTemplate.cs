@@ -13,5 +13,16 @@ namespace EvoDesigner.Models
         public double MarginBottom { get; set; }
         public List<LabelElement> Elements { get; set; } = new();
         public List<FieldMapping> FieldMappings { get; set; } = new();
+        public DataSourceConfig? DataSource { get; set; }
+    }
+
+    public class DataSourceConfig
+    {
+        public string Host { get; set; } = "";
+        public string Port { get; set; } = "3306";
+        public string Database { get; set; } = "";
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = ""; // Note: Consider encryption in production
+        public string Query { get; set; } = "";
     }
 }

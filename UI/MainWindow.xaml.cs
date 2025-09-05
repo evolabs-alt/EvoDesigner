@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.IO;
+using System;
+using System.ComponentModel;
 using EvoDesigner.Services;
 using EvoDesigner.Models;
 using EvoDesigner.Commands;
@@ -32,6 +34,15 @@ namespace EvoDesigner
         private DataTable? lastResultTable = null;
         private Thumb? resizeThumb = null;
         private AppConfig _appConfig;
+        private EvoDesigner.Models.DataSourceConfig? _currentDataSource = null;
+        
+        // Track unsaved changes
+        private bool _isDirty = false;
+        private string? _currentFilePath = null;
+        
+        // Label dimensions (in mm)
+        private double _labelWidthMm = 70.0;
+        private double _labelHeightMm = 30.0;
         
         // Zoom functionality
         private double _zoomFactor = 1.0;
@@ -84,18 +95,7 @@ namespace EvoDesigner
             ShowGridCheckBox.Checked += ShowGridCheckBox_Changed;
             ShowGridCheckBox.Unchecked += ShowGridCheckBox_Changed;
 
-            // Add new buttons to UI
-            var bringForwardBtn = new Button { Content = "Bring Forward", Margin = new Thickness(0, 0, 10, 0), Width = 110 };
-            ((StackPanel)((Grid)((DockPanel)Content).Children[1]).Children[0]).Children.Add(bringForwardBtn);
-            bringForwardBtn.Click += BringForward_Click;
-
-            var sendBackwardBtn = new Button { Content = "Send Backward", Margin = new Thickness(0, 0, 10, 0), Width = 110 };
-            ((StackPanel)((Grid)((DockPanel)Content).Children[1]).Children[0]).Children.Add(sendBackwardBtn);
-            sendBackwardBtn.Click += SendBackward_Click;
-
-            // Wire up template property change events
-            LabelWidthBox.TextChanged += TemplateDimensions_Changed;
-            LabelHeightBox.TextChanged += TemplateDimensions_Changed;
+            // Wire up template property change events (only margins now)
             MarginLeftBox.TextChanged += TemplateDimensions_Changed;
             MarginRightBox.TextChanged += TemplateDimensions_Changed;
             MarginTopBox.TextChanged += TemplateDimensions_Changed;
@@ -109,13 +109,43 @@ namespace EvoDesigner
         {
             // Attach toolbox drag handlers after UI is fully loaded
             AttachToolboxDragHandlers();
+            
+            // Initialize layer control buttons in the LayerControlsContainer
+            InitializeLayerControls();
+        }
+        
+        private void InitializeLayerControls()
+        {
+            // Add layer control buttons to the LayerControlsContainer
+            var bringForwardBtn = new Button 
+            { 
+                Content = "Bring Forward", 
+                Margin = new Thickness(0, 0, 5, 0), 
+                Width = 85,
+                Height = 25,
+                ToolTip = "Bring selected element forward"
+            };
+            LayerControlsContainer.Children.Add(bringForwardBtn);
+            bringForwardBtn.Click += BringForward_Click;
+
+            var sendBackwardBtn = new Button 
+            { 
+                Content = "Send Backward", 
+                Margin = new Thickness(0, 0, 0, 0), 
+                Width = 85,
+                Height = 25,
+                ToolTip = "Send selected element backward"
+            };
+            LayerControlsContainer.Children.Add(sendBackwardBtn);
+            sendBackwardBtn.Click += SendBackward_Click;
         }
 
         private void InitializeDefaultTemplate()
         {
             // Set default label size (common address label: 70mm x 30mm)
-            LabelWidthBox.Text = "70";
-            LabelHeightBox.Text = "30";
+            _labelWidthMm = 70.0;
+            _labelHeightMm = 30.0;
+            UpdateDisplayedDimensions();
             MarginLeftBox.Text = "2";
             MarginRightBox.Text = "2";
             MarginTopBox.Text = "2";
@@ -125,16 +155,23 @@ namespace EvoDesigner
             UpdateCanvasSize();
         }
 
+        private void UpdateDisplayedDimensions()
+        {
+            LabelWidthDisplay.Text = $"{_labelWidthMm:F1} mm";
+            LabelHeightDisplay.Text = $"{_labelHeightMm:F1} mm";
+        }
+
         private void TemplateDimensions_Changed(object sender, TextChangedEventArgs e)
         {
             UpdateCanvasSize();
+            SetDirty(true);
         }
 
         private void UpdateCanvasSize()
         {
-            // Get values from UI (default to reasonable values if parsing fails)
-            double widthMm = double.TryParse(LabelWidthBox.Text, out double w) ? w : 70;
-            double heightMm = double.TryParse(LabelHeightBox.Text, out double h) ? h : 30;
+            // Use internal properties instead of textboxes for dimensions
+            double widthMm = _labelWidthMm;
+            double heightMm = _labelHeightMm;
             double marginLeftMm = double.TryParse(MarginLeftBox.Text, out double ml) ? ml : 2;
             double marginRightMm = double.TryParse(MarginRightBox.Text, out double mr) ? mr : 2;
             double marginTopMm = double.TryParse(MarginTopBox.Text, out double mt) ? mt : 2;
@@ -147,6 +184,18 @@ namespace EvoDesigner
             // Update canvas size
             LabelCanvas.Width = canvasWidth;
             LabelCanvas.Height = canvasHeight;
+            
+            // Update other canvas layers to match
+            GridCanvas.Width = canvasWidth;
+            GridCanvas.Height = canvasHeight;
+            MarginCanvas.Width = canvasWidth;
+            MarginCanvas.Height = canvasHeight;
+            
+            // Ensure CanvasContainer can accommodate the canvas size
+            // Add some padding around the canvas for better usability
+            double containerPadding = 100; // 100 pixels padding around the canvas
+            CanvasContainer.Width = canvasWidth + containerPadding;
+            CanvasContainer.Height = canvasHeight + containerPadding;
             
             // Update template object
             CurrentTemplate.LabelWidth = widthMm;
@@ -165,10 +214,6 @@ namespace EvoDesigner
         private void UpdateMarginGuidelines()
         {
             MarginCanvas.Children.Clear();
-
-            // Ensure MarginCanvas matches LabelCanvas dimensions exactly
-            MarginCanvas.Width = LabelCanvas.Width;
-            MarginCanvas.Height = LabelCanvas.Height;
             
             double canvasWidth = LabelCanvas.Width;
             double canvasHeight = LabelCanvas.Height;
@@ -416,6 +461,83 @@ namespace EvoDesigner
             }
             return null;
         }
+
+        #region Image Base64 Handling
+
+        private string ConvertImageToBase64(string filePath)
+        {
+            try
+            {
+                byte[] imageBytes = File.ReadAllBytes(filePath);
+                return Convert.ToBase64String(imageBytes);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to convert image to base64: {ex.Message}", "Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return string.Empty;
+            }
+        }
+
+        private BitmapImage ConvertBase64ToImage(string base64String)
+        {
+            try
+            {
+                byte[] imageBytes = Convert.FromBase64String(base64String);
+                var bitmap = new BitmapImage();
+                using (var stream = new MemoryStream(imageBytes))
+                {
+                    bitmap.BeginInit();
+                    bitmap.StreamSource = stream;
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                }
+                return bitmap;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to convert base64 to image: {ex.Message}", "Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return new BitmapImage();
+            }
+        }
+
+        private Image CreateImageFromFile(string filePath)
+        {
+            var image = new Image();
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(filePath);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            
+            image.Source = bitmap;
+            image.Width = 100; // Default size
+            image.Height = 100;
+            image.Stretch = Stretch.Uniform;
+            
+            // Store both file path and base64 data
+            string base64Data = ConvertImageToBase64(filePath);
+            image.Tag = $"ImageData:{base64Data}";
+            
+            return image;
+        }
+
+        private Image CreateImageFromBase64(string base64Data, double width = 100, double height = 100)
+        {
+            var image = new Image();
+            var bitmap = ConvertBase64ToImage(base64Data);
+            
+            image.Source = bitmap;
+            image.Width = width;
+            image.Height = height;
+            image.Stretch = Stretch.Uniform;
+            image.Tag = $"ImageData:{base64Data}";
+            
+            return image;
+        }
+
+        #endregion
 
         private Image CreateBarcodeImage(string symbology, string data, double width = 120, double height = 60)
         {
@@ -844,25 +966,16 @@ namespace EvoDesigner
                         {
                             try
                             {
-                                // Create an actual Image element with the dropped file
-                                var image = new Image();
-                                var bitmap = new BitmapImage();
-                                bitmap.BeginInit();
-                                bitmap.UriSource = new Uri(filePath);
-                                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                                bitmap.EndInit();
-                                
-                                image.Source = bitmap;
-                                image.Width = 100; // Default size
-                                image.Height = 100;
-                                image.Stretch = Stretch.Uniform;
-                                image.Tag = filePath; // Store file path for later reference
-                                
+                                // Create an image element with base64 storage
+                                var image = CreateImageFromFile(filePath);
                                 image.MouseLeftButtonDown += Element_MouseLeftButtonDown;
                                 
                                 // Use command to add the image
                                 var addCommand = new AddElementCommand(LabelCanvas, image, adjustedPosition.X, adjustedPosition.Y, "Add image");
                                 commandHistory.ExecuteCommand(addCommand);
+                                
+                                // Mark as dirty since we added an image
+                                SetDirty(true);
                                 
                                 // Show a success message
                                 if (adjustedPosition != position)
@@ -896,7 +1009,32 @@ namespace EvoDesigner
                         newElement = new TextBlock { Text = "Text", FontSize = 16, Foreground = Brushes.Black };
                         break;
                     case "Image":
-                        newElement = new Rectangle { Width = 60, Height = 60, Fill = Brushes.LightGray, Stroke = Brushes.DarkGray, StrokeThickness = 2 };
+                        // Prompt user to select an image file
+                        var openFileDialog = new Microsoft.Win32.OpenFileDialog
+                        {
+                            Filter = "Image files (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif|All files (*.*)|*.*",
+                            Title = "Select Image File"
+                        };
+                        
+                        if (openFileDialog.ShowDialog() == true)
+                        {
+                            try
+                            {
+                                newElement = CreateImageFromFile(openFileDialog.FileName);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Failed to load image: {ex.Message}", "Error", 
+                                    MessageBoxButton.OK, MessageBoxImage.Error);
+                                // Create placeholder rectangle as fallback
+                                newElement = new Rectangle { Width = 60, Height = 60, Fill = Brushes.LightGray, Stroke = Brushes.DarkGray, StrokeThickness = 2, Tag = "No Image Selected" };
+                            }
+                        }
+                        else
+                        {
+                            // User cancelled - create placeholder rectangle
+                            newElement = new Rectangle { Width = 60, Height = 60, Fill = Brushes.LightGray, Stroke = Brushes.DarkGray, StrokeThickness = 2, Tag = "No Image Selected" };
+                        }
                         break;
                     
                     // Retail Checkout
@@ -957,6 +1095,9 @@ namespace EvoDesigner
                     // Use command to add the element
                     var addCommand = new AddElementCommand(LabelCanvas, newElement, adjustedPosition.X, adjustedPosition.Y, $"Add {elementType}");
                     commandHistory.ExecuteCommand(addCommand);
+                    
+                    // Mark as dirty since we added an element
+                    SetDirty(true);
                     
                     // Show a tooltip if the element was repositioned
                     if (adjustedPosition != position)
@@ -1093,6 +1234,12 @@ namespace EvoDesigner
 
         private void Canvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            if (isDragging)
+            {
+                // Mark as dirty since elements were moved
+                SetDirty(true);
+            }
+            
             isDragging = false;
             LabelCanvas.MouseMove -= Canvas_MouseMove;
             LabelCanvas.MouseLeftButtonUp -= Canvas_MouseLeftButtonUp;
@@ -1433,6 +1580,9 @@ namespace EvoDesigner
                     elementsToDelete.Count == 1 ? "Delete element" : $"Delete {elementsToDelete.Count} elements");
                 commandHistory.ExecuteCommand(deleteCommand);
                 
+                // Mark as dirty since we deleted elements
+                SetDirty(true);
+                
                 selectedElements.Clear();
             }
         }
@@ -1532,7 +1682,10 @@ namespace EvoDesigner
             {
                 ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Text:" });
                 var textBox = new TextBox { Text = tb.Text };
-                textBox.TextChanged += (s, e) => tb.Text = textBox.Text;
+                textBox.TextChanged += (s, e) => { 
+                    tb.Text = textBox.Text; 
+                    SetDirty(true); 
+                };
                 ElementPropertiesPanel.Children.Add(textBox);
 
                 ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Font Family:" });
@@ -1541,15 +1694,20 @@ namespace EvoDesigner
                     SelectedItem = tb.FontFamily.Source 
                 };
                 fontFamilyBox.SelectionChanged += (s, e) => {
-                    if (fontFamilyBox.SelectedItem != null)
+                    if (fontFamilyBox.SelectedItem != null) {
                         tb.FontFamily = new FontFamily(fontFamilyBox.SelectedItem.ToString());
+                        SetDirty(true);
+                    }
                 };
                 ElementPropertiesPanel.Children.Add(fontFamilyBox);
 
                 ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Font Size:" });
                 var fontSizeBox = new TextBox { Text = tb.FontSize.ToString() };
                 fontSizeBox.TextChanged += (s, e) => {
-                    if (double.TryParse(fontSizeBox.Text, out double size)) tb.FontSize = size;
+                    if (double.TryParse(fontSizeBox.Text, out double size)) {
+                        tb.FontSize = size;
+                        SetDirty(true);
+                    }
                 };
                 ElementPropertiesPanel.Children.Add(fontSizeBox);
 
@@ -1856,6 +2014,170 @@ namespace EvoDesigner
             }
         }
 
+        private void SaveAsTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Populate template with current canvas content
+                CurrentTemplate.Elements.Clear();
+                CurrentTemplate.TemplateName = TemplateNameBox.Text ?? "Untitled Template";
+                
+                // Save all canvas elements (excluding resize handles)
+                int elementIndex = 0;
+                foreach (UIElement child in LabelCanvas.Children)
+                {
+                    if (child is System.Windows.Controls.Primitives.Thumb) continue; // Skip resize handles
+                    
+                    var labelElement = new EvoDesigner.Models.LabelElement
+                    {
+                        X = Canvas.GetLeft(child),
+                        Y = Canvas.GetTop(child),
+                        Width = child is FrameworkElement fe ? fe.Width : 100,
+                        Height = child is FrameworkElement fe2 ? fe2.Height : 30
+                    };
+                    
+                    if (child is TextBlock tb)
+                    {
+                        if (tb.Text == "[EAN-13]")
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode13;
+                        else if (tb.Text == "[EAN-8]")
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode8;
+                        else if (tb.Text == "[QR Code]")
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
+                        else
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
+                            
+                        labelElement.Content = tb.Text;
+                        labelElement.FontSize = tb.FontSize;
+                        labelElement.FontFamily = tb.FontFamily.ToString();
+                        labelElement.FontWeight = tb.FontWeight.ToString();
+                        labelElement.FontStyle = tb.FontStyle.ToString();
+                        labelElement.Foreground = tb.Foreground.ToString();
+                    }
+                    else if (child is System.Windows.Shapes.Rectangle rect)
+                    {
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                        string tagStr = rect.Tag?.ToString() ?? "";
+                        
+                        // Handle file path in rectangle tag - convert to base64
+                        if (!string.IsNullOrEmpty(tagStr) && tagStr != "Missing Image Data" && tagStr != "No Image Data")
+                        {
+                            if (System.IO.File.Exists(tagStr))
+                            {
+                                labelElement.ImageData = ConvertImageToBase64(tagStr);
+                                labelElement.Content = ""; // Clear file path since we have base64 data
+                            }
+                            else
+                            {
+                                labelElement.Content = tagStr; // Keep as fallback
+                            }
+                        }
+                    }
+                    else if (child is Image imageElement)
+                    {
+                        if (imageElement.Tag?.ToString() == "QRCode" || imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
+                        {
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
+                            // Extract data from tag if available
+                            if (imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
+                                labelElement.Content = imageElement.Tag.ToString().Substring("QRCodeData:".Length);
+                            else
+                                labelElement.Content = "Sample QR Data";
+                        }
+                        else if (imageElement.Tag?.ToString()?.StartsWith("BarcodeData:") == true)
+                        {
+                            var tagStr = imageElement.Tag.ToString();
+                            var parts = tagStr.Split(':');
+                            if (parts.Length >= 3)
+                            {
+                                var barcodeType = parts[1];
+                                var barcodeData = string.Join(":", parts.Skip(2));
+                                
+                                // Map barcode type to enum
+                                labelElement.Type = GetLabelElementTypeFromBarcodeType(barcodeType);
+                                labelElement.Content = barcodeData;
+                                labelElement.BarcodeType = barcodeType;
+                            }
+                            else
+                            {
+                                labelElement.Type = EvoDesigner.Models.LabelElementType.EAN13;
+                                labelElement.Content = "4000000000004";
+                                labelElement.BarcodeType = "EAN13";
+                            }
+                        }
+                        else
+                        {
+                            // Regular image element
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                            
+                            // Extract base64 image data from tag
+                            string tagStr = imageElement.Tag?.ToString() ?? "";
+                            if (tagStr.StartsWith("ImageData:"))
+                            {
+                                // Extract base64 data from tag
+                                labelElement.ImageData = tagStr.Substring("ImageData:".Length);
+                                labelElement.Content = ""; // Clear file path since we have base64 data
+                            }
+                            else
+                            {
+                                // Legacy: file path stored in tag - convert to base64
+                                labelElement.Content = tagStr;
+                                if (!string.IsNullOrEmpty(tagStr) && System.IO.File.Exists(tagStr))
+                                {
+                                    labelElement.ImageData = ConvertImageToBase64(tagStr);
+                                }
+                            }
+                        }
+                    }
+                    
+                    CurrentTemplate.Elements.Add(labelElement);
+                    elementIndex++;
+                }
+
+                // Save data source configuration if available
+                if (_currentDataSource != null)
+                {
+                    CurrentTemplate.DataSource = _currentDataSource;
+                }
+
+                var dlg = new Microsoft.Win32.SaveFileDialog 
+                { 
+                    Filter = "Label Template (*.xml)|*.xml",
+                    DefaultExt = "xml",
+                    FileName = string.IsNullOrEmpty(CurrentTemplate.TemplateName) ? "MyTemplate" : CurrentTemplate.TemplateName
+                };
+                
+                if (dlg.ShowDialog() == true)
+                {
+                    var serializer = new System.Xml.Serialization.XmlSerializer(typeof(EvoDesigner.Models.LabelTemplate));
+                    using var fs = new System.IO.FileStream(dlg.FileName, System.IO.FileMode.Create);
+                    serializer.Serialize(fs, CurrentTemplate);
+                    
+                    // Reset dirty flag and update current file path
+                    _currentFilePath = dlg.FileName;
+                    SetDirty(false);
+                    
+                    MessageBox.Show($"Template saved successfully to:\n{dlg.FileName}", "Success", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("Access denied. Please choose a different location or run as administrator.", 
+                    "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show("The specified directory was not found. Please choose a valid location.", 
+                    "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving template:\n{ex.Message}", "Save Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void SaveTemplate_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -1899,7 +2221,21 @@ namespace EvoDesigner
                     else if (child is System.Windows.Shapes.Rectangle rect)
                     {
                         labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
-                        labelElement.Content = rect.Tag?.ToString() ?? "";
+                        string tagStr = rect.Tag?.ToString() ?? "";
+                        
+                        // Handle file path in rectangle tag - convert to base64
+                        if (!string.IsNullOrEmpty(tagStr) && tagStr != "Missing Image Data" && tagStr != "No Image Data")
+                        {
+                            if (System.IO.File.Exists(tagStr))
+                            {
+                                labelElement.ImageData = ConvertImageToBase64(tagStr);
+                                labelElement.Content = ""; // Clear file path since we have base64 data
+                            }
+                            else
+                            {
+                                labelElement.Content = tagStr; // Keep as fallback
+                            }
+                        }
                     }
                     else if (child is Image imageElement)
                     {
@@ -1935,8 +2271,26 @@ namespace EvoDesigner
                         }
                         else
                         {
+                            // Regular image element
                             labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
-                            labelElement.Content = imageElement.Tag?.ToString() ?? "";
+                            
+                            // Extract base64 image data from tag
+                            string tagStr = imageElement.Tag?.ToString() ?? "";
+                            if (tagStr.StartsWith("ImageData:"))
+                            {
+                                // Extract base64 data from tag
+                                labelElement.ImageData = tagStr.Substring("ImageData:".Length);
+                                labelElement.Content = ""; // Clear file path since we have base64 data
+                            }
+                            else
+                            {
+                                // Legacy: file path stored in tag - convert to base64
+                                labelElement.Content = tagStr;
+                                if (!string.IsNullOrEmpty(tagStr) && System.IO.File.Exists(tagStr))
+                                {
+                                    labelElement.ImageData = ConvertImageToBase64(tagStr);
+                                }
+                            }
                         }
                     }
                     
@@ -1944,22 +2298,43 @@ namespace EvoDesigner
                     elementIndex++;
                 }
 
-                var dlg = new Microsoft.Win32.SaveFileDialog 
-                { 
-                    Filter = "Label Template (*.xml)|*.xml",
-                    DefaultExt = "xml",
-                    FileName = string.IsNullOrEmpty(CurrentTemplate.TemplateName) ? "MyTemplate" : CurrentTemplate.TemplateName
-                };
-                
-                if (dlg.ShowDialog() == true)
+                // Save data source configuration if available
+                if (_currentDataSource != null)
                 {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(typeof(EvoDesigner.Models.LabelTemplate));
-                    using var fs = new System.IO.FileStream(dlg.FileName, System.IO.FileMode.Create);
-                    serializer.Serialize(fs, CurrentTemplate);
-                    
-                    MessageBox.Show($"Template saved successfully to:\n{dlg.FileName}", "Success", 
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    CurrentTemplate.DataSource = _currentDataSource;
                 }
+
+                string saveFilePath;
+                
+                // If we have an existing file path, save directly to it
+                if (!string.IsNullOrEmpty(_currentFilePath))
+                {
+                    saveFilePath = _currentFilePath;
+                }
+                else
+                {
+                    // Show dialog for new file
+                    var dlg = new Microsoft.Win32.SaveFileDialog 
+                    { 
+                        Filter = "Label Template (*.xml)|*.xml",
+                        DefaultExt = "xml",
+                        FileName = string.IsNullOrEmpty(CurrentTemplate.TemplateName) ? "MyTemplate" : CurrentTemplate.TemplateName
+                    };
+                    
+                    if (dlg.ShowDialog() != true)
+                        return; // User cancelled
+                        
+                    saveFilePath = dlg.FileName;
+                }
+                
+                // Save the template
+                var serializer = new System.Xml.Serialization.XmlSerializer(typeof(EvoDesigner.Models.LabelTemplate));
+                using var fs = new System.IO.FileStream(saveFilePath, System.IO.FileMode.Create);
+                serializer.Serialize(fs, CurrentTemplate);
+                
+                // Reset dirty flag and update current file path
+                _currentFilePath = saveFilePath;
+                SetDirty(false);
             }
             catch (UnauthorizedAccessException)
             {
@@ -1994,12 +2369,20 @@ namespace EvoDesigner
                     using var fs = new System.IO.FileStream(dlg.FileName, System.IO.FileMode.Open);
                     CurrentTemplate = (EvoDesigner.Models.LabelTemplate)serializer.Deserialize(fs);
                     
+                    // Load data source configuration if available
+                    if (CurrentTemplate.DataSource != null)
+                    {
+                        _currentDataSource = CurrentTemplate.DataSource;
+                        // TODO: Optionally reconnect to data source and reload data
+                    }
+                    
                     // Update template name textbox
                     TemplateNameBox.Text = CurrentTemplate.TemplateName ?? "Loaded Template";
                     
-                    // Restore template dimensions to UI
-                    LabelWidthBox.Text = CurrentTemplate.LabelWidth.ToString("F1");
-                    LabelHeightBox.Text = CurrentTemplate.LabelHeight.ToString("F1");
+                    // Restore template dimensions to internal properties and display
+                    _labelWidthMm = CurrentTemplate.LabelWidth;
+                    _labelHeightMm = CurrentTemplate.LabelHeight;
+                    UpdateDisplayedDimensions();
                     MarginLeftBox.Text = CurrentTemplate.MarginLeft.ToString("F1");
                     MarginRightBox.Text = CurrentTemplate.MarginRight.ToString("F1");
                     MarginTopBox.Text = CurrentTemplate.MarginTop.ToString("F1");
@@ -2026,8 +2409,9 @@ namespace EvoDesigner
                         }
                     }
                     
-                    MessageBox.Show($"Template loaded successfully:\n{CurrentTemplate.TemplateName}", "Success", 
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    // Reset dirty flag and update current file path
+                    _currentFilePath = dlg.FileName;
+                    SetDirty(false);
                 }
             }
             catch (FileNotFoundException)
@@ -2106,8 +2490,32 @@ namespace EvoDesigner
                     
                 case EvoDesigner.Models.LabelElementType.Image:
                     // Try to create an actual Image element if we have image data
-                    if (!string.IsNullOrEmpty(element.Content))
+                    if (!string.IsNullOrEmpty(element.ImageData))
                     {
+                        // We have base64 image data - use it directly
+                        try
+                        {
+                            var image = CreateImageFromBase64(element.ImageData, element.Width, element.Height);
+                            result = image;
+                        }
+                        catch
+                        {
+                            // Fallback to rectangle if base64 decoding fails
+                            var rect = new System.Windows.Shapes.Rectangle
+                            {
+                                Width = element.Width,
+                                Height = element.Height,
+                                Fill = Brushes.LightGray,
+                                Stroke = Brushes.DarkGray,
+                                StrokeThickness = 2,
+                                Tag = "Missing Image Data"
+                            };
+                            result = rect;
+                        }
+                    }
+                    else if (!string.IsNullOrEmpty(element.Content))
+                    {
+                        // Legacy support: try to load from file path
                         try
                         {
                             var image = new Image();
@@ -2115,12 +2523,10 @@ namespace EvoDesigner
                             // Check if the content is a file path
                             if (System.IO.File.Exists(element.Content))
                             {
-                                var bitmap = new BitmapImage();
-                                bitmap.BeginInit();
-                                bitmap.UriSource = new Uri(element.Content);
-                                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                                bitmap.EndInit();
-                                image.Source = bitmap;
+                                // File exists - load it and convert to base64 for future saves
+                                image = CreateImageFromFile(element.Content);
+                                image.Width = element.Width;
+                                image.Height = element.Height;
                             }
                             else
                             {
@@ -2133,6 +2539,10 @@ namespace EvoDesigner
                                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                                     bitmap.EndInit();
                                     image.Source = bitmap;
+                                    image.Width = element.Width;
+                                    image.Height = element.Height;
+                                    image.Stretch = Stretch.Uniform;
+                                    image.Tag = element.Content;
                                 }
                                 catch
                                 {
@@ -2151,10 +2561,6 @@ namespace EvoDesigner
                                 }
                             }
                             
-                            image.Width = element.Width;
-                            image.Height = element.Height;
-                            image.Stretch = Stretch.Uniform;
-                            image.Tag = element.Content;
                             result = image;
                         }
                         catch
@@ -2182,7 +2588,7 @@ namespace EvoDesigner
                             Fill = Brushes.LightGray,
                             Stroke = Brushes.DarkGray,
                             StrokeThickness = 2,
-                            Tag = element.Content
+                            Tag = "No Image Data"
                         };
                         result = rect;
                     }
@@ -2212,8 +2618,8 @@ namespace EvoDesigner
             var liveTemplate = new EvoDesigner.Models.LabelTemplate
             {
                 TemplateName = CurrentTemplate.TemplateName,
-                LabelWidth = CurrentTemplate.LabelWidth,
-                LabelHeight = CurrentTemplate.LabelHeight,
+                LabelWidth = CurrentTemplate.LabelWidth > 0 ? CurrentTemplate.LabelWidth : _labelWidthMm,
+                LabelHeight = CurrentTemplate.LabelHeight > 0 ? CurrentTemplate.LabelHeight : _labelHeightMm,
                 MarginLeft = CurrentTemplate.MarginLeft,
                 MarginRight = CurrentTemplate.MarginRight,
                 MarginTop = CurrentTemplate.MarginTop,
@@ -2318,7 +2724,18 @@ namespace EvoDesigner
                 else if (child is System.Windows.Shapes.Rectangle rect)
                 {
                     labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
-                    labelElement.Content = rect.Tag?.ToString() ?? "";
+                    string tagStr = rect.Tag?.ToString() ?? "";
+                    
+                    // Handle base64 image data stored in tag
+                    if (tagStr.StartsWith("ImageData:"))
+                    {
+                        labelElement.ImageData = tagStr.Substring("ImageData:".Length);
+                        labelElement.Content = ""; // Clear content since we have base64 data
+                    }
+                    else
+                    {
+                        labelElement.Content = tagStr;
+                    }
                 }
                 else if (child is Image imageElement)
                 {
@@ -2355,7 +2772,18 @@ namespace EvoDesigner
                     else
                     {
                         labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
-                        labelElement.Content = imageElement.Tag?.ToString() ?? "";
+                        string tagStr = imageElement.Tag?.ToString() ?? "";
+                        
+                        // Handle base64 image data stored in tag
+                        if (tagStr.StartsWith("ImageData:"))
+                        {
+                            labelElement.ImageData = tagStr.Substring("ImageData:".Length);
+                            labelElement.Content = ""; // Clear content since we have base64 data
+                        }
+                        else
+                        {
+                            labelElement.Content = tagStr;
+                        }
                     }
                 }
                 
@@ -2363,15 +2791,97 @@ namespace EvoDesigner
                 elementIndex++;
             }
 
+            // Copy field mappings from current template
+            liveTemplate.FieldMappings = CurrentTemplate.FieldMappings ?? new List<EvoDesigner.Models.FieldMapping>();
+            
             return liveTemplate;
         }
 
         private void DataSource_Click(object sender, RoutedEventArgs e)
         {
-            var win = new EvoDesigner.UI.DataSourceWindow();
+            var win = new EvoDesigner.UI.DataSourceWindow(_currentDataSource);
             if (win.ShowDialog() == true)
             {
                 lastResultTable = win.ResultTable;
+                
+                // Store the data source configuration
+                _currentDataSource = new EvoDesigner.Models.DataSourceConfig
+                {
+                    Host = win.Host,
+                    Port = win.Port,
+                    Database = win.Database,
+                    Username = win.Username,
+                    Password = win.Password,
+                    Query = win.Query
+                };
+                
+                SetDirty(true); // Mark template as modified
+            }
+        }
+
+        private void RefreshData_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Check if data source is configured
+                if (_currentDataSource == null || string.IsNullOrEmpty(_currentDataSource.Host) || string.IsNullOrEmpty(_currentDataSource.Query))
+                {
+                    MessageBox.Show("Please configure a data source first.\n\nGo to File > Setup Data Source to configure your database connection and query.", 
+                        "Data Source Not Configured", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                // Set loading state
+                RefreshDataButton.IsEnabled = false;
+                RefreshDataButton.Content = "⏳ Loading...";
+                DataStatusTextBlock.Text = "Connecting to database...";
+                DataStatusTextBlock.Foreground = Brushes.Orange;
+
+                // Force UI update
+                Application.Current.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
+
+                // Create connection string
+                var connectionString = $"Server={_currentDataSource.Host};Port={_currentDataSource.Port};Database={_currentDataSource.Database};User={_currentDataSource.Username};Password={_currentDataSource.Password};";
+
+                // Execute query
+                var mysqlService = new MySqlService();
+                mysqlService.ConnectionString = connectionString;
+                
+                DataStatusTextBlock.Text = "Executing query...";
+                Application.Current.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
+                
+                lastResultTable = mysqlService.ExecuteQuery(_currentDataSource.Query);
+
+                if (lastResultTable != null && lastResultTable.Rows.Count > 0)
+                {
+                    DataStatusTextBlock.Text = $"{lastResultTable.Rows.Count} rows";
+                    DataStatusTextBlock.Foreground = Brushes.Green;
+                    
+                    MessageBox.Show($"Data refreshed successfully!\n\nLoaded {lastResultTable.Rows.Count} rows with {lastResultTable.Columns.Count} columns.", 
+                        "Data Refresh Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    DataStatusTextBlock.Text = "No data";
+                    DataStatusTextBlock.Foreground = Brushes.Gray;
+                    
+                    MessageBox.Show("Query executed successfully but returned no data.", 
+                        "No Data", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                DataStatusTextBlock.Text = "Error";
+                DataStatusTextBlock.Foreground = Brushes.Red;
+                
+                MessageBox.Show($"Error refreshing data:\n\n{ex.Message}", 
+                    "Data Refresh Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                // Restore button state
+                RefreshDataButton.IsEnabled = true;
+                RefreshDataButton.Content = "⟳ Refresh";
             }
         }
 
@@ -2559,6 +3069,175 @@ namespace EvoDesigner
         {
             MessageBox.Show("Evolabs IT Solutions Ltd (c) 2025", "About EvoDesigner", 
                 MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void ResizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Open the resize dialog
+            var resizeDialog = new EvoDesigner.UI.LabelResizeWindow(_labelWidthMm, _labelHeightMm);
+            
+            if (resizeDialog.ShowDialog() == true)
+            {
+                // Get the new dimensions and resize mode
+                double newWidthMm = resizeDialog.NewWidth;
+                double newHeightMm = resizeDialog.NewHeight;
+                var resizeMode = resizeDialog.SelectedResizeMode;
+                
+                // Calculate scale factors
+                double scaleX = newWidthMm / _labelWidthMm;
+                double scaleY = newHeightMm / _labelHeightMm;
+                
+                // Update label dimensions
+                _labelWidthMm = newWidthMm;
+                _labelHeightMm = newHeightMm;
+                UpdateDisplayedDimensions();
+                
+                // Apply resize based on selected mode
+                switch (resizeMode)
+                {
+                    case EvoDesigner.UI.LabelResizeMode.ResizeElements:
+                        ResizeElements(scaleX, scaleY);
+                        break;
+                        
+                    case EvoDesigner.UI.LabelResizeMode.RepositionElements:
+                        RepositionElements(scaleX, scaleY);
+                        break;
+                        
+                    case EvoDesigner.UI.LabelResizeMode.CanvasOnly:
+                        // Do nothing - just resize the canvas
+                        break;
+                }
+                
+                // Update the canvas size
+                UpdateCanvasSize();
+                UpdateGrid();
+                UpdateMarginGuidelines();
+            }
+        }
+        
+        private void ResizeElements(double scaleX, double scaleY)
+        {
+            foreach (UIElement element in LabelCanvas.Children)
+            {
+                // Scale position
+                double left = Canvas.GetLeft(element);
+                double top = Canvas.GetTop(element);
+                if (!double.IsNaN(left)) Canvas.SetLeft(element, left * scaleX);
+                if (!double.IsNaN(top)) Canvas.SetTop(element, top * scaleY);
+                
+                // Scale size
+                if (element is FrameworkElement fe)
+                {
+                    if (!double.IsNaN(fe.Width)) fe.Width *= scaleX;
+                    if (!double.IsNaN(fe.Height)) fe.Height *= scaleY;
+                }
+                
+                // Scale font size for text elements
+                if (element is TextBlock textBlock)
+                {
+                    textBlock.FontSize *= Math.Min(scaleX, scaleY); // Use smaller scale for text
+                }
+            }
+        }
+        
+        private void RepositionElements(double scaleX, double scaleY)
+        {
+            foreach (UIElement element in LabelCanvas.Children)
+            {
+                // Only scale position, not size
+                double left = Canvas.GetLeft(element);
+                double top = Canvas.GetTop(element);
+                if (!double.IsNaN(left)) Canvas.SetLeft(element, left * scaleX);
+                if (!double.IsNaN(top)) Canvas.SetTop(element, top * scaleY);
+            }
+        }
+
+        #endregion
+
+        #region Exit and Save Tracking
+
+        private void SetDirty(bool isDirty = true)
+        {
+            _isDirty = isDirty;
+            // Update title to show if unsaved changes exist
+            string baseTitle = "EvoDesigner - Label Designer";
+            this.Title = _isDirty ? $"{baseTitle} *" : baseTitle;
+        }
+
+        private bool PromptSaveChanges()
+        {
+            if (!_isDirty) return true; // No changes to save
+
+            var result = MessageBox.Show(
+                "You have unsaved changes. Do you want to save them before continuing?",
+                "Unsaved Changes",
+                MessageBoxButton.YesNoCancel,
+                MessageBoxImage.Question);
+
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    SaveTemplate_Click(this, new RoutedEventArgs());
+                    return !_isDirty; // Return true if save was successful
+                case MessageBoxResult.No:
+                    return true; // Continue without saving
+                case MessageBoxResult.Cancel:
+                default:
+                    return false; // Cancel the operation
+            }
+        }
+
+        private void New_Click(object sender, RoutedEventArgs e)
+        {
+            if (PromptSaveChanges())
+            {
+                // Clear the canvas
+                LabelCanvas.Children.Clear();
+                RemoveResizingHandles();
+                selectedElement = null;
+                selectedElements.Clear();
+                
+                // Reset template to defaults
+                CurrentTemplate = new EvoDesigner.Models.LabelTemplate();
+                _currentFilePath = null;
+                
+                // Reset UI to default values
+                InitializeDefaultTemplate();
+                
+                // Clear any loaded data
+                lastResultTable = null;
+                _currentDataSource = null;
+                
+                // Clear properties panel
+                ElementPropertiesPanel.Children.Clear();
+                ElementPropertiesPanel.Children.Add(new TextBlock 
+                { 
+                    Text = "Select an element to view its properties", 
+                    Foreground = Brushes.Gray, 
+                    FontStyle = FontStyles.Italic, 
+                    TextWrapping = TextWrapping.Wrap, 
+                    Margin = new Thickness(0,10,0,0) 
+                });
+                
+                // Reset dirty flag
+                SetDirty(false);
+            }
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            if (PromptSaveChanges())
+            {
+                Application.Current.Shutdown();
+            }
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!PromptSaveChanges())
+            {
+                e.Cancel = true; // Cancel the closing if user chose to cancel
+            }
         }
 
         #endregion

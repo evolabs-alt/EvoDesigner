@@ -5,18 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EvoDesigner"
         mc:Ignorable="d"
-        Title="EvoDesigner - Label Designer" Height="450" Width="800">
+        Title="EvoDesigner - Label Designer" Height="450" Width="800"
+        Closing="MainWindow_Closing">
     <DockPanel>
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Setup Data Source..." x:Name="SetupDataSourceMenuItem" Click="DataSource_Click" />
-                <MenuItem Header="_Map Fields..." x:Name="MapFieldsMenuItem" Click="MapFields_Click" />
+                <MenuItem Header="_New Template" x:Name="NewMenuItem" Click="New_Click" />
                 <Separator />
                 <MenuItem Header="_Load Template..." x:Name="LoadTemplateMenuItem" Click="LoadTemplate_Click" />
-                <MenuItem Header="_Save Template..." x:Name="SaveTemplateMenuItem" Click="SaveTemplate_Click" />
+                <MenuItem Header="_Save Template" x:Name="SaveTemplateMenuItem" Click="SaveTemplate_Click" />
+                <MenuItem Header="Save Template _As..." x:Name="SaveAsTemplateMenuItem" Click="SaveAsTemplate_Click" />
                 <Separator />
-                <MenuItem Header="_Print Preview..." x:Name="PrintPreviewMenuItem" Click="PrintPreview_Click" />
+                <MenuItem Header="_Setup Data Source..." x:Name="SetupDataSourceMenuItem" Click="DataSource_Click" />
+                <MenuItem Header="Setup _Map Fields..." x:Name="MapFieldsMenuItem" Click="MapFields_Click" />
+                <Separator />
+                <MenuItem Header="_Print..." x:Name="PrintPreviewMenuItem" Click="PrintPreview_Click" />
+                <Separator />
+                <MenuItem Header="E_xit" x:Name="ExitMenuItem" Click="Exit_Click" />
             </MenuItem>
             <MenuItem Header="_About">
                 <MenuItem Header="_About EvoDesigner..." x:Name="AboutMenuItem" Click="About_Click" />
@@ -36,17 +42,44 @@
 
         <!-- Top Bar: Actions -->
         <StackPanel Grid.ColumnSpan="3" Grid.Row="0" Orientation="Horizontal" Margin="10">
-            <!-- Grid Toggle -->
-            <CheckBox x:Name="ShowGridCheckBox" Content="Show Grid (5mm)" VerticalAlignment="Center" Margin="0,0,10,0" IsChecked="True" ToolTip="Toggle 5mm gridlines" />
+            <!-- Grid Controls Group -->
+            <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="3" Padding="8,5,8,5" Margin="0,0,15,0" Background="#FAFAFA">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="⊞ Grid:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" Foreground="#444" FontSize="11"/>
+                    <CheckBox x:Name="ShowGridCheckBox" Content="Show Grid (5mm)" IsChecked="True" VerticalAlignment="Center" ToolTip="Toggle 5mm gridlines" FontSize="11"/>
+                </StackPanel>
+            </Border>
             
-            <!-- Zoom Controls -->
-            <Separator Margin="10,0" />
-            <TextBlock Text="Zoom:" VerticalAlignment="Center" Margin="0,0,5,0" />
-            <Button x:Name="ZoomOutButton" Content="−" Width="25" Height="25" Margin="0,0,2,0" ToolTip="Zoom Out" FontSize="14" FontWeight="Bold" />
-            <TextBlock x:Name="ZoomTextBlock" Text="100%" VerticalAlignment="Center" Margin="5,0" MinWidth="40" TextAlignment="Center" />
-            <Button x:Name="ZoomInButton" Content="+" Width="25" Height="25" Margin="2,0,5,0" ToolTip="Zoom In" FontSize="14" FontWeight="Bold" />
-            <Button x:Name="ZoomFitButton" Content="Fit" Width="30" Height="25" Margin="0,0,5,0" ToolTip="Zoom to Fit" FontSize="10" />
-            <Button x:Name="ZoomResetButton" Content="100%" Width="35" Height="25" Margin="0,0,0,0" ToolTip="Reset Zoom" FontSize="10" />
+            <!-- Layer Controls Group -->
+            <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="3" Padding="8,5,8,5" Margin="0,0,15,0" Background="#FAFAFA">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="📊 Layer:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" Foreground="#444" FontSize="11"/>
+                    <StackPanel x:Name="LayerControlsContainer" Orientation="Horizontal">
+                        <!-- Layer control buttons will be added here dynamically -->
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            
+            <!-- Zoom Controls Group -->
+            <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="3" Padding="8,5,8,5" Background="#FAFAFA">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="🔍 Zoom:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" Foreground="#444" FontSize="11"/>
+                    <Button x:Name="ZoomOutButton" Content="−" Width="28" Height="25" Margin="0,0,3,0" ToolTip="Zoom Out" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock x:Name="ZoomTextBlock" Text="100%" VerticalAlignment="Center" Width="45" TextAlignment="Center" Margin="3,0,3,0" FontWeight="SemiBold" Foreground="#333"/>
+                    <Button x:Name="ZoomInButton" Content="+" Width="28" Height="25" Margin="3,0,8,0" ToolTip="Zoom In" FontSize="12" FontWeight="Bold"/>
+                    <Button x:Name="ZoomFitButton" Content="⊞" Width="32" Height="25" Margin="0,0,3,0" ToolTip="Zoom to Fit" FontSize="12"/>
+                    <Button x:Name="ZoomResetButton" Content="1:1" Width="35" Height="25" ToolTip="Reset Zoom (100%)" FontSize="10"/>
+                </StackPanel>
+            </Border>
+            
+            <!-- Data Controls Group -->
+            <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="3" Padding="8,5,8,5" Margin="15,0,0,0" Background="#FAFAFA">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="📊 Data:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" Foreground="#444" FontSize="11"/>
+                    <Button x:Name="RefreshDataButton" Content="⟳ Refresh" Width="70" Height="25" ToolTip="Refresh data from configured data source" FontSize="11" Click="RefreshData_Click"/>
+                    <TextBlock x:Name="DataStatusTextBlock" Text="No data" VerticalAlignment="Center" Margin="8,0,0,0" FontStyle="Italic" Foreground="#666" FontSize="10"/>
+                </StackPanel>
+            </Border>
         </StackPanel>
 
         <!-- Toolbox -->
@@ -120,8 +153,11 @@
             <Rectangle Grid.Column="0" Grid.Row="0" Fill="#D0D0D0" />
             
             <!-- Canvas Container -->
-            <Border Grid.Column="1" Grid.Row="1" Background="#FFF" BorderBrush="#CCC" BorderThickness="0" CornerRadius="0">
-                <ScrollViewer x:Name="CanvasScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Border Grid.Column="1" Grid.Row="1" Background="#FFF" BorderBrush="#888" BorderThickness="2" CornerRadius="0">
+                <ScrollViewer x:Name="CanvasScrollViewer" 
+                             HorizontalScrollBarVisibility="Auto" 
+                             VerticalScrollBarVisibility="Auto"
+                             CanContentScroll="True">
                     <Grid x:Name="CanvasContainer" MouseLeftButtonDown="CanvasContainer_MouseLeftButtonDown">
                         <Grid.RenderTransform>
                             <ScaleTransform x:Name="CanvasScaleTransform" ScaleX="1" ScaleY="1" />
@@ -147,10 +183,18 @@
             <TextBlock Text="Label Setup" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" Foreground="#2D5A8D" />
             <TextBlock Text="Template Name:" ToolTip="Name for your label template" />
             <TextBox x:Name="TemplateNameBox" Margin="0,0,0,10" />
-            <TextBlock Text="Label Width (mm):" ToolTip="Width of the label in millimeters" />
-            <TextBox x:Name="LabelWidthBox" Margin="0,0,0,10" />
-            <TextBlock Text="Label Height (mm):" ToolTip="Height of the label in millimeters" />
-            <TextBox x:Name="LabelHeightBox" Margin="0,0,0,10" />
+            
+            <!-- Label Size Display (Read-only) -->
+            <TextBlock Text="Label Size:" FontWeight="Bold" Margin="0,0,0,5" Foreground="#2D5A8D" />
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                <TextBlock Text="Width:" Margin="0,0,5,0" />
+                <TextBlock x:Name="LabelWidthDisplay" Text="70.0 mm" FontWeight="SemiBold" Margin="0,0,15,0" />
+                <TextBlock Text="Height:" Margin="0,0,5,0" />
+                <TextBlock x:Name="LabelHeightDisplay" Text="30.0 mm" FontWeight="SemiBold" />
+            </StackPanel>
+            <Button x:Name="ResizeButton" Content="Resize" Width="80" HorizontalAlignment="Left" 
+                    Margin="0,0,0,10" Click="ResizeButton_Click" ToolTip="Resize the label and optionally adjust elements" />
+            
             <TextBlock Text="Margins (mm):" FontWeight="Bold" Margin="0,10,0,0" Foreground="#2D5A8D" ToolTip="Set label margins in millimeters" />
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Left:" Margin="0,0,5,0" ToolTip="Left margin" />

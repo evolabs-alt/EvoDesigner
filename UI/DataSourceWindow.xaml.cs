@@ -12,12 +12,43 @@ namespace EvoDesigner.UI
         public string ConnectionString { get; private set; } = "";
         public string Query => QueryBox.Text;
         public DataTable? ResultTable { get; private set; }
+        
+        // Expose individual connection properties
+        public string Host => HostBox.Text;
+        public string Port => PortBox.Text;
+        public string Database => DatabaseBox.Text;
+        public string Username => UsernameBox.Text;
+        public string Password => PasswordBox.Password;
 
         public DataSourceWindow()
         {
             InitializeComponent();
             _config = ConfigService.LoadConfig();
             LoadSavedSettings();
+        }
+
+        public DataSourceWindow(EvoDesigner.Models.DataSourceConfig? dataSource) : this()
+        {
+            // If a data source is provided, use it instead of saved settings
+            if (dataSource != null)
+            {
+                LoadFromDataSource(dataSource);
+            }
+            else
+            {
+                // For new templates, start with empty fields
+                ClearFields();
+            }
+        }
+
+        private void ClearFields()
+        {
+            HostBox.Text = "";
+            PortBox.Text = "";
+            DatabaseBox.Text = "";
+            UsernameBox.Text = "";
+            PasswordBox.Password = "";
+            QueryBox.Text = "";
         }
 
         private void LoadSavedSettings()
@@ -29,6 +60,17 @@ namespace EvoDesigner.UI
             UsernameBox.Text = _config.MySqlConnection.Username;
             PasswordBox.Password = _config.MySqlConnection.Password;
             QueryBox.Text = _config.MySqlConnection.LastQuery;
+        }
+
+        private void LoadFromDataSource(EvoDesigner.Models.DataSourceConfig dataSource)
+        {
+            // Load from template data source configuration
+            HostBox.Text = dataSource.Host;
+            PortBox.Text = dataSource.Port;
+            DatabaseBox.Text = dataSource.Database;
+            UsernameBox.Text = dataSource.Username;
+            PasswordBox.Password = dataSource.Password;
+            QueryBox.Text = dataSource.Query;
         }
 
         private void SaveCurrentSettings()

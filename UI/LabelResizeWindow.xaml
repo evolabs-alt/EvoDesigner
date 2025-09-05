@@ -1,0 +1,67 @@
+<Window x:Class="EvoDesigner.UI.LabelResizeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Label Resize" Height="500" Width="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <TextBlock Grid.Row="0" Text="Label Resize" FontSize="18" FontWeight="Bold" 
+                   Foreground="#2D5A8D" Margin="0,0,0,25" HorizontalAlignment="Center"/>
+        
+        <!-- Resize Options -->
+        <GroupBox Grid.Row="1" Header="Resize Options" Margin="0,0,0,15">
+            <StackPanel Margin="10">
+                <RadioButton x:Name="ResizeElementsRadio" Content="Resize Elements" 
+                           IsChecked="True" Margin="0,5,0,5"
+                           ToolTip="Scale existing elements proportionally with the new size"/>
+                <RadioButton x:Name="RepositionElementsRadio" Content="Reposition Elements" 
+                           Margin="0,5,0,5"
+                           ToolTip="Move elements to maintain relative positions"/>
+                <RadioButton x:Name="CanvasOnlyRadio" Content="Change Canvas Size Only" 
+                           Margin="0,5,0,5"
+                           ToolTip="Keep elements at current positions and sizes"/>
+            </StackPanel>
+        </GroupBox>
+        
+        <!-- Dimensions Input -->
+        <GroupBox Grid.Row="2" Header="New Dimensions" Margin="0,0,0,20">
+            <Grid Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Width:" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="WidthTextBox" Margin="0,5,10,10" Height="28"/>
+                <TextBlock Grid.Row="0" Grid.Column="2" Text="mm" VerticalAlignment="Center"/>
+                
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Height:" VerticalAlignment="Center" Margin="0,0,15,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="HeightTextBox" Margin="0,5,10,5" Height="28"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" Text="mm" VerticalAlignment="Center"/>
+            </Grid>
+        </GroupBox>
+        
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,10">
+            <Button x:Name="ResizeConfirmButton" Content="Resize" Width="90" Height="35" 
+                    Margin="0,0,15,0" Click="ResizeConfirmButton_Click" IsDefault="True"/>
+            <Button x:Name="CancelButton" Content="Cancel" Width="90" Height="35" 
+                    Click="CancelButton_Click" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -11,23 +11,24 @@
         
         <!-- Header with navigation -->
         <Grid Grid.Row="0" Margin="20,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
             
-            <TextBlock Grid.Column="1" Text="Print Preview" FontSize="18" FontWeight="Bold" 
-                       HorizontalAlignment="Center" />
+            <!-- Title -->
+            <TextBlock Grid.Row="0" Text="Print Preview" FontSize="18" FontWeight="Bold" 
+                       HorizontalAlignment="Center" Margin="0,0,0,5" />
             
             <!-- Label Size Information -->
-            <TextBlock Grid.Column="1" x:Name="LabelSizeInfo" Text="Label Size: 70mm × 30mm" 
+            <TextBlock Grid.Row="1" x:Name="LabelSizeInfo" Text="Label Size: 70mm × 30mm" 
                        FontSize="12" Foreground="#666666" HorizontalAlignment="Center" 
-                       Margin="0,20,0,0" />
+                       Margin="0,0,0,5" />
             
             <!-- Record Navigation -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" 
-                        Margin="0,25,0,0" x:Name="NavigationPanel" Visibility="Collapsed">
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" 
+                        x:Name="NavigationPanel" Visibility="Collapsed">
                 <Button x:Name="PrevButton" Content="◀ Previous" Width="80" Height="25" 
                         Margin="0,0,10,0" Click="PrevRecord_Click" />
                 <TextBlock x:Name="RecordCounter" Text="Record 1 of 1" FontSize="12" 

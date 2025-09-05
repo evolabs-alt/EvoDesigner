@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET9_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
 E:\Repos\EvoDesigner\App.xaml
-4614125582
+5267766321
 
-23-1160299719
+25-241639173
 2111743117380
-UI\DataSourceWindow.xaml;UI\FieldMappingWindow.xaml;UI\MainWindow.xaml;UI\PrintPreviewWindow.xaml;
+UI\DataSourceWindow.xaml;UI\FieldMappingWindow.xaml;UI\LabelResizeWindow.xaml;UI\MainWindow.xaml;UI\PrintPreviewWindow.xaml;
 
 False
 

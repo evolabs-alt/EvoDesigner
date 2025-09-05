@@ -42,5 +42,6 @@ namespace EvoDesigner.Models
         public string FontWeight { get; set; }
         public string FontStyle { get; set; }
         public string Foreground { get; set; }
+        public string? ImageData { get; set; } // Base64 encoded image data for portability
     }
 }

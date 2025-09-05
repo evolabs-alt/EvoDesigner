@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>test-clipping</TemplateName>
+  <LabelWidth>50</LabelWidth>
+  <LabelHeight>30</LabelHeight>
+  <MarginLeft>2</MarginLeft>
+  <MarginRight>2</MarginRight>
+  <MarginTop>2</MarginTop>
+  <MarginBottom>2</MarginBottom>
+  <Elements>
+    <!-- Element that extends beyond right edge -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>40</X>
+      <Y>10</Y>
+      <Width>100</Width>
+      <Height>20</Height>
+      <Rotation>0</Rotation>
+      <Content>This text extends beyond the right edge</Content>
+      <FontSize>12</FontSize>
+      <FontFamily>Arial</FontFamily>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Red</Foreground>
+      <BarcodeType></BarcodeType>
+      <ImageData></ImageData>
+    </LabelElement>
+    <!-- Element that extends beyond bottom edge -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>5</X>
+      <Y>25</Y>
+      <Width>80</Width>
+      <Height>20</Height>
+      <Rotation>0</Rotation>
+      <Content>This extends below</Content>
+      <FontSize>12</FontSize>
+      <FontFamily>Arial</FontFamily>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Blue</Foreground>
+      <BarcodeType></BarcodeType>
+      <ImageData></ImageData>
+    </LabelElement>
+    <!-- Rotated element that extends beyond boundaries -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>20</X>
+      <Y>15</Y>
+      <Width>60</Width>
+      <Height>15</Height>
+      <Rotation>45</Rotation>
+      <Content>Rotated and extending</Content>
+      <FontSize>10</FontSize>
+      <FontFamily>Arial</FontFamily>
+      <FontWeight>Bold</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Green</Foreground>
+      <BarcodeType></BarcodeType>
+      <ImageData></ImageData>
+    </LabelElement>
+    <!-- Normal element within bounds -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>5</X>
+      <Y>5</Y>
+      <Width>30</Width>
+      <Height>15</Height>
+      <Rotation>0</Rotation>
+      <Content>Normal text</Content>
+      <FontSize>10</FontSize>
+      <FontFamily>Arial</FontFamily>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+      <BarcodeType></BarcodeType>
+      <ImageData></ImageData>
+    </LabelElement>
+  </Elements>
+</LabelTemplate>

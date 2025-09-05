@@ -30,18 +30,35 @@ namespace EvoDesigner.Models
 
     public class LabelElement
     {
-        public LabelElementType Type { get; set; }
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public string Content { get; set; } // Text, image path, barcode data, etc.
-        public string BarcodeType { get; set; } // EAN13, EAN8, etc.
-        public string FontFamily { get; set; }
-        public double FontSize { get; set; }
-        public string FontWeight { get; set; }
-        public string FontStyle { get; set; }
-        public string Foreground { get; set; }
-        public string? ImageData { get; set; } // Base64 encoded image data for portability
+    [System.Xml.Serialization.XmlElement]
+    public LabelElementType Type { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public double X { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public double Y { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public double Width { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public double Height { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public string Content { get; set; } // Text, image path, barcode data, etc.
+    [System.Xml.Serialization.XmlElement]
+    public string BarcodeType { get; set; } // EAN13, EAN8, etc.
+    [System.Xml.Serialization.XmlElement]
+    public string FontFamily { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public double FontSize { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public string FontWeight { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public string FontStyle { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public string Foreground { get; set; }
+    [System.Xml.Serialization.XmlElement]
+    public string? TextDecorations { get; set; } // Underline, Strikethrough, etc.
+    [System.Xml.Serialization.XmlElement]
+    public string? ImageData { get; set; } // Base64 encoded image data for portability
+    [System.Xml.Serialization.XmlElement]
+    public double Rotation { get; set; } = 0; // Rotation angle in degrees (0-360)
     }
 }

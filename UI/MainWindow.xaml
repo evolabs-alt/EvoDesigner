@@ -168,7 +168,7 @@
                         <Canvas x:Name="GridCanvas" Background="#FEFEFE" MouseLeftButtonDown="CanvasContainer_MouseLeftButtonDown" />
                         
                         <!-- Main Label Canvas -->
-                        <Canvas x:Name="LabelCanvas" Background="Transparent" AllowDrop="True" />
+                        <Canvas x:Name="LabelCanvas" Background="Transparent" AllowDrop="True" ClipToBounds="True" />
                         
                         <!-- Margin Guidelines (on top for visibility) -->
                         <Canvas x:Name="MarginCanvas" Background="Transparent" IsHitTestVisible="False" />
@@ -181,8 +181,6 @@
         <StackPanel Grid.Column="2" Grid.Row="1" Margin="10">
             <!-- Template Properties Section -->
             <TextBlock Text="Label Setup" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" Foreground="#2D5A8D" />
-            <TextBlock Text="Template Name:" ToolTip="Name for your label template" />
-            <TextBox x:Name="TemplateNameBox" Margin="0,0,0,10" />
             
             <!-- Label Size Display (Read-only) -->
             <TextBlock Text="Label Size:" FontWeight="Bold" Margin="0,0,0,5" Foreground="#2D5A8D" />

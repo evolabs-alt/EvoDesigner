@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>test-rotation</TemplateName>
+  <LabelWidth>70</LabelWidth>
+  <LabelHeight>30</LabelHeight>
+  <MarginLeft>2</MarginLeft>
+  <MarginRight>2</MarginRight>
+  <MarginTop>2</MarginTop>
+  <MarginBottom>2</MarginBottom>
+  <Elements>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>20</X>
+      <Y>10</Y>
+      <Width>100</Width>
+      <Height>20</Height>
+      <Rotation>45</Rotation>
+      <Content>Rotated Text 45°</Content>
+      <FontSize>12</FontSize>
+      <FontFamily>Arial</FontFamily>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+      <BarcodeType></BarcodeType>
+      <ImageData></ImageData>
+    </LabelElement>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>150</X>
+      <Y>10</Y>
+      <Width>100</Width>
+      <Height>20</Height>
+      <Rotation>-30</Rotation>
+      <Content>Rotated Text -30°</Content>
+      <FontSize>12</FontSize>
+      <FontFamily>Arial</FontFamily>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Blue</Foreground>
+      <BarcodeType></BarcodeType>
+      <ImageData></ImageData>
+    </LabelElement>
+  </Elements>
+</LabelTemplate>

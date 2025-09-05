@@ -40,15 +40,15 @@
         
         <!-- Preview Area with distinct background colors -->
         <ScrollViewer Grid.Row="1" Margin="20" HorizontalScrollBarVisibility="Auto" 
-                      VerticalScrollBarVisibility="Auto" Background="#E0E0E0">
+                      VerticalScrollBarVisibility="Auto" Background="White">
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border BorderBrush="#333" BorderThickness="2" CornerRadius="4" 
-                        Background="#D0D0D0" Padding="20">
-                    <Border BorderBrush="#666" BorderThickness="1" Background="#F8F8FF">
+                        Background="White" Padding="20">
+                    <Border BorderBrush="#666" BorderThickness="1" Background="White">
                         <Border.Effect>
                             <DropShadowEffect Color="Black" BlurRadius="5" ShadowDepth="3" Opacity="0.3"/>
                         </Border.Effect>
-                        <Canvas x:Name="PreviewCanvas" Background="#F8F8FF" />
+                        <Canvas x:Name="PreviewCanvas" Background="White" ClipToBounds="True" />
                     </Border>
                 </Border>
             </Grid>

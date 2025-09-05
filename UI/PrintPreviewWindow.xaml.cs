@@ -136,6 +136,9 @@ namespace EvoDesigner.UI
                 PreviewCanvas.Width = canvasWidthPx;
                 PreviewCanvas.Height = canvasHeightPx;
                 
+                // Set explicit clip geometry to ensure elements outside label bounds are cut off
+                PreviewCanvas.Clip = new RectangleGeometry(new Rect(0, 0, canvasWidthPx, canvasHeightPx));
+                
                 // Add a debug border to show canvas bounds
                 var debugBorder = new Rectangle
                 {
@@ -278,6 +281,16 @@ namespace EvoDesigner.UI
                         case LabelElementType.Barcode13:
                         case LabelElementType.Barcode8:
                         case LabelElementType.Barcode:
+                        case LabelElementType.EAN13:
+                        case LabelElementType.EAN8:
+                        case LabelElementType.UPCA:
+                        case LabelElementType.UPCE:
+                        case LabelElementType.Code128:
+                        case LabelElementType.Code39:
+                        case LabelElementType.Aztec:
+                        case LabelElementType.DataMatrix:
+                        case LabelElementType.GS1DataBar:
+                        case LabelElementType.PDF417:
                             // Generate actual barcode for preview using dynamic content
                             try
                             {
@@ -287,9 +300,10 @@ namespace EvoDesigner.UI
                             catch
                             {
                                 // Fallback to text representation
+                                var barcodeTypeName = GetBarcodeTypeName(el.Type);
                                 var barcodeTb = new TextBlock 
                                 { 
-                                    Text = $"[{(el.Type == LabelElementType.Barcode13 ? "EAN-13" : el.Type == LabelElementType.Barcode8 ? "EAN-8" : "Barcode")}]\n{elementContent}",
+                                    Text = $"[{barcodeTypeName}]\n{elementContent}",
                                     FontSize = Math.Min(el.FontSize, 10),
                                     Width = el.Width,
                                     Height = el.Height,
@@ -328,6 +342,18 @@ namespace EvoDesigner.UI
                     {
                         Canvas.SetLeft(uiEl, el.X);
                         Canvas.SetTop(uiEl, el.Y);
+                        
+                        // Apply rotation if specified
+                        if (el.Rotation != 0)
+                        {
+                            var rotateTransform = new RotateTransform(el.Rotation);
+                            if (uiEl is FrameworkElement fe)
+                            {
+                                fe.RenderTransformOrigin = new Point(0.5, 0.5);
+                            }
+                            uiEl.RenderTransform = rotateTransform;
+                        }
+                        
                         PreviewCanvas.Children.Add(uiEl);
                     }
                     
@@ -360,10 +386,49 @@ namespace EvoDesigner.UI
             }
         }
 
+        private string GetBarcodeTypeName(LabelElementType type)
+        {
+            return type switch
+            {
+                LabelElementType.EAN13 => "EAN-13",
+                LabelElementType.EAN8 => "EAN-8", 
+                LabelElementType.UPCA => "UPC-A",
+                LabelElementType.UPCE => "UPC-E",
+                LabelElementType.Code128 => "Code 128",
+                LabelElementType.Code39 => "Code 39",
+                LabelElementType.Aztec => "Aztec",
+                LabelElementType.DataMatrix => "Data Matrix",
+                LabelElementType.GS1DataBar => "GS1 DataBar",
+                LabelElementType.PDF417 => "PDF417",
+                LabelElementType.Barcode13 => "EAN-13",
+                LabelElementType.Barcode8 => "EAN-8",
+                LabelElementType.Barcode => "Barcode",
+                _ => "Unknown"
+            };
+        }
+
         private Image GenerateBarcodeImage(string content, LabelElementType type, double width, double height)
         {
             var writer = new ZXing.BarcodeWriterPixelData();
-            writer.Format = type == LabelElementType.Barcode13 ? ZXing.BarcodeFormat.EAN_13 : ZXing.BarcodeFormat.EAN_8;
+            
+            // Map LabelElementType to ZXing.BarcodeFormat
+            writer.Format = type switch
+            {
+                LabelElementType.EAN13 => ZXing.BarcodeFormat.EAN_13,
+                LabelElementType.EAN8 => ZXing.BarcodeFormat.EAN_8,
+                LabelElementType.UPCA => ZXing.BarcodeFormat.UPC_A,
+                LabelElementType.UPCE => ZXing.BarcodeFormat.UPC_E,
+                LabelElementType.Code128 => ZXing.BarcodeFormat.CODE_128,
+                LabelElementType.Code39 => ZXing.BarcodeFormat.CODE_39,
+                LabelElementType.Aztec => ZXing.BarcodeFormat.AZTEC,
+                LabelElementType.DataMatrix => ZXing.BarcodeFormat.DATA_MATRIX,
+                LabelElementType.GS1DataBar => ZXing.BarcodeFormat.RSS_14, // RSS is the old name for GS1 DataBar
+                LabelElementType.PDF417 => ZXing.BarcodeFormat.PDF_417,
+                LabelElementType.Barcode13 => ZXing.BarcodeFormat.EAN_13, // Legacy support
+                LabelElementType.Barcode8 => ZXing.BarcodeFormat.EAN_8,   // Legacy support
+                LabelElementType.Barcode => ZXing.BarcodeFormat.EAN_13,   // Legacy support
+                _ => ZXing.BarcodeFormat.EAN_13
+            };
             
             var pixelData = writer.Write(content);
             var bmp = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
@@ -751,6 +816,16 @@ namespace EvoDesigner.UI
                     case LabelElementType.Barcode13:
                     case LabelElementType.Barcode8:
                     case LabelElementType.Barcode:
+                    case LabelElementType.EAN13:
+                    case LabelElementType.EAN8:
+                    case LabelElementType.UPCA:
+                    case LabelElementType.UPCE:
+                    case LabelElementType.Code128:
+                    case LabelElementType.Code39:
+                    case LabelElementType.Aztec:
+                    case LabelElementType.DataMatrix:
+                    case LabelElementType.GS1DataBar:
+                    case LabelElementType.PDF417:
                         // Create a completely new barcode image for printing
                         try
                         {
@@ -761,9 +836,10 @@ namespace EvoDesigner.UI
                         catch
                         {
                             // Fallback to text if barcode generation fails
+                            var barcodeTypeName = GetBarcodeTypeName(el.Type);
                             var barcodeTb = new TextBlock 
                             { 
-                                Text = $"[Barcode: {elementContent}]",
+                                Text = $"[{barcodeTypeName}: {elementContent}]",
                                 FontSize = 8 * scaleFactor,
                                 Width = el.Width * scaleFactor,
                                 Height = el.Height * scaleFactor,
@@ -804,6 +880,18 @@ namespace EvoDesigner.UI
                     
                     Canvas.SetLeft(uiEl, printX);
                     Canvas.SetTop(uiEl, printY);
+                    
+                    // Apply rotation if specified
+                    if (el.Rotation != 0)
+                    {
+                        var rotateTransform = new RotateTransform(el.Rotation);
+                        if (uiEl is FrameworkElement fe)
+                        {
+                            fe.RenderTransformOrigin = new Point(0.5, 0.5);
+                        }
+                        uiEl.RenderTransform = rotateTransform;
+                    }
+                    
                     printCanvas.Children.Add(uiEl);
                 }
                 

@@ -58,6 +58,9 @@ namespace EvoDesigner
         
         // Undo/Redo functionality
         private CommandHistory commandHistory = new CommandHistory();
+        
+        // Rotation tracking for elements (separate from Tag to avoid conflicts with image data)
+        private Dictionary<UIElement, double> elementRotations = new Dictionary<UIElement, double>();
 
         public MainWindow()
         {
@@ -150,7 +153,6 @@ namespace EvoDesigner
             MarginRightBox.Text = "2";
             MarginTopBox.Text = "2";
             MarginBottomBox.Text = "2";
-            TemplateNameBox.Text = "New Label Template";
             
             UpdateCanvasSize();
         }
@@ -184,6 +186,9 @@ namespace EvoDesigner
             // Update canvas size
             LabelCanvas.Width = canvasWidth;
             LabelCanvas.Height = canvasHeight;
+            
+            // Set explicit clip geometry to ensure elements outside label bounds are cut off
+            LabelCanvas.Clip = new RectangleGeometry(new Rect(0, 0, canvasWidth, canvasHeight));
             
             // Update other canvas layers to match
             GridCanvas.Width = canvasWidth;
@@ -1967,6 +1972,86 @@ namespace EvoDesigner
                     };
                 }
             }
+            
+            // Add rotation controls for all elements
+            AddRotationControls(element);
+        }
+
+        private void AddRotationControls(UIElement element)
+        {
+            // Add a separator before rotation controls
+            ElementPropertiesPanel.Children.Add(new Separator { Margin = new Thickness(0, 10, 0, 10) });
+            
+            // Add rotation label
+            ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Rotation:", FontWeight = FontWeights.Bold });
+            
+            // Get current rotation from dictionary or RenderTransform
+            double currentRotation = 0;
+            if (elementRotations.ContainsKey(element))
+            {
+                currentRotation = elementRotations[element];
+            }
+            else if (element.RenderTransform is RotateTransform rotateTransform)
+            {
+                currentRotation = rotateTransform.Angle;
+            }
+            
+            // Create rotation slider
+            var rotationSlider = new Slider
+            {
+                Minimum = 0,
+                Maximum = 360,
+                Value = currentRotation,
+                TickFrequency = 1,
+                TickPlacement = TickPlacement.BottomRight,
+                IsSnapToTickEnabled = false,
+                Margin = new Thickness(0, 5, 0, 5)
+            };
+            
+            // Create rotation value display
+            var rotationValueText = new TextBlock 
+            { 
+                Text = $"{currentRotation:F1}°",
+                HorizontalAlignment = HorizontalAlignment.Center,
+                FontWeight = FontWeights.SemiBold
+            };
+            
+            // Handle rotation changes
+            rotationSlider.ValueChanged += (s, e) =>
+            {
+                double angle = rotationSlider.Value;
+                rotationValueText.Text = $"{angle:F1}°";
+                // Apply rotation transform to the element
+                var rotateTransform = new RotateTransform(angle);
+                if (element is FrameworkElement fe)
+                {
+                    fe.RenderTransformOrigin = new Point(0.5, 0.5);
+                }
+                element.RenderTransform = rotateTransform;
+                // Store the angle in our rotation dictionary
+                elementRotations[element] = angle;
+                SetDirty(true);
+            };
+            
+            ElementPropertiesPanel.Children.Add(rotationSlider);
+            ElementPropertiesPanel.Children.Add(rotationValueText);
+            
+            // Add rotation shortcuts
+            var shortcutsPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
+            
+            var rotate90Btn = new Button { Content = "90°", Width = 35, Margin = new Thickness(0, 0, 5, 0) };
+            rotate90Btn.Click += (s, e) => { rotationSlider.Value = (rotationSlider.Value + 90) % 360; };
+            shortcutsPanel.Children.Add(rotate90Btn);
+            
+            var rotate180Btn = new Button { Content = "180°", Width = 35, Margin = new Thickness(0, 0, 5, 0) };
+            rotate180Btn.Click += (s, e) => { rotationSlider.Value = (rotationSlider.Value + 180) % 360; };
+            shortcutsPanel.Children.Add(rotate180Btn);
+            
+            var resetBtn = new Button { Content = "Reset", Width = 40 };
+            resetBtn.Click += (s, e) => { rotationSlider.Value = 0; };
+            shortcutsPanel.Children.Add(resetBtn);
+            
+            ElementPropertiesPanel.Children.Add(shortcutsPanel);
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
@@ -1974,6 +2059,11 @@ namespace EvoDesigner
             if (selectedElement != null)
             {
                 LabelCanvas.Children.Remove(selectedElement);
+                // Remove rotation tracking for this element
+                if (elementRotations.ContainsKey(selectedElement))
+                {
+                    elementRotations.Remove(selectedElement);
+                }
                 RemoveResizingHandles();
                 selectedElement = null;
                 ElementPropertiesPanel.Children.Clear();
@@ -2020,7 +2110,7 @@ namespace EvoDesigner
             {
                 // Populate template with current canvas content
                 CurrentTemplate.Elements.Clear();
-                CurrentTemplate.TemplateName = TemplateNameBox.Text ?? "Untitled Template";
+                CurrentTemplate.TemplateName = System.IO.Path.GetFileNameWithoutExtension(_currentFilePath ?? "Untitled Template");
                 
                 // Save all canvas elements (excluding resize handles)
                 int elementIndex = 0;
@@ -2033,7 +2123,9 @@ namespace EvoDesigner
                         X = Canvas.GetLeft(child),
                         Y = Canvas.GetTop(child),
                         Width = child is FrameworkElement fe ? fe.Width : 100,
-                        Height = child is FrameworkElement fe2 ? fe2.Height : 30
+                        Height = child is FrameworkElement fe2 ? fe2.Height : 30,
+                        Rotation = elementRotations.ContainsKey(child) ? elementRotations[child] : 
+                                  (child.RenderTransform is RotateTransform rotateTransform ? rotateTransform.Angle : 0)
                     };
                     
                     if (child is TextBlock tb)
@@ -2058,9 +2150,14 @@ namespace EvoDesigner
                     {
                         labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
                         string tagStr = rect.Tag?.ToString() ?? "";
-                        
-                        // Handle file path in rectangle tag - convert to base64
-                        if (!string.IsNullOrEmpty(tagStr) && tagStr != "Missing Image Data" && tagStr != "No Image Data")
+                        // If tag contains base64, save it
+                        if (tagStr.StartsWith("ImageData:"))
+                        {
+                            labelElement.ImageData = tagStr.Substring("ImageData:".Length);
+                            labelElement.Content = "";
+                        }
+                        // Otherwise, handle file path in rectangle tag - convert to base64
+                        else if (!string.IsNullOrEmpty(tagStr) && tagStr != "Missing Image Data" && tagStr != "No Image Data")
                         {
                             if (System.IO.File.Exists(tagStr))
                             {
@@ -2092,7 +2189,6 @@ namespace EvoDesigner
                             {
                                 var barcodeType = parts[1];
                                 var barcodeData = string.Join(":", parts.Skip(2));
-                                
                                 // Map barcode type to enum
                                 labelElement.Type = GetLabelElementTypeFromBarcodeType(barcodeType);
                                 labelElement.Content = barcodeData;
@@ -2109,7 +2205,6 @@ namespace EvoDesigner
                         {
                             // Regular image element
                             labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
-                            
                             // Extract base64 image data from tag
                             string tagStr = imageElement.Tag?.ToString() ?? "";
                             if (tagStr.StartsWith("ImageData:"))
@@ -2118,14 +2213,14 @@ namespace EvoDesigner
                                 labelElement.ImageData = tagStr.Substring("ImageData:".Length);
                                 labelElement.Content = ""; // Clear file path since we have base64 data
                             }
+                            else if (!string.IsNullOrEmpty(tagStr) && System.IO.File.Exists(tagStr))
+                            {
+                                labelElement.ImageData = ConvertImageToBase64(tagStr);
+                                labelElement.Content = "";
+                            }
                             else
                             {
-                                // Legacy: file path stored in tag - convert to base64
                                 labelElement.Content = tagStr;
-                                if (!string.IsNullOrEmpty(tagStr) && System.IO.File.Exists(tagStr))
-                                {
-                                    labelElement.ImageData = ConvertImageToBase64(tagStr);
-                                }
                             }
                         }
                     }
@@ -2144,7 +2239,7 @@ namespace EvoDesigner
                 { 
                     Filter = "Label Template (*.xml)|*.xml",
                     DefaultExt = "xml",
-                    FileName = string.IsNullOrEmpty(CurrentTemplate.TemplateName) ? "MyTemplate" : CurrentTemplate.TemplateName
+                    FileName = !string.IsNullOrEmpty(_currentFilePath) ? System.IO.Path.GetFileNameWithoutExtension(_currentFilePath) : "MyTemplate"
                 };
                 
                 if (dlg.ShowDialog() == true)
@@ -2184,7 +2279,7 @@ namespace EvoDesigner
             {
                 // Populate template with current canvas content
                 CurrentTemplate.Elements.Clear();
-                CurrentTemplate.TemplateName = TemplateNameBox.Text ?? "Untitled Template";
+                CurrentTemplate.TemplateName = System.IO.Path.GetFileNameWithoutExtension(_currentFilePath ?? "Untitled Template");
                 
                 // Save all canvas elements (excluding resize handles)
                 int elementIndex = 0;
@@ -2197,7 +2292,9 @@ namespace EvoDesigner
                         X = Canvas.GetLeft(child),
                         Y = Canvas.GetTop(child),
                         Width = child is FrameworkElement fe ? fe.Width : 100,
-                        Height = child is FrameworkElement fe2 ? fe2.Height : 30
+                        Height = child is FrameworkElement fe2 ? fe2.Height : 30,
+                        Rotation = elementRotations.ContainsKey(child) ? elementRotations[child] : 
+                                  (child.RenderTransform is RotateTransform rotateTransform ? rotateTransform.Angle : 0)
                     };
                     
                     if (child is TextBlock tb)
@@ -2318,7 +2415,7 @@ namespace EvoDesigner
                     { 
                         Filter = "Label Template (*.xml)|*.xml",
                         DefaultExt = "xml",
-                        FileName = string.IsNullOrEmpty(CurrentTemplate.TemplateName) ? "MyTemplate" : CurrentTemplate.TemplateName
+                        FileName = !string.IsNullOrEmpty(_currentFilePath) ? System.IO.Path.GetFileNameWithoutExtension(_currentFilePath) : "MyTemplate"
                     };
                     
                     if (dlg.ShowDialog() != true)
@@ -2376,9 +2473,6 @@ namespace EvoDesigner
                         // TODO: Optionally reconnect to data source and reload data
                     }
                     
-                    // Update template name textbox
-                    TemplateNameBox.Text = CurrentTemplate.TemplateName ?? "Loaded Template";
-                    
                     // Restore template dimensions to internal properties and display
                     _labelWidthMm = CurrentTemplate.LabelWidth;
                     _labelHeightMm = CurrentTemplate.LabelHeight;
@@ -2393,6 +2487,7 @@ namespace EvoDesigner
                     
                     // Clear current canvas
                     LabelCanvas.Children.Clear();
+                    elementRotations.Clear(); // Clear rotation tracking
                     RemoveResizingHandles();
                     selectedElement = null;
                     
@@ -2595,6 +2690,20 @@ namespace EvoDesigner
                     break;
             }
             
+            // Apply rotation if specified
+            if (result != null && element.Rotation != 0)
+            {
+                var rotateTransform = new RotateTransform(element.Rotation);
+                if (result is FrameworkElement fe)
+                {
+                    fe.RenderTransformOrigin = new Point(0.5, 0.5);
+                }
+                result.RenderTransform = rotateTransform;
+                
+                // Store rotation in our dictionary instead of Tag to avoid conflicts
+                elementRotations[result] = element.Rotation;
+            }
+            
             return result;
         }
 
@@ -2626,12 +2735,13 @@ namespace EvoDesigner
                 MarginBottom = CurrentTemplate.MarginBottom
             };
 
-            // Convert current canvas elements to template elements
+            // Get consistent list of label elements (same as used for field mapping)
+            var labelElements = GetLabelElements();
+            
+            // Convert label elements to template elements
             int elementIndex = 0;
-            foreach (UIElement child in LabelCanvas.Children)
+            foreach (UIElement child in labelElements)
             {
-                if (child is System.Windows.Controls.Primitives.Thumb) continue; // Skip resize handles
-                
                 var labelElement = new EvoDesigner.Models.LabelElement
                 {
                     X = Canvas.GetLeft(child),
@@ -2787,6 +2897,20 @@ namespace EvoDesigner
                     }
                 }
                 
+                // Capture rotation from Tag if present, otherwise from RenderTransform
+                if (child is FrameworkElement feTag && feTag.Tag is double tagAngle)
+                {
+                    labelElement.Rotation = tagAngle;
+                }
+                else if (child.RenderTransform is RotateTransform rotateTransform)
+                {
+                    labelElement.Rotation = rotateTransform.Angle;
+                }
+                else
+                {
+                    labelElement.Rotation = 0; // Default rotation
+                }
+                
                 liveTemplate.Elements.Add(labelElement);
                 elementIndex++;
             }
@@ -2885,16 +3009,8 @@ namespace EvoDesigner
             }
         }
 
-        private void MapFields_Click(object sender, RoutedEventArgs e)
+        private List<UIElement> GetLabelElements()
         {
-            if (lastResultTable == null || LabelCanvas.Children.Count == 0)
-            {
-                MessageBox.Show("Please fetch data and add label elements to the canvas first.", "No Data or Elements", 
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            
-            // Convert canvas children to a list (excluding resize handles)
             var labelElements = new List<UIElement>();
             foreach (UIElement child in LabelCanvas.Children)
             {
@@ -2904,6 +3020,20 @@ namespace EvoDesigner
                     labelElements.Add(child);
                 }
             }
+            return labelElements;
+        }
+
+        private void MapFields_Click(object sender, RoutedEventArgs e)
+        {
+            if (lastResultTable == null || LabelCanvas.Children.Count == 0)
+            {
+                MessageBox.Show("Please fetch data and add label elements to the canvas first.", "No Data or Elements", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            
+            // Get consistent list of label elements
+            var labelElements = GetLabelElements();
             
             if (labelElements.Count == 0)
             {

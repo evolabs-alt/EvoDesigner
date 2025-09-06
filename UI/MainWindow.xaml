@@ -5,221 +5,519 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EvoDesigner"
         mc:Ignorable="d"
-        Title="EvoDesigner - Label Designer" Height="450" Width="800"
+        Title="TaggJack - Professional Label Designer" Height="800" Width="1400"
+        WindowState="Maximized"
+        Background="#f5f5f5"
         Closing="MainWindow_Closing">
+    
+    <Window.Resources>
+        <!-- Modern Light Theme Styles -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#f8f9fa"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#0078d4"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#106ebe"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#005a9e"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ToolboxButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="16,8"/>
+        </Style>
+
+        <Style x:Key="CompactButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+
+        <Style x:Key="MenuItemStyle" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+        </Style>
+
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ModernCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+
+        <Style x:Key="ModernLabelStyle" TargetType="Label">
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Padding" Value="0,2"/>
+        </Style>
+
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="8,2,28,2"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="2">
+                            <Grid>
+                                <ToggleButton Name="ToggleButton" 
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Focusable="false"
+                                              IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
+                                              ClickMode="Press"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="20"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Path Name="Arrow" Grid.Column="1" 
+                                              Fill="#605e5c" 
+                                              HorizontalAlignment="Right" 
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,6,0"
+                                              Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                    </Grid>
+                                </ToggleButton>
+                                <ContentPresenter Name="ContentSite" 
+                                                  IsHitTestVisible="False" 
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                  Margin="8,6,28,6"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"/>
+                                <TextBox x:Name="PART_EditableTextBox"
+                                         Style="{x:Null}" 
+                                         HorizontalAlignment="Left" 
+                                         VerticalAlignment="Center" 
+                                         Margin="3,6,28,6"
+                                         Focusable="True" 
+                                         Background="Transparent"
+                                         Visibility="Hidden"
+                                         IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                                <Popup Name="Popup"
+                                       Placement="Bottom"
+                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       AllowsTransparency="True" 
+                                       Focusable="False"
+                                       PopupAnimation="Slide">
+                                    <Grid Name="DropDown"
+                                          SnapsToDevicePixels="True"                
+                                          MinWidth="{TemplateBinding ActualWidth}"
+                                          MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                        <Border x:Name="DropDownBorder"
+                                                Background="White" 
+                                                BorderThickness="1"
+                                                BorderBrush="#d1d2d3"/>
+                                        <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Popup>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#0078d4"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="SubHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#605e5c"/>
+            <Setter Property="Margin" Value="0,8,0,4"/>
+        </Style>
+
+        <!-- Light Gradient Background for Panels -->
+        <LinearGradientBrush x:Key="PanelGradient" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#ffffff" Offset="0"/>
+            <GradientStop Color="#f8f9fa" Offset="1"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="ToolboxGradient" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#faf9f8" Offset="0"/>
+            <GradientStop Color="#f3f2f1" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Resources>
+
     <DockPanel>
-        <!-- Menu Bar -->
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_New Template" x:Name="NewMenuItem" Click="New_Click" />
-                <Separator />
-                <MenuItem Header="_Load Template..." x:Name="LoadTemplateMenuItem" Click="LoadTemplate_Click" />
-                <MenuItem Header="_Save Template" x:Name="SaveTemplateMenuItem" Click="SaveTemplate_Click" />
-                <MenuItem Header="Save Template _As..." x:Name="SaveAsTemplateMenuItem" Click="SaveAsTemplate_Click" />
-                <Separator />
-                <MenuItem Header="_Setup Data Source..." x:Name="SetupDataSourceMenuItem" Click="DataSource_Click" />
-                <MenuItem Header="Setup _Map Fields..." x:Name="MapFieldsMenuItem" Click="MapFields_Click" />
-                <Separator />
-                <MenuItem Header="_Print..." x:Name="PrintPreviewMenuItem" Click="PrintPreview_Click" />
-                <Separator />
-                <MenuItem Header="E_xit" x:Name="ExitMenuItem" Click="Exit_Click" />
+        <!-- Modern Menu Bar -->
+        <Menu DockPanel.Dock="Top" Background="White" BorderBrush="#d1d2d3" BorderThickness="0,0,0,1">
+            <MenuItem Header="_File" Style="{StaticResource MenuItemStyle}">
+                <MenuItem Header="🆕 _New Template" x:Name="NewMenuItem" Click="New_Click" />
+                <Separator Background="#d1d2d3"/>
+                <MenuItem Header="📁 _Load Template..." x:Name="LoadTemplateMenuItem" Click="LoadTemplate_Click" />
+                <MenuItem Header="💾 _Save Template" x:Name="SaveTemplateMenuItem" Click="SaveTemplate_Click" />
+                <MenuItem Header="💾 Save Template _As..." x:Name="SaveAsTemplateMenuItem" Click="SaveAsTemplate_Click" />
+                <Separator Background="#d1d2d3"/>
+                <MenuItem Header="🔌 Setup _Data Source..." x:Name="SetupDataSourceMenuItem" Click="DataSource_Click" />
+                <MenuItem Header="🗺️ Setup _Map Fields..." x:Name="MapFieldsMenuItem" Click="MapFields_Click" />
+                <Separator Background="#d1d2d3"/>
+                <MenuItem Header="🖨️ _Print..." x:Name="PrintPreviewMenuItem" Click="PrintPreview_Click" />
+                <Separator Background="#d1d2d3"/>
+                <MenuItem Header="🚪 E_xit" x:Name="ExitMenuItem" Click="Exit_Click" />
             </MenuItem>
-            <MenuItem Header="_About">
-                <MenuItem Header="_About EvoDesigner..." x:Name="AboutMenuItem" Click="About_Click" />
+            <MenuItem Header="_About" Style="{StaticResource MenuItemStyle}">
+                <MenuItem Header="ℹ️ _About TaggJack..." x:Name="AboutMenuItem" Click="About_Click" />
             </MenuItem>
         </Menu>
         
-        <Grid>
+        <Grid Background="#f5f5f5">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" /> <!-- Toolbox -->
+            <ColumnDefinition Width="140" /> <!-- Compact Toolbox -->
             <ColumnDefinition Width="*" />   <!-- Canvas -->
-            <ColumnDefinition Width="250" /> <!-- Setup/Properties -->
+            <ColumnDefinition Width="320" /> <!-- Expanded Properties -->
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" /> <!-- Top Bar -->
-            <RowDefinition Height="*" />    <!-- Main -->
+            <RowDefinition Height="Auto" /> <!-- Modern Toolbar -->
+            <RowDefinition Height="*" />    <!-- Main Content -->
         </Grid.RowDefinitions>
 
-        <!-- Top Bar: Actions -->
-        <StackPanel Grid.ColumnSpan="3" Grid.Row="0" Orientation="Horizontal" Margin="10">
-            <!-- Grid Controls Group -->
-            <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="3" Padding="8,5,8,5" Margin="0,0,15,0" Background="#FAFAFA">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="⊞ Grid:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" Foreground="#444" FontSize="11"/>
-                    <CheckBox x:Name="ShowGridCheckBox" Content="Show Grid (5mm)" IsChecked="True" VerticalAlignment="Center" ToolTip="Toggle 5mm gridlines" FontSize="11"/>
-                </StackPanel>
-            </Border>
-            
-            <!-- Layer Controls Group -->
-            <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="3" Padding="8,5,8,5" Margin="0,0,15,0" Background="#FAFAFA">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="📊 Layer:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" Foreground="#444" FontSize="11"/>
-                    <StackPanel x:Name="LayerControlsContainer" Orientation="Horizontal">
-                        <!-- Layer control buttons will be added here dynamically -->
+        <!-- Modern Floating Toolbar -->
+        <Border Grid.ColumnSpan="3" Grid.Row="0" Background="{StaticResource PanelGradient}" 
+                BorderBrush="#d1d2d3" BorderThickness="0,0,0,1" Padding="16,12">
+            <StackPanel Orientation="Horizontal">
+                <!-- Grid Controls -->
+                <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
+                        Padding="12,8" Margin="0,0,16,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⊞" VerticalAlignment="Center" Margin="0,0,8,0" 
+                                  FontSize="14" Foreground="#0078d4" FontWeight="Bold"/>
+                        <TextBlock Text="Grid" VerticalAlignment="Center" Margin="0,0,12,0" 
+                                  FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
+                        <CheckBox x:Name="ShowGridCheckBox" Content="Show 5mm Grid" IsChecked="True" 
+                                 VerticalAlignment="Center" Style="{StaticResource ModernCheckBoxStyle}"
+                                 ToolTip="Toggle 5mm gridlines for precise alignment"/>
                     </StackPanel>
-                </StackPanel>
-            </Border>
-            
-            <!-- Zoom Controls Group -->
-            <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="3" Padding="8,5,8,5" Background="#FAFAFA">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="🔍 Zoom:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" Foreground="#444" FontSize="11"/>
-                    <Button x:Name="ZoomOutButton" Content="−" Width="28" Height="25" Margin="0,0,3,0" ToolTip="Zoom Out" FontSize="14" FontWeight="Bold"/>
-                    <TextBlock x:Name="ZoomTextBlock" Text="100%" VerticalAlignment="Center" Width="45" TextAlignment="Center" Margin="3,0,3,0" FontWeight="SemiBold" Foreground="#333"/>
-                    <Button x:Name="ZoomInButton" Content="+" Width="28" Height="25" Margin="3,0,8,0" ToolTip="Zoom In" FontSize="12" FontWeight="Bold"/>
-                    <Button x:Name="ZoomFitButton" Content="⊞" Width="32" Height="25" Margin="0,0,3,0" ToolTip="Zoom to Fit" FontSize="12"/>
-                    <Button x:Name="ZoomResetButton" Content="1:1" Width="35" Height="25" ToolTip="Reset Zoom (100%)" FontSize="10"/>
-                </StackPanel>
-            </Border>
-            
-            <!-- Data Controls Group -->
-            <Border BorderBrush="#CCCCCC" BorderThickness="1" CornerRadius="3" Padding="8,5,8,5" Margin="15,0,0,0" Background="#FAFAFA">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="📊 Data:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold" Foreground="#444" FontSize="11"/>
-                    <Button x:Name="RefreshDataButton" Content="⟳ Refresh" Width="70" Height="25" ToolTip="Refresh data from configured data source" FontSize="11" Click="RefreshData_Click"/>
-                    <TextBlock x:Name="DataStatusTextBlock" Text="No data" VerticalAlignment="Center" Margin="8,0,0,0" FontStyle="Italic" Foreground="#666" FontSize="10"/>
-                </StackPanel>
-            </Border>
-        </StackPanel>
-
-        <!-- Toolbox -->
-        <ScrollViewer Grid.Column="0" Grid.Row="1" Margin="10" VerticalScrollBarVisibility="Auto">
-            <StackPanel Background="#F0F4F8" Margin="0,0,10,0">
-                <TextBlock Text="Toolbox" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" Foreground="#2D5A8D" />
+                </Border>
                 
-                <!-- Basic Elements -->
-                <TextBlock Text="Basic Elements" FontWeight="Bold" FontSize="12" Margin="0,0,0,5" Foreground="#4A5568" />
-                <Button Content="🅣 Text" Margin="0,0,0,3" ToolTip="Add text element" FontSize="12" />
-                <Button Content="🖼 Image" Margin="0,0,0,5" ToolTip="Add image element" FontSize="12" />
+                <!-- Layer Controls -->
+                <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
+                        Padding="12,8" Margin="0,0,16,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📊" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                        <TextBlock Text="Layers" VerticalAlignment="Center" Margin="0,0,12,0" 
+                                  FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
+                        <StackPanel x:Name="LayerControlsContainer" Orientation="Horizontal">
+                            <!-- Dynamic layer controls -->
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
                 
-                <!-- Retail Checkout -->
-                <TextBlock Text="Retail Checkout" FontWeight="Bold" FontSize="12" Margin="0,10,0,5" Foreground="#4A5568" />
-                <Button Content="📊 EAN-13" Margin="0,0,0,3" ToolTip="European Article Number 13-digit" FontSize="12" />
-                <Button Content="📊 EAN-8" Margin="0,0,0,3" ToolTip="European Article Number 8-digit" FontSize="12" />
-                <Button Content="📊 UPC-A" Margin="0,0,0,3" ToolTip="Universal Product Code A" FontSize="12" />
-                <Button Content="📊 UPC-E" Margin="0,0,0,5" ToolTip="Universal Product Code E" FontSize="12" />
+                <!-- Zoom Controls -->
+                <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
+                        Padding="12,8" Margin="0,0,16,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🔍" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                        <TextBlock Text="Zoom" VerticalAlignment="Center" Margin="0,0,12,0" 
+                                  FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
+                        <Button x:Name="ZoomOutButton" Content="−" Width="36" Height="28" Margin="0,0,4,0" 
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Zoom Out" FontSize="14"
+                               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Border Background="White" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="3" 
+                               Width="60" Height="28" Margin="4,0">
+                            <TextBlock x:Name="ZoomTextBlock" Text="100%" VerticalAlignment="Center" 
+                                      TextAlignment="Center" FontWeight="SemiBold" Foreground="#323130"/>
+                        </Border>
+                        <Button x:Name="ZoomInButton" Content="+" Width="36" Height="28" Margin="4,0,8,0" 
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Zoom In" FontSize="14"
+                               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Button x:Name="ZoomFitButton" Content="⊞" Width="40" Height="28" Margin="0,0,4,0" 
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Fit to Window" FontSize="12"
+                               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                        <Button x:Name="ZoomResetButton" Content="1:1" Width="40" Height="28" 
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Reset Zoom" FontSize="11"
+                               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                </Border>
                 
-                <!-- Logistics -->
-                <TextBlock Text="Logistics" FontWeight="Bold" FontSize="12" Margin="0,10,0,5" Foreground="#4A5568" />
-                <Button Content="📋 Code 128" Margin="0,0,0,3" ToolTip="High-density linear barcode" FontSize="12" />
-                <Button Content="📋 Code 39" Margin="0,0,0,5" ToolTip="Alphanumeric barcode" FontSize="12" />
-                
-                <!-- Mobile/Consumer -->
-                <TextBlock Text="Mobile/Consumer" FontWeight="Bold" FontSize="12" Margin="0,10,0,5" Foreground="#4A5568" />
-                <Button Content="� QR Code" Margin="0,0,0,3" ToolTip="Quick Response code" FontSize="12" />
-                <Button Content="📱 Aztec" Margin="0,0,0,5" ToolTip="Aztec code" FontSize="12" />
-                
-                <!-- Healthcare/Industrial -->
-                <TextBlock Text="Healthcare/Industrial" FontWeight="Bold" FontSize="12" Margin="0,10,0,5" Foreground="#4A5568" />
-                <Button Content="🏥 Data Matrix" Margin="0,0,0,3" ToolTip="2D matrix barcode" FontSize="12" />
-                <Button Content="🏥 GS1 DataBar" Margin="0,0,0,5" ToolTip="GS1 DataBar (RSS)" FontSize="12" />
-                
-                <!-- Government -->
-                <TextBlock Text="Government" FontWeight="Bold" FontSize="12" Margin="0,10,0,5" Foreground="#4A5568" />
-                <Button Content="🏛 PDF417" Margin="0,0,0,5" ToolTip="Portable Data File 417" FontSize="12" />
+                <!-- Data Controls -->
+                <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
+                        Padding="12,8">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="📊" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                        <TextBlock Text="Data" VerticalAlignment="Center" Margin="0,0,12,0" 
+                                  FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
+                        <Button x:Name="RefreshDataButton" Content="⟳ Refresh" Height="28" 
+                               Style="{StaticResource CompactButtonStyle}" Click="RefreshData_Click"
+                               ToolTip="Refresh data from configured source"/>
+                        <Border Background="#2D2D30" BorderBrush="#555555" BorderThickness="1" CornerRadius="3" 
+                               Padding="8,4" Margin="8,0,0,0">
+                            <TextBlock x:Name="DataStatusTextBlock" Text="No data" VerticalAlignment="Center" 
+                                      FontStyle="Italic" Foreground="#9CDCFE" FontSize="10"/>
+                        </Border>
+                    </StackPanel>
+                </Border>
             </StackPanel>
-        </ScrollViewer>
+        </Border>
 
-        <!-- Label Canvas with Rulers and Guidelines -->
-        <Grid Grid.Column="1" Grid.Row="1" Margin="0">
+        <!-- Modern Toolbox -->
+        <Border Grid.Column="0" Grid.Row="1" Background="{StaticResource ToolboxGradient}" 
+                BorderBrush="#d1d2d3" BorderThickness="0,0,1,0">
+            <ScrollViewer Margin="16" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Text="Toolbox" Style="{StaticResource SectionHeaderStyle}" 
+                              FontSize="16" Margin="0,0,0,16"/>
+                    
+                    <Button Content="Text" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Add text element with customizable fonts and styles"/>
+                    <Button Content="Image" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Add image element (PNG, JPEG, BMP supported)"/>
+                    <Button Content="EAN-13" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="European Article Number (13-digit) - Most common retail barcode"/>
+                    <Button Content="EAN-8" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="European Article Number (8-digit) - Compact retail barcode"/>
+                    <Button Content="UPC-A" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Universal Product Code A - North American standard"/>
+                    <Button Content="UPC-E" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Universal Product Code E - Compact UPC format"/>
+                    <Button Content="Code 128" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="High-density barcode for shipping and logistics"/>
+                    <Button Content="Code 39" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Alphanumeric barcode for inventory management"/>
+                    <Button Content="DataMatrix" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="2D barcode for small items and electronics"/>
+                    <Button Content="PDF417" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="2D barcode for documents and identification"/>
+                    <Button Content="Aztec" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="2D barcode for transportation tickets"/>
+                    <Button Content="GS1 DataBar" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Next-generation GS1 barcode standard"/>
+                    <Button Content="QR Code" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="QR code for URLs, contact info, and mobile integration"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Modern Canvas Area with Rulers -->
+        <Grid Grid.Column="1" Grid.Row="1" Background="#f5f5f5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="25" /> <!-- Top Ruler -->
-                <RowDefinition Height="*" />  <!-- Canvas Area -->
+                <RowDefinition Height="30" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="25" /> <!-- Left Ruler -->
-                <ColumnDefinition Width="*" />  <!-- Canvas Area -->
+                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             
-            <!-- Top Ruler -->
-            <Canvas x:Name="TopRuler" Grid.Column="1" Grid.Row="0" Background="#E8E8E8" Height="25" ClipToBounds="True">
+            <!-- Modern Horizontal Ruler -->
+            <Canvas Grid.Column="1" Grid.Row="0" x:Name="TopRuler" Background="#e1e2e4" 
+                   ClipToBounds="True" Height="30">
                 <Canvas.RenderTransform>
                     <ScaleTransform x:Name="TopRulerScaleTransform" ScaleX="1" ScaleY="1" />
                 </Canvas.RenderTransform>
                 <Canvas.RenderTransformOrigin>0.5,0</Canvas.RenderTransformOrigin>
-                <!-- Ruler marks will be added programmatically -->
+                <!-- Ruler markings rendered programmatically -->
             </Canvas>
             
-            <!-- Left Ruler -->
-            <Canvas x:Name="LeftRuler" Grid.Column="0" Grid.Row="1" Background="#E8E8E8" Width="25" ClipToBounds="True">
+            <!-- Modern Vertical Ruler -->
+            <Canvas Grid.Column="0" Grid.Row="1" x:Name="LeftRuler" Background="#e1e2e4" 
+                   ClipToBounds="True" Width="30">
                 <Canvas.RenderTransform>
                     <ScaleTransform x:Name="LeftRulerScaleTransform" ScaleX="1" ScaleY="1" />
                 </Canvas.RenderTransform>
                 <Canvas.RenderTransformOrigin>0,0.5</Canvas.RenderTransformOrigin>
-                <!-- Ruler marks will be added programmatically -->
+                <!-- Ruler markings rendered programmatically -->
             </Canvas>
             
-            <!-- Corner -->
-            <Rectangle Grid.Column="0" Grid.Row="0" Fill="#D0D0D0" />
+            <!-- Modern Corner -->
+            <Rectangle Grid.Column="0" Grid.Row="0" Fill="#d1d2d3" />
             
-            <!-- Canvas Container -->
-            <Border Grid.Column="1" Grid.Row="1" Background="#FFF" BorderBrush="#888" BorderThickness="2" CornerRadius="0">
+            <!-- Modern Canvas Container -->
+            <Border Grid.Column="1" Grid.Row="1" Background="White" 
+                   BorderBrush="#0078d4" BorderThickness="2" CornerRadius="6" Margin="4">
+                <Border.Effect>
+                    <DropShadowEffect Color="Gray" BlurRadius="15" ShadowDepth="3" Opacity="0.2"/>
+                </Border.Effect>
                 <ScrollViewer x:Name="CanvasScrollViewer" 
                              HorizontalScrollBarVisibility="Auto" 
                              VerticalScrollBarVisibility="Auto"
-                             CanContentScroll="True">
+                             CanContentScroll="True"
+                             Background="#252526">
                     <Grid x:Name="CanvasContainer" MouseLeftButtonDown="CanvasContainer_MouseLeftButtonDown">
                         <Grid.RenderTransform>
                             <ScaleTransform x:Name="CanvasScaleTransform" ScaleX="1" ScaleY="1" />
                         </Grid.RenderTransform>
                         <Grid.RenderTransformOrigin>0.5,0.5</Grid.RenderTransformOrigin>
                         
-                        <!-- Background Grid -->
-                        <Canvas x:Name="GridCanvas" Background="#FEFEFE" MouseLeftButtonDown="CanvasContainer_MouseLeftButtonDown" />
+                        <!-- Background Grid with modern styling -->
+                        <Canvas x:Name="GridCanvas" Background="#FAFAFA" 
+                               MouseLeftButtonDown="CanvasContainer_MouseLeftButtonDown">
+                            <Canvas.Effect>
+                                <DropShadowEffect Color="#0078d4" BlurRadius="8" ShadowDepth="0" Opacity="0.2"/>
+                            </Canvas.Effect>
+                        </Canvas>
                         
                         <!-- Main Label Canvas -->
                         <Canvas x:Name="LabelCanvas" Background="Transparent" AllowDrop="True" ClipToBounds="True" />
                         
-                        <!-- Margin Guidelines (on top for visibility) -->
+                        <!-- Margin Guidelines -->
                         <Canvas x:Name="MarginCanvas" Background="Transparent" IsHitTestVisible="False" />
                     </Grid>
                 </ScrollViewer>
             </Border>
         </Grid>
 
-        <!-- Setup/Properties Panel -->
-        <StackPanel Grid.Column="2" Grid.Row="1" Margin="10">
-            <!-- Template Properties Section -->
-            <TextBlock Text="Label Setup" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" Foreground="#2D5A8D" />
-            
-            <!-- Label Size Display (Read-only) -->
-            <TextBlock Text="Label Size:" FontWeight="Bold" Margin="0,0,0,5" Foreground="#2D5A8D" />
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                <TextBlock Text="Width:" Margin="0,0,5,0" />
-                <TextBlock x:Name="LabelWidthDisplay" Text="70.0 mm" FontWeight="SemiBold" Margin="0,0,15,0" />
-                <TextBlock Text="Height:" Margin="0,0,5,0" />
-                <TextBlock x:Name="LabelHeightDisplay" Text="30.0 mm" FontWeight="SemiBold" />
-            </StackPanel>
-            <Button x:Name="ResizeButton" Content="Resize" Width="80" HorizontalAlignment="Left" 
-                    Margin="0,0,0,10" Click="ResizeButton_Click" ToolTip="Resize the label and optionally adjust elements" />
-            
-            <TextBlock Text="Margins (mm):" FontWeight="Bold" Margin="0,10,0,0" Foreground="#2D5A8D" ToolTip="Set label margins in millimeters" />
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Left:" Margin="0,0,5,0" ToolTip="Left margin" />
-                <TextBox x:Name="MarginLeftBox" Width="40" Margin="0,0,10,0" />
-                <TextBlock Text="Right:" Margin="0,0,5,0" ToolTip="Right margin" />
-                <TextBox x:Name="MarginRightBox" Width="40" Margin="0,0,10,0" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="0,5,0,10">
-                <TextBlock Text="Top:" Margin="0,0,5,0" ToolTip="Top margin" />
-                <TextBox x:Name="MarginTopBox" Width="40" Margin="0,0,10,0" />
-                <TextBlock Text="Bottom:" Margin="0,0,5,0" ToolTip="Bottom margin" />
-                <TextBox x:Name="MarginBottomBox" Width="40" />
-            </StackPanel>
-            
-            <!-- Separator -->
-            <Separator Margin="0,10,0,10"/>
-            
-            <!-- Element Properties Section -->
-            <TextBlock Text="Element Properties" FontWeight="Bold" FontSize="16" Margin="0,0,0,10" Foreground="#2D5A8D" />
-            <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
-                <StackPanel x:Name="ElementPropertiesPanel">
-                    <TextBlock Text="Select an element to view its properties" 
-                              Foreground="Gray" FontStyle="Italic" 
-                              TextWrapping="Wrap" Margin="0,10,0,0"/>
+        <!-- Modern Properties Panel -->
+        <Border Grid.Column="2" Grid.Row="1" Background="{StaticResource PanelGradient}" 
+                BorderBrush="#d1d2d3" BorderThickness="1,0,0,0">
+            <ScrollViewer Margin="16" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <!-- Template Properties Section -->
+                    <TextBlock Text="🏷️ Label Setup" Style="{StaticResource SectionHeaderStyle}" FontSize="16"/>
+                    
+                    <!-- Label Size Display -->
+                    <TextBlock Text="Label Dimensions" Style="{StaticResource SubHeaderStyle}"/>
+                    <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="4" Padding="12,8" Margin="0,0,0,8">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <TextBlock Text="📐 Width:" Margin="0,0,8,0" Foreground="#605e5c" FontSize="11"/>
+                                <TextBlock x:Name="LabelWidthDisplay" Text="70.0 mm" FontWeight="SemiBold" Foreground="#323130" FontSize="11"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📏 Height:" Margin="0,0,8,0" Foreground="#605e5c" FontSize="11"/>
+                                <TextBlock x:Name="LabelHeightDisplay" Text="30.0 mm" FontWeight="SemiBold" Foreground="#323130" FontSize="11"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    
+                    <Button x:Name="ResizeButton" Content="📏 Resize Label" Style="{StaticResource ModernButtonStyle}"
+                            HorizontalAlignment="Stretch" Margin="0,0,0,16" Click="ResizeButton_Click" 
+                            ToolTip="Change label dimensions and adjust elements"/>
+                    
+                    <!-- Margins Section -->
+                    <TextBlock Text="Margins (mm)" Style="{StaticResource SubHeaderStyle}"/>
+                    <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="4" Padding="12,8" Margin="0,0,0,16">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- Labels Row -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Left:" HorizontalAlignment="Center" Margin="0,0,0,4" Foreground="#605e5c" FontSize="11"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="Right:" HorizontalAlignment="Center" Margin="0,0,0,4" Foreground="#605e5c" FontSize="11"/>
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Top:" HorizontalAlignment="Center" Margin="0,0,0,4" Foreground="#605e5c" FontSize="11"/>
+                                <TextBlock Grid.Row="0" Grid.Column="3" Text="Bottom:" HorizontalAlignment="Center" Margin="0,0,0,4" Foreground="#605e5c" FontSize="11"/>
+                                
+                                <!-- TextBoxes Row -->
+                                <TextBox Grid.Row="1" Grid.Column="0" x:Name="MarginLeftBox" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,4,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" x:Name="MarginRightBox" Style="{StaticResource ModernTextBoxStyle}" Margin="4,0,4,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="2" x:Name="MarginTopBox" Style="{StaticResource ModernTextBoxStyle}" Margin="4,0,4,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="3" x:Name="MarginBottomBox" Style="{StaticResource ModernTextBoxStyle}" Margin="4,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- Separator -->
+                    <Rectangle Height="1" Fill="#d1d2d3" Margin="0,8,0,16"/>
+                    
+                    <!-- Element Properties Section -->
+                    <TextBlock Text="🎨 Element Properties" Style="{StaticResource SectionHeaderStyle}" FontSize="16"/>
+                    <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="4" Padding="12" MinHeight="200">
+                        <ScrollViewer MaxHeight="400" VerticalScrollBarVisibility="Auto">
+                            <StackPanel x:Name="ElementPropertiesPanel">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20">
+                                    <TextBlock Text="🎯" FontSize="24" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Select an element to view properties" 
+                                              Foreground="#605e5c" FontStyle="Italic" FontSize="11"
+                                              TextWrapping="Wrap" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
                 </StackPanel>
             </ScrollViewer>
-        </StackPanel>
+        </Border>
     </Grid>
 </DockPanel>
 </Window>

@@ -1,67 +1,385 @@
 <Window x:Class="EvoDesigner.UI.LabelResizeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Label Resize" Height="500" Width="500"
+        Title="Resize Label" Height="600" Width="550"
         WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize">
-    <Grid Margin="25">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        
-        <!-- Header -->
-        <TextBlock Grid.Row="0" Text="Label Resize" FontSize="18" FontWeight="Bold" 
-                   Foreground="#2D5A8D" Margin="0,0,0,25" HorizontalAlignment="Center"/>
-        
-        <!-- Resize Options -->
-        <GroupBox Grid.Row="1" Header="Resize Options" Margin="0,0,0,15">
-            <StackPanel Margin="10">
-                <RadioButton x:Name="ResizeElementsRadio" Content="Resize Elements" 
-                           IsChecked="True" Margin="0,5,0,5"
-                           ToolTip="Scale existing elements proportionally with the new size"/>
-                <RadioButton x:Name="RepositionElementsRadio" Content="Reposition Elements" 
-                           Margin="0,5,0,5"
-                           ToolTip="Move elements to maintain relative positions"/>
-                <RadioButton x:Name="CanvasOnlyRadio" Content="Change Canvas Size Only" 
-                           Margin="0,5,0,5"
-                           ToolTip="Keep elements at current positions and sizes"/>
+        ResizeMode="CanResize">
+    
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#f3f2f1"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#0078d4"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#106ebe"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#005a9e"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern TextBox Style -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="4,2"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="{TemplateBinding Padding}" 
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern ComboBox Style -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="8,2,28,2"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <Grid>
+                                <ToggleButton Name="ToggleButton" 
+                                              Background="Transparent"
+                                              BorderThickness="0"
+                                              Focusable="false"
+                                              IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
+                                              ClickMode="Press"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="20"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Path Name="Arrow" Grid.Column="1" 
+                                              Fill="#605e5c" 
+                                              HorizontalAlignment="Right" 
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,6,0"
+                                              Data="M 0 0 L 4 4 L 8 0 Z"/>
+                                    </Grid>
+                                </ToggleButton>
+                                <ContentPresenter Name="ContentSite" 
+                                                  IsHitTestVisible="False" 
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                  Margin="8,6,28,6"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"/>
+                                <TextBox x:Name="PART_EditableTextBox"
+                                         Style="{x:Null}" 
+                                         HorizontalAlignment="Left" 
+                                         VerticalAlignment="Center" 
+                                         Margin="3,6,28,6"
+                                         Focusable="True" 
+                                         Background="Transparent"
+                                         Visibility="Hidden"
+                                         IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                                <Popup Name="Popup"
+                                       Placement="Bottom"
+                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       AllowsTransparency="True" 
+                                       Focusable="False"
+                                       PopupAnimation="Slide">
+                                    <Grid Name="DropDown"
+                                          SnapsToDevicePixels="True"                
+                                          MinWidth="{TemplateBinding ActualWidth}"
+                                          MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                        <Border x:Name="DropDownBorder"
+                                                Background="White" 
+                                                BorderThickness="1"
+                                                BorderBrush="#d1d2d3"/>
+                                        <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Popup>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern RadioButton Style -->
+        <Style x:Key="ModernRadioButtonStyle" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Margin" Value="0,8,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Ellipse Grid.Column="0" 
+                                    Width="16" Height="16" 
+                                    Stroke="#0078d4" 
+                                    StrokeThickness="2" 
+                                    Fill="White"
+                                    VerticalAlignment="Center"/>
+                            <Ellipse Grid.Column="0" 
+                                    Width="8" Height="8" 
+                                    Fill="#0078d4"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <ContentPresenter Grid.Column="1" 
+                                            VerticalAlignment="Center" 
+                                            Margin="8,0,0,0"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Section Header Style -->
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#0078d4"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <!-- Label Style -->
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+        </Style>
+
+        <!-- Panel Background -->
+        <LinearGradientBrush x:Key="PanelGradient" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#ffffff" Offset="0"/>
+            <GradientStop Color="#f8f9fa" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Resources>
+
+    <Border Background="{StaticResource PanelGradient}" BorderBrush="#d1d2d3" BorderThickness="1">
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Resize Options -->
+            <Border Grid.Row="0" Background="White" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Resize Options" FontWeight="SemiBold" FontSize="12" Foreground="#0078d4" Margin="0,0,0,12"/>
+                    <RadioButton x:Name="ResizeElementsRadio" Content="📐 Resize Elements" 
+                               IsChecked="True" Style="{StaticResource ModernRadioButtonStyle}"
+                               ToolTip="Scale existing elements proportionally with the new size"/>
+                    <TextBlock Text="Scale all elements proportionally to maintain their relative appearance" 
+                               FontSize="10" Foreground="#605e5c" Margin="28,2,0,8"/>
+                               
+                    <RadioButton x:Name="RepositionElementsRadio" Content="🔄 Reposition Elements" 
+                               Style="{StaticResource ModernRadioButtonStyle}"
+                               ToolTip="Move elements to maintain relative positions"/>
+                    <TextBlock Text="Keep element sizes but adjust their positions relative to the new canvas" 
+                               FontSize="10" Foreground="#605e5c" Margin="28,2,0,8"/>
+                               
+                    <RadioButton x:Name="CanvasOnlyRadio" Content="🎯 Change Canvas Size Only" 
+                               Style="{StaticResource ModernRadioButtonStyle}"
+                               ToolTip="Keep elements at current positions and sizes"/>
+                    <TextBlock Text="Only change the canvas size, keep all elements exactly as they are" 
+                               FontSize="10" Foreground="#605e5c" Margin="28,2,0,0"/>
+                </StackPanel>
+            </Border>
+            
+            <!-- Dimensions Input -->
+            <Border Grid.Row="1" Background="White" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="New Dimensions" FontWeight="SemiBold" FontSize="12" Foreground="#0078d4" Margin="0,0,0,12"/>
+                    
+                    <!-- Preset Sizes Dropdown -->
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Preset:" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox Grid.Column="1" x:Name="PresetSizeComboBox" Style="{StaticResource ModernComboBoxStyle}" 
+                                  SelectionChanged="PresetSizeComboBox_SelectionChanged">
+                            <ComboBoxItem Content="Custom Size" Tag=""/>
+                            <Separator/>
+                            <!-- ISO Paper Sizes (A-Series) -->
+                            <ComboBoxItem Content="ISO Paper Sizes" IsEnabled="False" FontWeight="SemiBold"/>
+                            <ComboBoxItem Content="  A4 (210 x 297 mm)" Tag="210,297"/>
+                            <ComboBoxItem Content="  A5 (148 x 210 mm)" Tag="148,210"/>
+                            <ComboBoxItem Content="  A6 (105 x 148 mm)" Tag="105,148"/>
+                            <ComboBoxItem Content="  A7 (74 x 105 mm)" Tag="74,105"/>
+                            <ComboBoxItem Content="  A8 (52 x 74 mm)" Tag="52,74"/>
+                            <Separator/>
+                            <!-- Address &amp; Shipping Labels -->
+                            <ComboBoxItem Content="Address &amp; Shipping" IsEnabled="False" FontWeight="SemiBold"/>
+                            <ComboBoxItem Content="  Standard Address (89 x 36 mm)" Tag="89,36"/>
+                            <ComboBoxItem Content="  Large Address (99 x 57 mm)" Tag="99,57"/>
+                            <ComboBoxItem Content="  Shipping Label (101.6 x 152.4 mm)" Tag="101.6,152.4"/>
+                            <ComboBoxItem Content="  Return Address (63.5 x 38.1 mm)" Tag="63.5,38.1"/>
+                            <Separator/>
+                            <!-- Product &amp; Barcode Labels -->
+                            <ComboBoxItem Content="Product &amp; Barcode" IsEnabled="False" FontWeight="SemiBold"/>
+                            <ComboBoxItem Content="  Standard Product (70 x 42.3 mm)" Tag="70,42.3"/>
+                            <ComboBoxItem Content="  Small Product (50 x 25 mm)" Tag="50,25"/>
+                            <ComboBoxItem Content="  Barcode Label (50.8 x 25.4 mm)" Tag="50.8,25.4"/>
+                            <ComboBoxItem Content="  Price Tag (38 x 25 mm)" Tag="38,25"/>
+                            <Separator/>
+                            <!-- Business &amp; Name Tags -->
+                            <ComboBoxItem Content="Business &amp; Name Tags" IsEnabled="False" FontWeight="SemiBold"/>
+                            <ComboBoxItem Content="  Business Card (89 x 51 mm)" Tag="89,51"/>
+                            <ComboBoxItem Content="  Name Badge (76 x 51 mm)" Tag="76,51"/>
+                            <ComboBoxItem Content="  ID Badge (86 x 54 mm)" Tag="86,54"/>
+                            <Separator/>
+                            <!-- Specialty Labels -->
+                            <ComboBoxItem Content="Specialty Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                            <ComboBoxItem Content="  Round Small (19 x 19 mm)" Tag="19,19"/>
+                            <ComboBoxItem Content="  Round Medium (32 x 32 mm)" Tag="32,32"/>
+                            <ComboBoxItem Content="  Round Large (51 x 51 mm)" Tag="51,51"/>
+                            <ComboBoxItem Content="  CD/DVD Label (118 x 118 mm)" Tag="118,118"/>
+                            <ComboBoxItem Content="  Bottle Label (100 x 80 mm)" Tag="100,80"/>
+                            <Separator/>
+                            <!-- Mailing Labels -->
+                            <ComboBoxItem Content="Mailing Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                            <ComboBoxItem Content="  Standard (83.8 x 25.4 mm)" Tag="83.8,25.4"/>
+                            <ComboBoxItem Content="  Large (101.6 x 33.9 mm)" Tag="101.6,33.9"/>
+                            <ComboBoxItem Content="  Return (63.5 x 16.9 mm)" Tag="63.5,16.9"/>
+                            <Separator/>
+                            <!-- Industrial Labels -->
+                            <ComboBoxItem Content="Industrial Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                            <ComboBoxItem Content="  Asset Tag (50 x 20 mm)" Tag="50,20"/>
+                            <ComboBoxItem Content="  Warning Label (100 x 50 mm)" Tag="100,50"/>
+                            <ComboBoxItem Content="  Equipment Label (76 x 25 mm)" Tag="76,25"/>
+                            <Separator/>
+                            <!-- Laboratory Labels -->
+                            <ComboBoxItem Content="Laboratory Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                            <ComboBoxItem Content="  Tube Label (25 x 13 mm)" Tag="25,13"/>
+                            <ComboBoxItem Content="  Slide Label (76 x 26 mm)" Tag="76,26"/>
+                            <ComboBoxItem Content="  Vial Label (38 x 13 mm)" Tag="38,13"/>
+                            <Separator/>
+                            <!-- Retail Labels -->
+                            <ComboBoxItem Content="Retail Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                            <ComboBoxItem Content="  Price Sticker (25 x 16 mm)" Tag="25,16"/>
+                            <ComboBoxItem Content="  Sale Tag (50 x 32 mm)" Tag="50,32"/>
+                            <ComboBoxItem Content="  Clearance (76 x 51 mm)" Tag="76,51"/>
+                        </ComboBox>
+                    </Grid>
+                    
+                    <!-- Manual Input - Width and Height on Same Line -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="Width:" Style="{StaticResource LabelStyle}"/>
+                        <TextBox Grid.Column="1" x:Name="WidthTextBox" Style="{StaticResource ModernTextBoxStyle}"/>
+                        <TextBlock Grid.Column="2" Text="mm" Style="{StaticResource LabelStyle}" Margin="8,0,0,0"/>
+                        
+                        <TextBlock Grid.Column="3" Text="Height:" Style="{StaticResource LabelStyle}" Margin="12,0,12,0"/>
+                        <TextBox Grid.Column="4" x:Name="HeightTextBox" Style="{StaticResource ModernTextBoxStyle}"/>
+                        <TextBlock Grid.Column="5" Text="mm" Style="{StaticResource LabelStyle}" Margin="8,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+            
+            <!-- Preview Area -->
+            <Border Grid.Row="2" Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,16">
+                <TextBlock x:Name="PreviewText" Text="Current size: 100.0 × 50.0 mm" 
+                           FontSize="10" Foreground="#605e5c" TextAlignment="Center"/>
+            </Border>
+            
+            <!-- Action Buttons -->
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="ResizeConfirmButton" Content="✅ Apply Resize" Width="150" 
+                        Margin="0,0,12,0" Style="{StaticResource ModernButtonStyle}" 
+                        Click="ResizeConfirmButton_Click" IsDefault="True"/>
+                <Button x:Name="CancelButton" Content="❌ Cancel" Width="100" 
+                        Style="{StaticResource ModernButtonStyle}" 
+                        Click="CancelButton_Click" IsCancel="True"/>
             </StackPanel>
-        </GroupBox>
-        
-        <!-- Dimensions Input -->
-        <GroupBox Grid.Row="2" Header="New Dimensions" Margin="0,0,0,20">
-            <Grid Margin="15">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Width:" VerticalAlignment="Center" Margin="0,0,15,0"/>
-                <TextBox Grid.Row="0" Grid.Column="1" x:Name="WidthTextBox" Margin="0,5,10,10" Height="28"/>
-                <TextBlock Grid.Row="0" Grid.Column="2" Text="mm" VerticalAlignment="Center"/>
-                
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Height:" VerticalAlignment="Center" Margin="0,0,15,0"/>
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="HeightTextBox" Margin="0,5,10,5" Height="28"/>
-                <TextBlock Grid.Row="1" Grid.Column="2" Text="mm" VerticalAlignment="Center"/>
-            </Grid>
-        </GroupBox>
-        
-        <!-- Action Buttons -->
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,25,0,10">
-            <Button x:Name="ResizeConfirmButton" Content="Resize" Width="90" Height="35" 
-                    Margin="0,0,15,0" Click="ResizeConfirmButton_Click" IsDefault="True"/>
-            <Button x:Name="CancelButton" Content="Cancel" Width="90" Height="35" 
-                    Click="CancelButton_Click" IsCancel="True"/>
-        </StackPanel>
-    </Grid>
+        </Grid>
+    </Border>
 </Window>

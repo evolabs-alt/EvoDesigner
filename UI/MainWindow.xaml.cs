@@ -13,6 +13,7 @@ using System.Windows.Controls.Primitives;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.IO;
 using System;
 using System.ComponentModel;
@@ -61,6 +62,9 @@ namespace EvoDesigner
         
         // Rotation tracking for elements (separate from Tag to avoid conflicts with image data)
         private Dictionary<UIElement, double> elementRotations = new Dictionary<UIElement, double>();
+        
+        // Clipboard functionality
+        private List<EvoDesigner.Models.LabelElement> clipboardElements = new List<EvoDesigner.Models.LabelElement>();
 
         public MainWindow()
         {
@@ -124,10 +128,10 @@ namespace EvoDesigner
             { 
                 Content = "Bring Forward", 
                 Margin = new Thickness(0, 0, 5, 0), 
-                Width = 85,
-                Height = 25,
+                Height = 28,
                 ToolTip = "Bring selected element forward"
             };
+            bringForwardBtn.Style = (Style)FindResource("CompactButtonStyle");
             LayerControlsContainer.Children.Add(bringForwardBtn);
             bringForwardBtn.Click += BringForward_Click;
 
@@ -135,10 +139,10 @@ namespace EvoDesigner
             { 
                 Content = "Send Backward", 
                 Margin = new Thickness(0, 0, 0, 0), 
-                Width = 85,
-                Height = 25,
+                Height = 28,
                 ToolTip = "Send selected element backward"
             };
+            sendBackwardBtn.Style = (Style)FindResource("CompactButtonStyle");
             LayerControlsContainer.Children.Add(sendBackwardBtn);
             sendBackwardBtn.Click += SendBackward_Click;
         }
@@ -542,6 +546,28 @@ namespace EvoDesigner
             return image;
         }
 
+        private string ConvertBitmapSourceToBase64(BitmapSource bitmapSource)
+        {
+            try
+            {
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+                
+                using (var stream = new MemoryStream())
+                {
+                    encoder.Save(stream);
+                    byte[] imageBytes = stream.ToArray();
+                    return Convert.ToBase64String(imageBytes);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to convert bitmap source to base64: {ex.Message}", "Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return string.Empty;
+            }
+        }
+
         #endregion
 
         private Image CreateBarcodeImage(string symbology, string data, double width = 120, double height = 60)
@@ -921,7 +947,7 @@ namespace EvoDesigner
                     btn.PreviewMouseDown += (s, e) => StartDrag("Aztec");
                 
                 // Healthcare/Industrial
-                else if (content?.Contains("Data Matrix") == true)
+                else if (content?.Contains("DataMatrix") == true)
                     btn.PreviewMouseDown += (s, e) => StartDrag("DataMatrix");
                 else if (content?.Contains("GS1 DataBar") == true)
                     btn.PreviewMouseDown += (s, e) => StartDrag("GS1DataBar");
@@ -1545,6 +1571,18 @@ namespace EvoDesigner
                     Redo();
                     e.Handled = true;
                     break;
+                case Key.C when (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)):
+                    CopySelectedElements();
+                    e.Handled = true;
+                    break;
+                case Key.V when (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)):
+                    PasteElements();
+                    e.Handled = true;
+                    break;
+                case Key.X when (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)):
+                    CutSelectedElements();
+                    e.Handled = true;
+                    break;
                 case Key.Left:
                     MoveSelectedElements(-1, 0);
                     e.Handled = true;
@@ -1646,6 +1684,204 @@ namespace EvoDesigner
             commandHistory.Redo();
         }
 
+        private void CopySelectedElements()
+        {
+            if (selectedElements.Count == 0 && selectedElement == null)
+                return;
+
+            clipboardElements.Clear();
+            
+            // Collect all selected elements
+            var elementsToCopy = new List<UIElement>();
+            if (selectedElement != null)
+                elementsToCopy.Add(selectedElement);
+            elementsToCopy.AddRange(selectedElements);
+
+            // Convert each UI element to LabelElement model for clipboard storage
+            foreach (UIElement element in elementsToCopy)
+            {
+                var labelElement = ConvertUIElementToLabelElement(element);
+                if (labelElement != null)
+                    clipboardElements.Add(labelElement);
+            }
+        }
+
+        private void CutSelectedElements()
+        {
+            CopySelectedElements();
+            DeleteSelectedElements();
+        }
+
+        private void PasteElements()
+        {
+            if (clipboardElements.Count == 0)
+                return;
+
+            var elementsToAdd = new List<UIElement>();
+            var addCommands = new List<AddElementCommand>();
+            
+            // Calculate offset for pasted elements (20 pixels down and right)
+            double offsetX = 20;
+            double offsetY = 20;
+
+            foreach (var labelElement in clipboardElements)
+            {
+                // Create a copy of the label element with offset position
+                var copiedElement = new EvoDesigner.Models.LabelElement
+                {
+                    Type = labelElement.Type,
+                    X = labelElement.X + offsetX,
+                    Y = labelElement.Y + offsetY,
+                    Width = labelElement.Width,
+                    Height = labelElement.Height,
+                    Content = labelElement.Content,
+                    BarcodeType = labelElement.BarcodeType,
+                    FontFamily = labelElement.FontFamily,
+                    FontSize = labelElement.FontSize,
+                    FontWeight = labelElement.FontWeight,
+                    FontStyle = labelElement.FontStyle,
+                    Foreground = labelElement.Foreground,
+                    TextDecorations = labelElement.TextDecorations,
+                    ImageData = labelElement.ImageData,
+                    Rotation = labelElement.Rotation
+                };
+
+                // Create UI element from the copied model
+                var uiElement = CreateElementFromTemplate(copiedElement);
+                if (uiElement != null)
+                {
+                    // Add the event handler to make the element selectable
+                    uiElement.MouseLeftButtonDown += Element_MouseLeftButtonDown;
+                    
+                    elementsToAdd.Add(uiElement);
+                    var addCommand = new AddElementCommand(LabelCanvas, uiElement, copiedElement.X, copiedElement.Y, "Paste element");
+                    addCommands.Add(addCommand);
+                }
+            }
+
+            // Execute all add commands as a batch
+            if (addCommands.Count > 0)
+            {
+                var batchCommand = new BatchCommand(addCommands.Cast<Commands.ICommand>().ToList(), 
+                    $"Paste {addCommands.Count} element{(addCommands.Count == 1 ? "" : "s")}");
+                commandHistory.ExecuteCommand(batchCommand);
+                
+                // Select the pasted elements
+                ClearSelection();
+                foreach (var element in elementsToAdd)
+                {
+                    selectedElements.Add(element);
+                    HighlightElement(element, true);
+                }
+                
+                SetDirty(true);
+            }
+        }
+
+        private EvoDesigner.Models.LabelElement? ConvertUIElementToLabelElement(UIElement element)
+        {
+            var labelElement = new EvoDesigner.Models.LabelElement
+            {
+                X = Canvas.GetLeft(element),
+                Y = Canvas.GetTop(element),
+                Width = element is FrameworkElement fe ? fe.Width : 100,
+                Height = element is FrameworkElement fe2 ? fe2.Height : 30,
+                Rotation = elementRotations.ContainsKey(element) ? elementRotations[element] : 
+                          (element.RenderTransform is RotateTransform rotateTransform ? rotateTransform.Angle : 0)
+            };
+
+            if (element is TextBlock tb)
+            {
+                if (tb.Text == "[EAN-13]")
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode13;
+                else if (tb.Text == "[EAN-8]")
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode8;
+                else if (tb.Text == "[QR Code]")
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
+                else
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
+                    
+                labelElement.Content = tb.Text;
+                labelElement.FontSize = tb.FontSize;
+                labelElement.FontFamily = tb.FontFamily.ToString();
+                labelElement.FontWeight = tb.FontWeight.ToString();
+                labelElement.FontStyle = tb.FontStyle.ToString();
+                labelElement.Foreground = tb.Foreground.ToString();
+                labelElement.TextDecorations = GetTextDecorationsString(tb.TextDecorations);
+            }
+            else if (element is System.Windows.Shapes.Rectangle rect)
+            {
+                labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                string tagStr = rect.Tag?.ToString() ?? "";
+                
+                // Handle file path in rectangle tag - convert to base64
+                if (!string.IsNullOrEmpty(tagStr) && tagStr != "Missing Image Data" && tagStr != "No Image Data")
+                {
+                    if (System.IO.File.Exists(tagStr))
+                    {
+                        labelElement.ImageData = ConvertImageToBase64(tagStr);
+                        labelElement.Content = ""; // Clear file path since we have base64 data
+                    }
+                    else
+                    {
+                        labelElement.Content = tagStr; // Keep as fallback
+                    }
+                }
+            }
+            else if (element is Image imageElement)
+            {
+                if (imageElement.Tag?.ToString() == "QRCode" || imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
+                {
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
+                    // Extract data from tag if available
+                    var tagStr = imageElement.Tag?.ToString();
+                    if (tagStr?.StartsWith("QRCodeData:") == true)
+                        labelElement.Content = tagStr.Substring("QRCodeData:".Length);
+                    else
+                        labelElement.Content = "Sample QR Data";
+                }
+                else if (imageElement.Tag?.ToString()?.StartsWith("BarcodeData:") == true)
+                {
+                    var tagStr = imageElement.Tag?.ToString();
+                    if (tagStr != null)
+                    {
+                        var parts = tagStr.Split(':');
+                        if (parts.Length >= 3)
+                        {
+                            var barcodeType = parts[1];
+                            var barcodeData = string.Join(":", parts.Skip(2));
+                            
+                            // Map barcode type to enum
+                            labelElement.Type = GetLabelElementTypeFromBarcodeType(barcodeType);
+                            labelElement.Content = barcodeData;
+                            labelElement.BarcodeType = barcodeType;
+                        }
+                        else
+                        {
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                            labelElement.Content = "Invalid barcode data";
+                        }
+                    }
+                }
+                else
+                {
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                    // Try to extract image data
+                    if (imageElement.Source is BitmapSource bitmapSource)
+                    {
+                        labelElement.ImageData = ConvertBitmapSourceToBase64(bitmapSource);
+                    }
+                }
+            }
+            else
+            {
+                // Unsupported element type
+                return null;
+            }
+
+            return labelElement;
+        }
+
         private void ShowResizingHandles(UIElement element)
         {
             RemoveResizingHandles();
@@ -1682,299 +1918,181 @@ namespace EvoDesigner
 
         private void ShowProperties(UIElement element)
         {
-            ElementPropertiesPanel.Children.Clear();
-            if (element is TextBlock tb)
+            try
             {
-                ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Text:" });
-                var textBox = new TextBox { Text = tb.Text };
-                textBox.TextChanged += (s, e) => { 
-                    tb.Text = textBox.Text; 
-                    SetDirty(true); 
-                };
-                ElementPropertiesPanel.Children.Add(textBox);
-
-                ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Font Family:" });
-                var fontFamilyBox = new ComboBox { 
-                    ItemsSource = System.Windows.Media.Fonts.SystemFontFamilies.Select(f => f.Source).OrderBy(f => f),
-                    SelectedItem = tb.FontFamily.Source 
-                };
-                fontFamilyBox.SelectionChanged += (s, e) => {
-                    if (fontFamilyBox.SelectedItem != null) {
-                        tb.FontFamily = new FontFamily(fontFamilyBox.SelectedItem.ToString());
-                        SetDirty(true);
-                    }
-                };
-                ElementPropertiesPanel.Children.Add(fontFamilyBox);
-
-                ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Font Size:" });
-                var fontSizeBox = new TextBox { Text = tb.FontSize.ToString() };
-                fontSizeBox.TextChanged += (s, e) => {
-                    if (double.TryParse(fontSizeBox.Text, out double size)) {
-                        tb.FontSize = size;
-                        SetDirty(true);
-                    }
-                };
-                ElementPropertiesPanel.Children.Add(fontSizeBox);
-
-                ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Text Formatting:" });
+                ElementPropertiesPanel.Children.Clear();
                 
-                // Create formatting buttons panel
-                var formattingPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 5) };
-                
-                // Bold button
-                var boldButton = new System.Windows.Controls.Primitives.ToggleButton { 
-                    Content = "B", 
-                    FontWeight = FontWeights.Bold,
-                    Width = 30, 
-                    Height = 25,
-                    Margin = new Thickness(0, 0, 2, 0),
-                    IsChecked = tb.FontWeight == FontWeights.Bold
-                };
-                boldButton.Checked += (s, e) => tb.FontWeight = FontWeights.Bold;
-                boldButton.Unchecked += (s, e) => tb.FontWeight = FontWeights.Normal;
-                formattingPanel.Children.Add(boldButton);
-                
-                // Italic button
-                var italicButton = new System.Windows.Controls.Primitives.ToggleButton { 
-                    Content = "I", 
-                    FontStyle = FontStyles.Italic,
-                    Width = 30, 
-                    Height = 25,
-                    Margin = new Thickness(0, 0, 2, 0),
-                    IsChecked = tb.FontStyle == FontStyles.Italic
-                };
-                italicButton.Checked += (s, e) => tb.FontStyle = FontStyles.Italic;
-                italicButton.Unchecked += (s, e) => tb.FontStyle = FontStyles.Normal;
-                formattingPanel.Children.Add(italicButton);
-                
-                // Underline button
-                var underlineButton = new System.Windows.Controls.Primitives.ToggleButton { 
-                    Content = "U", 
-                    Width = 30, 
-                    Height = 25,
-                    IsChecked = tb.TextDecorations.Count > 0 && tb.TextDecorations.Contains(TextDecorations.Underline[0])
-                };
-                underlineButton.Checked += (s, e) => tb.TextDecorations.Add(TextDecorations.Underline);
-                underlineButton.Unchecked += (s, e) => tb.TextDecorations.Clear();
-                formattingPanel.Children.Add(underlineButton);
-                
-                ElementPropertiesPanel.Children.Add(formattingPanel);
-
-                ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Text Color:" });
-                var colorBox = new TextBox { Text = (tb.Foreground as SolidColorBrush)?.Color.ToString() ?? "#000000" };
-                colorBox.TextChanged += (s, e) => {
-                    try { tb.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorBox.Text)); } catch { }
-                };
-                ElementPropertiesPanel.Children.Add(colorBox);
-            }
-            else if (element is Rectangle rect)
-            {
-                ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Image" });
-                ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Width:" });
-                var widthBox = new TextBox { Text = rect.Width.ToString() };
-                widthBox.TextChanged += (s, e) => {
-                    if (double.TryParse(widthBox.Text, out double w)) rect.Width = w;
-                };
-                ElementPropertiesPanel.Children.Add(widthBox);
-
-                ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Height:" });
-                var heightBox = new TextBox { Text = rect.Height.ToString() };
-                heightBox.TextChanged += (s, e) => {
-                    if (double.TryParse(heightBox.Text, out double h)) rect.Height = h;
-                };
-                ElementPropertiesPanel.Children.Add(heightBox);
-
-                ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Source:" });
-                var sourceBox = new TextBox { Text = rect.Tag as string ?? "" };
-                ElementPropertiesPanel.Children.Add(sourceBox);
-                var browseBtn = new Button { Content = "Browse...", Margin = new Thickness(0,5,0,0) };
-                browseBtn.Click += (s, e) => {
-                    var dlg = new Microsoft.Win32.OpenFileDialog();
-                    dlg.Filter = "Image Files (*.png;*.jpg;*.jpeg;*.bmp)|*.png;*.jpg;*.jpeg;*.bmp";
-                    if (dlg.ShowDialog() == true)
-                    {
-                        sourceBox.Text = dlg.FileName;
-                        rect.Tag = dlg.FileName;
-                        var imgBrush = new ImageBrush();
-                        imgBrush.ImageSource = new BitmapImage(new System.Uri(dlg.FileName));
-                        rect.Fill = imgBrush;
-                    }
-                };
-                ElementPropertiesPanel.Children.Add(browseBtn);
-
-                sourceBox.TextChanged += (s, e) => {
-                    rect.Tag = sourceBox.Text;
-                    try {
-                        var imgBrush = new ImageBrush();
-                        imgBrush.ImageSource = new BitmapImage(new System.Uri(sourceBox.Text));
-                        rect.Fill = imgBrush;
-                    } catch { rect.Fill = Brushes.LightGray; }
-                };
-            }
-            else if (element is Image img)
-            {
-                // Handle Image elements (including QR codes and barcodes)
-                bool isQRCode = img.Tag?.ToString() == "QRCode" || img.Tag?.ToString()?.StartsWith("QRCodeData:") == true;
-                bool isBarcode = img.Tag?.ToString() == "Barcode13" || img.Tag?.ToString() == "Barcode8" || 
-                                img.Tag?.ToString()?.StartsWith("BarcodeData:") == true;
-                
-                if (isQRCode)
+                if (element is TextBlock tb)
                 {
-                    ElementPropertiesPanel.Children.Add(new TextBlock { Text = "QR Code Data:" });
-                    var dataBox = new TextBox { Text = img.Tag?.ToString()?.StartsWith("QRCodeData:") == true ? 
-                        img.Tag.ToString().Substring("QRCodeData:".Length) : "Sample QR Data" };
-                    ElementPropertiesPanel.Children.Add(dataBox);
+                    // Text property
+                    var textLabel = new Label { Content = "Text:" };
+                    textLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(textLabel);
                     
-                    var previewImage = new Image { Width = 80, Height = 80, Margin = new Thickness(0,5,0,0) };
-                    ElementPropertiesPanel.Children.Add(previewImage);
+                    var textBox = new TextBox { Text = tb.Text };
+                    textBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    textBox.TextChanged += (s, e) => { 
+                        tb.Text = textBox.Text; 
+                        SetDirty(true); 
+                    };
+                    ElementPropertiesPanel.Children.Add(textBox);
+
+                    // Font Family property
+                    var fontFamilyLabel = new Label { Content = "Font Family:" };
+                    fontFamilyLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(fontFamilyLabel);
                     
-                    dataBox.TextChanged += (s, e) => {
-                        try {
-                            var newQRImage = CreateBarcodeImage("QRCode", dataBox.Text, img.Width, img.Height);
-                            img.Source = newQRImage.Source;
-                            previewImage.Source = newQRImage.Source;
-                            img.Tag = $"QRCodeData:{dataBox.Text}";
-                        } catch { 
-                            // Keep current image if generation fails
+                    var fontFamilyBox = new ComboBox { 
+                        ItemsSource = System.Windows.Media.Fonts.SystemFontFamilies.Select(f => f.Source).OrderBy(f => f),
+                        SelectedItem = tb.FontFamily.Source 
+                    };
+                    fontFamilyBox.Style = (Style)FindResource("ModernComboBoxStyle");
+                    fontFamilyBox.SelectionChanged += (s, e) => {
+                        if (fontFamilyBox.SelectedItem != null) {
+                            tb.FontFamily = new FontFamily(fontFamilyBox.SelectedItem.ToString());
+                            SetDirty(true);
                         }
                     };
+                    ElementPropertiesPanel.Children.Add(fontFamilyBox);
+
+                    // Font Size and Text Color properties on same line
+                    var fontSizeColorGrid = new Grid();
+                    fontSizeColorGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    fontSizeColorGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    fontSizeColorGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                    fontSizeColorGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                     
-                    // Set initial preview
-                    previewImage.Source = img.Source;
-                }
-                else if (isBarcode)
-                {
-                    // Determine barcode type from tag
-                    string barcodeType = "EAN13"; // default
-                    string barcodeData = "";
+                    // Labels row
+                    var fontSizeLabel = new Label { Content = "Font Size:" };
+                    fontSizeLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    Grid.SetRow(fontSizeLabel, 0);
+                    Grid.SetColumn(fontSizeLabel, 0);
+                    fontSizeColorGrid.Children.Add(fontSizeLabel);
                     
-                    var tagStr = img.Tag?.ToString() ?? "";
-                    if (tagStr.StartsWith("BarcodeData:"))
-                    {
-                        var parts = tagStr.Split(':');
-                        if (parts.Length >= 3)
-                        {
-                            barcodeType = parts[1];
-                            barcodeData = string.Join(":", parts.Skip(2));
-                        }
-                    }
-                    else if (tagStr == "Barcode13")
-                    {
-                        barcodeType = "EAN13";
-                        barcodeData = "4000000000004";
-                    }
-                    else if (tagStr == "Barcode8")
-                    {
-                        barcodeType = "EAN8";
-                        barcodeData = "40000007";
-                    }
+                    var colorLabel = new Label { Content = "Text Color:" };
+                    colorLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    Grid.SetRow(colorLabel, 0);
+                    Grid.SetColumn(colorLabel, 1);
+                    fontSizeColorGrid.Children.Add(colorLabel);
                     
-                    // Get display name for the barcode type
-                    string displayName = GetBarcodeDisplayName(barcodeType);
-                    ElementPropertiesPanel.Children.Add(new TextBlock { Text = $"{displayName} Data:" });
-                    
-                    var dataBox = new TextBox { Text = barcodeData };
-                    ElementPropertiesPanel.Children.Add(dataBox);
-                    
-                    var previewImage = new Image { Width = 120, Height = 60, Margin = new Thickness(0,5,0,0) };
-                    ElementPropertiesPanel.Children.Add(previewImage);
-                    
-                    dataBox.TextChanged += (s, e) => {
-                        try {
-                            var newBarcodeImage = CreateBarcodeImage(barcodeType, dataBox.Text, img.Width, img.Height);
-                            img.Source = newBarcodeImage.Source;
-                            previewImage.Source = newBarcodeImage.Source;
-                            img.Tag = $"BarcodeData:{barcodeType}:{dataBox.Text}";
-                        } catch { 
-                            // Keep current image if generation fails
+                    // TextBoxes row
+                    var fontSizeBox = new TextBox { Text = tb.FontSize.ToString(), Margin = new Thickness(0, 0, 4, 0) };
+                    fontSizeBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    fontSizeBox.TextChanged += (s, e) => {
+                        if (double.TryParse(fontSizeBox.Text, out double size)) {
+                            tb.FontSize = size;
+                            SetDirty(true);
                         }
                     };
+                    Grid.SetRow(fontSizeBox, 1);
+                    Grid.SetColumn(fontSizeBox, 0);
+                    fontSizeColorGrid.Children.Add(fontSizeBox);
                     
-                    // Set initial preview
-                    previewImage.Source = img.Source;
+                    var colorBox = new TextBox { Text = (tb.Foreground as SolidColorBrush)?.Color.ToString() ?? "#000000", Margin = new Thickness(4, 0, 0, 0) };
+                    colorBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    colorBox.TextChanged += (s, e) => {
+                        try { 
+                            tb.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorBox.Text)); 
+                            SetDirty(true);
+                        } catch { }
+                    };
+                    Grid.SetRow(colorBox, 1);
+                    Grid.SetColumn(colorBox, 1);
+                    fontSizeColorGrid.Children.Add(colorBox);
+                    
+                    ElementPropertiesPanel.Children.Add(fontSizeColorGrid);
                 }
-                else
+                else if (element is Rectangle rect)
                 {
-                    // Handle regular images
-                    ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Image Properties:" });
-                    ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Width:" });
-                    var widthBox = new TextBox { Text = img.Width.ToString() };
+                    // Rectangle/Image properties
+                    var imageLabel = new Label { Content = "Image Properties" };
+                    imageLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(imageLabel);
+                    
+                    // Width property
+                    var widthLabel = new Label { Content = "Width:" };
+                    widthLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(widthLabel);
+                    
+                    var widthBox = new TextBox { Text = rect.Width.ToString() };
+                    widthBox.Style = (Style)FindResource("ModernTextBoxStyle");
                     widthBox.TextChanged += (s, e) => {
-                        if (double.TryParse(widthBox.Text, out double w)) img.Width = w;
+                        if (double.TryParse(widthBox.Text, out double w)) {
+                            rect.Width = w;
+                            SetDirty(true);
+                        }
                     };
                     ElementPropertiesPanel.Children.Add(widthBox);
 
-                    ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Height:" });
-                    var heightBox = new TextBox { Text = img.Height.ToString() };
+                    // Height property
+                    var heightLabel = new Label { Content = "Height:" };
+                    heightLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(heightLabel);
+                    
+                    var heightBox = new TextBox { Text = rect.Height.ToString() };
+                    heightBox.Style = (Style)FindResource("ModernTextBoxStyle");
                     heightBox.TextChanged += (s, e) => {
-                        if (double.TryParse(heightBox.Text, out double h)) img.Height = h;
+                        if (double.TryParse(heightBox.Text, out double h)) {
+                            rect.Height = h;
+                            SetDirty(true);
+                        }
                     };
                     ElementPropertiesPanel.Children.Add(heightBox);
                 }
+                else if (element is Image img)
+                {
+                    // Basic image properties
+                    var imageLabel = new Label { Content = "Image Properties" };
+                    imageLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(imageLabel);
+                    
+                    // Width property
+                    var widthLabel = new Label { Content = "Width:" };
+                    widthLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(widthLabel);
+                    
+                    var widthBox = new TextBox { Text = img.Width.ToString() };
+                    widthBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    widthBox.TextChanged += (s, e) => {
+                        if (double.TryParse(widthBox.Text, out double w)) {
+                            img.Width = w;
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(widthBox);
+
+                    // Height property
+                    var heightLabel = new Label { Content = "Height:" };
+                    heightLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(heightLabel);
+                    
+                    var heightBox = new TextBox { Text = img.Height.ToString() };
+                    heightBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    heightBox.TextChanged += (s, e) => {
+                        if (double.TryParse(heightBox.Text, out double h)) {
+                            img.Height = h;
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(heightBox);
+                }
+                
+                // Add rotation controls for all elements
+                AddRotationControls(element);
             }
-            else if (element is TextBlock barcode)
+            catch (Exception ex)
             {
-                if (barcode.Text == "[EAN-13]" || barcode.Text == "[EAN-8]")
+                // Fallback to prevent crash
+                try
                 {
-                    ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Barcode Data:" });
-                    var dataBox = new TextBox { Text = "" };
-                    ElementPropertiesPanel.Children.Add(dataBox);
-                    var barcodeImg = new Image { Width = 120, Height = 40, Margin = new Thickness(0,5,0,0) };
-                    ElementPropertiesPanel.Children.Add(barcodeImg);
-                    dataBox.TextChanged += (s, e) => {
-                        barcode.Text = dataBox.Text;
-                        try {
-                            var writer = new ZXing.BarcodeWriterPixelData();
-                            writer.Format = barcode.Text == "[EAN-13]" ? ZXing.BarcodeFormat.EAN_13 : ZXing.BarcodeFormat.EAN_8;
-                            var pixelData = writer.Write(dataBox.Text);
-                            var bmp = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
-                            var bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, pixelData.Width, pixelData.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
-                            System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bmpData.Scan0, pixelData.Pixels.Length);
-                            bmp.UnlockBits(bmpData);
-                            var ms = new System.IO.MemoryStream();
-                            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                            ms.Position = 0;
-                            var bi = new BitmapImage();
-                            bi.BeginInit();
-                            bi.StreamSource = ms;
-                            bi.CacheOption = BitmapCacheOption.OnLoad;
-                            bi.EndInit();
-                            barcodeImg.Source = bi;
-                        } catch { barcodeImg.Source = null; }
-                    };
+                    ElementPropertiesPanel.Children.Clear();
+                    ElementPropertiesPanel.Children.Add(new Label { Content = $"Error loading properties: {ex.Message}" });
                 }
-                else if (barcode.Text == "[QR Code]")
+                catch
                 {
-                    ElementPropertiesPanel.Children.Add(new TextBlock { Text = "QR Data:" });
-                    var dataBox = new TextBox { Text = "" };
-                    ElementPropertiesPanel.Children.Add(dataBox);
-                    var qrImg = new Image { Width = 80, Height = 80, Margin = new Thickness(0,5,0,0) };
-                    ElementPropertiesPanel.Children.Add(qrImg);
-                    dataBox.TextChanged += (s, e) => {
-                        barcode.Text = dataBox.Text;
-                        try {
-                            var qrGen = new QRCoder.QRCodeGenerator();
-                            var qrData = qrGen.CreateQrCode(dataBox.Text, QRCoder.QRCodeGenerator.ECCLevel.Q);
-                            var qrCode = new QRCoder.QRCode(qrData);
-                            using (var bmp = qrCode.GetGraphic(10))
-                            {
-                                var ms = new System.IO.MemoryStream();
-                                bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                                ms.Position = 0;
-                                var bi = new BitmapImage();
-                                bi.BeginInit();
-                                bi.StreamSource = ms;
-                                bi.CacheOption = BitmapCacheOption.OnLoad;
-                                bi.EndInit();
-                                qrImg.Source = bi;
-                            }
-                        } catch { qrImg.Source = null; }
-                    };
+                    // Do nothing if even this fails
                 }
             }
-            
-            // Add rotation controls for all elements
-            AddRotationControls(element);
         }
 
         private void AddRotationControls(UIElement element)
@@ -1983,7 +2101,13 @@ namespace EvoDesigner
             ElementPropertiesPanel.Children.Add(new Separator { Margin = new Thickness(0, 10, 0, 10) });
             
             // Add rotation label
-            ElementPropertiesPanel.Children.Add(new TextBlock { Text = "Rotation:", FontWeight = FontWeights.Bold });
+            var rotationLabel = new Label 
+            { 
+                Content = "Rotation:", 
+                FontWeight = FontWeights.Bold,
+                Style = (Style)FindResource("ModernLabelStyle")
+            };
+            ElementPropertiesPanel.Children.Add(rotationLabel);
             
             // Get current rotation from dictionary or RenderTransform
             double currentRotation = 0;
@@ -2039,238 +2163,36 @@ namespace EvoDesigner
             // Add rotation shortcuts
             var shortcutsPanel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 0) };
             
-            var rotate90Btn = new Button { Content = "90°", Width = 35, Margin = new Thickness(0, 0, 5, 0) };
+            var rotate90Btn = new Button 
+            { 
+                Content = "90°", 
+                Width = 50, 
+                Margin = new Thickness(0, 0, 5, 0),
+                Style = (Style)FindResource("CompactButtonStyle")
+            };
             rotate90Btn.Click += (s, e) => { rotationSlider.Value = (rotationSlider.Value + 90) % 360; };
             shortcutsPanel.Children.Add(rotate90Btn);
             
-            var rotate180Btn = new Button { Content = "180°", Width = 35, Margin = new Thickness(0, 0, 5, 0) };
+            var rotate180Btn = new Button 
+            { 
+                Content = "180°", 
+                Width = 55, 
+                Margin = new Thickness(0, 0, 5, 0),
+                Style = (Style)FindResource("CompactButtonStyle")
+            };
             rotate180Btn.Click += (s, e) => { rotationSlider.Value = (rotationSlider.Value + 180) % 360; };
             shortcutsPanel.Children.Add(rotate180Btn);
             
-            var resetBtn = new Button { Content = "Reset", Width = 40 };
+            var resetBtn = new Button 
+            { 
+                Content = "Reset", 
+                Width = 55,
+                Style = (Style)FindResource("CompactButtonStyle")
+            };
             resetBtn.Click += (s, e) => { rotationSlider.Value = 0; };
             shortcutsPanel.Children.Add(resetBtn);
             
             ElementPropertiesPanel.Children.Add(shortcutsPanel);
-        }
-
-        private void Delete_Click(object sender, RoutedEventArgs e)
-        {
-            if (selectedElement != null)
-            {
-                LabelCanvas.Children.Remove(selectedElement);
-                // Remove rotation tracking for this element
-                if (elementRotations.ContainsKey(selectedElement))
-                {
-                    elementRotations.Remove(selectedElement);
-                }
-                RemoveResizingHandles();
-                selectedElement = null;
-                ElementPropertiesPanel.Children.Clear();
-                ElementPropertiesPanel.Children.Add(new TextBlock 
-                { 
-                    Text = "Select an element to view its properties", 
-                    Foreground = Brushes.Gray, 
-                    FontStyle = FontStyles.Italic, 
-                    TextWrapping = TextWrapping.Wrap, 
-                    Margin = new Thickness(0,10,0,0) 
-                });
-            }
-        }
-
-        private void BringForward_Click(object sender, RoutedEventArgs e)
-        {
-            if (selectedElement != null)
-            {
-                int idx = LabelCanvas.Children.IndexOf(selectedElement);
-                if (idx < LabelCanvas.Children.Count - 1)
-                {
-                    LabelCanvas.Children.RemoveAt(idx);
-                    LabelCanvas.Children.Insert(idx + 1, selectedElement);
-                }
-            }
-        }
-
-        private void SendBackward_Click(object sender, RoutedEventArgs e)
-        {
-            if (selectedElement != null)
-            {
-                int idx = LabelCanvas.Children.IndexOf(selectedElement);
-                if (idx > 0)
-                {
-                    LabelCanvas.Children.RemoveAt(idx);
-                    LabelCanvas.Children.Insert(idx - 1, selectedElement);
-                }
-            }
-        }
-
-        private void SaveAsTemplate_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                // Populate template with current canvas content
-                CurrentTemplate.Elements.Clear();
-                CurrentTemplate.TemplateName = System.IO.Path.GetFileNameWithoutExtension(_currentFilePath ?? "Untitled Template");
-                
-                // Save all canvas elements (excluding resize handles)
-                int elementIndex = 0;
-                foreach (UIElement child in LabelCanvas.Children)
-                {
-                    if (child is System.Windows.Controls.Primitives.Thumb) continue; // Skip resize handles
-                    
-                    var labelElement = new EvoDesigner.Models.LabelElement
-                    {
-                        X = Canvas.GetLeft(child),
-                        Y = Canvas.GetTop(child),
-                        Width = child is FrameworkElement fe ? fe.Width : 100,
-                        Height = child is FrameworkElement fe2 ? fe2.Height : 30,
-                        Rotation = elementRotations.ContainsKey(child) ? elementRotations[child] : 
-                                  (child.RenderTransform is RotateTransform rotateTransform ? rotateTransform.Angle : 0)
-                    };
-                    
-                    if (child is TextBlock tb)
-                    {
-                        if (tb.Text == "[EAN-13]")
-                            labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode13;
-                        else if (tb.Text == "[EAN-8]")
-                            labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode8;
-                        else if (tb.Text == "[QR Code]")
-                            labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
-                        else
-                            labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
-                            
-                        labelElement.Content = tb.Text;
-                        labelElement.FontSize = tb.FontSize;
-                        labelElement.FontFamily = tb.FontFamily.ToString();
-                        labelElement.FontWeight = tb.FontWeight.ToString();
-                        labelElement.FontStyle = tb.FontStyle.ToString();
-                        labelElement.Foreground = tb.Foreground.ToString();
-                    }
-                    else if (child is System.Windows.Shapes.Rectangle rect)
-                    {
-                        labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
-                        string tagStr = rect.Tag?.ToString() ?? "";
-                        // If tag contains base64, save it
-                        if (tagStr.StartsWith("ImageData:"))
-                        {
-                            labelElement.ImageData = tagStr.Substring("ImageData:".Length);
-                            labelElement.Content = "";
-                        }
-                        // Otherwise, handle file path in rectangle tag - convert to base64
-                        else if (!string.IsNullOrEmpty(tagStr) && tagStr != "Missing Image Data" && tagStr != "No Image Data")
-                        {
-                            if (System.IO.File.Exists(tagStr))
-                            {
-                                labelElement.ImageData = ConvertImageToBase64(tagStr);
-                                labelElement.Content = ""; // Clear file path since we have base64 data
-                            }
-                            else
-                            {
-                                labelElement.Content = tagStr; // Keep as fallback
-                            }
-                        }
-                    }
-                    else if (child is Image imageElement)
-                    {
-                        if (imageElement.Tag?.ToString() == "QRCode" || imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
-                        {
-                            labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
-                            // Extract data from tag if available
-                            if (imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
-                                labelElement.Content = imageElement.Tag.ToString().Substring("QRCodeData:".Length);
-                            else
-                                labelElement.Content = "Sample QR Data";
-                        }
-                        else if (imageElement.Tag?.ToString()?.StartsWith("BarcodeData:") == true)
-                        {
-                            var tagStr = imageElement.Tag.ToString();
-                            var parts = tagStr.Split(':');
-                            if (parts.Length >= 3)
-                            {
-                                var barcodeType = parts[1];
-                                var barcodeData = string.Join(":", parts.Skip(2));
-                                // Map barcode type to enum
-                                labelElement.Type = GetLabelElementTypeFromBarcodeType(barcodeType);
-                                labelElement.Content = barcodeData;
-                                labelElement.BarcodeType = barcodeType;
-                            }
-                            else
-                            {
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.EAN13;
-                                labelElement.Content = "4000000000004";
-                                labelElement.BarcodeType = "EAN13";
-                            }
-                        }
-                        else
-                        {
-                            // Regular image element
-                            labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
-                            // Extract base64 image data from tag
-                            string tagStr = imageElement.Tag?.ToString() ?? "";
-                            if (tagStr.StartsWith("ImageData:"))
-                            {
-                                // Extract base64 data from tag
-                                labelElement.ImageData = tagStr.Substring("ImageData:".Length);
-                                labelElement.Content = ""; // Clear file path since we have base64 data
-                            }
-                            else if (!string.IsNullOrEmpty(tagStr) && System.IO.File.Exists(tagStr))
-                            {
-                                labelElement.ImageData = ConvertImageToBase64(tagStr);
-                                labelElement.Content = "";
-                            }
-                            else
-                            {
-                                labelElement.Content = tagStr;
-                            }
-                        }
-                    }
-                    
-                    CurrentTemplate.Elements.Add(labelElement);
-                    elementIndex++;
-                }
-
-                // Save data source configuration if available
-                if (_currentDataSource != null)
-                {
-                    CurrentTemplate.DataSource = _currentDataSource;
-                }
-
-                var dlg = new Microsoft.Win32.SaveFileDialog 
-                { 
-                    Filter = "Label Template (*.xml)|*.xml",
-                    DefaultExt = "xml",
-                    FileName = !string.IsNullOrEmpty(_currentFilePath) ? System.IO.Path.GetFileNameWithoutExtension(_currentFilePath) : "MyTemplate"
-                };
-                
-                if (dlg.ShowDialog() == true)
-                {
-                    var serializer = new System.Xml.Serialization.XmlSerializer(typeof(EvoDesigner.Models.LabelTemplate));
-                    using var fs = new System.IO.FileStream(dlg.FileName, System.IO.FileMode.Create);
-                    serializer.Serialize(fs, CurrentTemplate);
-                    
-                    // Reset dirty flag and update current file path
-                    _currentFilePath = dlg.FileName;
-                    SetDirty(false);
-                    
-                    MessageBox.Show($"Template saved successfully to:\n{dlg.FileName}", "Success", 
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                MessageBox.Show("Access denied. Please choose a different location or run as administrator.", 
-                    "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (DirectoryNotFoundException)
-            {
-                MessageBox.Show("The specified directory was not found. Please choose a valid location.", 
-                    "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error saving template:\n{ex.Message}", "Save Error", 
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
         private void SaveTemplate_Click(object sender, RoutedEventArgs e)
@@ -2282,7 +2204,6 @@ namespace EvoDesigner
                 CurrentTemplate.TemplateName = System.IO.Path.GetFileNameWithoutExtension(_currentFilePath ?? "Untitled Template");
                 
                 // Save all canvas elements (excluding resize handles)
-                int elementIndex = 0;
                 foreach (UIElement child in LabelCanvas.Children)
                 {
                     if (child is System.Windows.Controls.Primitives.Thumb) continue; // Skip resize handles
@@ -2314,6 +2235,7 @@ namespace EvoDesigner
                         labelElement.FontWeight = tb.FontWeight.ToString();
                         labelElement.FontStyle = tb.FontStyle.ToString();
                         labelElement.Foreground = tb.Foreground.ToString();
+                        labelElement.TextDecorations = GetTextDecorationsString(tb.TextDecorations);
                     }
                     else if (child is System.Windows.Shapes.Rectangle rect)
                     {
@@ -2392,7 +2314,6 @@ namespace EvoDesigner
                     }
                     
                     CurrentTemplate.Elements.Add(labelElement);
-                    elementIndex++;
                 }
 
                 // Save data source configuration if available
@@ -2415,7 +2336,7 @@ namespace EvoDesigner
                     { 
                         Filter = "Label Template (*.xml)|*.xml",
                         DefaultExt = "xml",
-                        FileName = !string.IsNullOrEmpty(_currentFilePath) ? System.IO.Path.GetFileNameWithoutExtension(_currentFilePath) : "MyTemplate"
+                        FileName = "MyTemplate"
                     };
                     
                     if (dlg.ShowDialog() != true)
@@ -2432,16 +2353,6 @@ namespace EvoDesigner
                 // Reset dirty flag and update current file path
                 _currentFilePath = saveFilePath;
                 SetDirty(false);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                MessageBox.Show("Access denied. Please choose a different location or run as administrator.", 
-                    "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (DirectoryNotFoundException)
-            {
-                MessageBox.Show("The specified directory was not found. Please choose a valid location.", 
-                    "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
@@ -2470,7 +2381,6 @@ namespace EvoDesigner
                     if (CurrentTemplate.DataSource != null)
                     {
                         _currentDataSource = CurrentTemplate.DataSource;
-                        // TODO: Optionally reconnect to data source and reload data
                     }
                     
                     // Restore template dimensions to internal properties and display
@@ -2487,7 +2397,7 @@ namespace EvoDesigner
                     
                     // Clear current canvas
                     LabelCanvas.Children.Clear();
-                    elementRotations.Clear(); // Clear rotation tracking
+                    elementRotations.Clear();
                     RemoveResizingHandles();
                     selectedElement = null;
                     
@@ -2509,21 +2419,6 @@ namespace EvoDesigner
                     SetDirty(false);
                 }
             }
-            catch (FileNotFoundException)
-            {
-                MessageBox.Show("The selected file was not found.", "Load Error", 
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (UnauthorizedAccessException)
-            {
-                MessageBox.Show("Access denied to the selected file.", "Load Error", 
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (InvalidOperationException ex)
-            {
-                MessageBox.Show($"Invalid template file format:\n{ex.Message}", "Load Error", 
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error loading template:\n{ex.Message}", "Load Error", 
@@ -2531,394 +2426,15 @@ namespace EvoDesigner
             }
         }
 
-        private UIElement? CreateElementFromTemplate(EvoDesigner.Models.LabelElement element)
-        {
-            UIElement? result = null;
-            
-            switch (element.Type)
-            {
-                case EvoDesigner.Models.LabelElementType.Text:
-                    var textBlock = new TextBlock
-                    {
-                        Text = element.Content ?? "Text",
-                        FontSize = element.FontSize,
-                        Width = element.Width,
-                        Height = element.Height
-                    };
-                    
-                    // Apply font properties if available
-                    if (!string.IsNullOrEmpty(element.FontFamily))
-                        textBlock.FontFamily = new FontFamily(element.FontFamily);
-                    if (!string.IsNullOrEmpty(element.FontWeight))
-                        textBlock.FontWeight = element.FontWeight.Contains("Bold") ? FontWeights.Bold : FontWeights.Normal;
-                    if (!string.IsNullOrEmpty(element.FontStyle))
-                        textBlock.FontStyle = element.FontStyle.Contains("Italic") ? FontStyles.Italic : FontStyles.Normal;
-                    
-                    result = textBlock;
-                    break;
-                    
-                case EvoDesigner.Models.LabelElementType.Barcode13:
-                case EvoDesigner.Models.LabelElementType.Barcode8:
-                case EvoDesigner.Models.LabelElementType.Barcode:
-                case EvoDesigner.Models.LabelElementType.EAN13:
-                case EvoDesigner.Models.LabelElementType.EAN8:
-                case EvoDesigner.Models.LabelElementType.UPCA:
-                case EvoDesigner.Models.LabelElementType.UPCE:
-                case EvoDesigner.Models.LabelElementType.Code128:
-                case EvoDesigner.Models.LabelElementType.Code39:
-                case EvoDesigner.Models.LabelElementType.Aztec:
-                case EvoDesigner.Models.LabelElementType.DataMatrix:
-                case EvoDesigner.Models.LabelElementType.GS1DataBar:
-                case EvoDesigner.Models.LabelElementType.PDF417:
-                    var barcodeType = GetBarcodeTypeFromElement(element);
-                    var barcodeData = element.Content ?? GetDefaultBarcodeData(barcodeType);
-                    var barcodeImage = CreateBarcodeImage(barcodeType, barcodeData, element.Width, element.Height);
-                    barcodeImage.Tag = $"BarcodeData:{barcodeType}:{barcodeData}";
-                    result = barcodeImage;
-                    break;
-                    
-                case EvoDesigner.Models.LabelElementType.QRCode:
-                    var qrImage = CreateBarcodeImage("QRCode", element.Content ?? "Sample QR Data", element.Width, element.Height);
-                    qrImage.Tag = $"QRCodeData:{element.Content ?? "Sample QR Data"}";
-                    result = qrImage;
-                    break;
-                    
-                case EvoDesigner.Models.LabelElementType.Image:
-                    // Try to create an actual Image element if we have image data
-                    if (!string.IsNullOrEmpty(element.ImageData))
-                    {
-                        // We have base64 image data - use it directly
-                        try
-                        {
-                            var image = CreateImageFromBase64(element.ImageData, element.Width, element.Height);
-                            result = image;
-                        }
-                        catch
-                        {
-                            // Fallback to rectangle if base64 decoding fails
-                            var rect = new System.Windows.Shapes.Rectangle
-                            {
-                                Width = element.Width,
-                                Height = element.Height,
-                                Fill = Brushes.LightGray,
-                                Stroke = Brushes.DarkGray,
-                                StrokeThickness = 2,
-                                Tag = "Missing Image Data"
-                            };
-                            result = rect;
-                        }
-                    }
-                    else if (!string.IsNullOrEmpty(element.Content))
-                    {
-                        // Legacy support: try to load from file path
-                        try
-                        {
-                            var image = new Image();
-                            
-                            // Check if the content is a file path
-                            if (System.IO.File.Exists(element.Content))
-                            {
-                                // File exists - load it and convert to base64 for future saves
-                                image = CreateImageFromFile(element.Content);
-                                image.Width = element.Width;
-                                image.Height = element.Height;
-                            }
-                            else
-                            {
-                                // If file doesn't exist, try to create from URI anyway
-                                try
-                                {
-                                    var bitmap = new BitmapImage();
-                                    bitmap.BeginInit();
-                                    bitmap.UriSource = new Uri(element.Content);
-                                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                                    bitmap.EndInit();
-                                    image.Source = bitmap;
-                                    image.Width = element.Width;
-                                    image.Height = element.Height;
-                                    image.Stretch = Stretch.Uniform;
-                                    image.Tag = element.Content;
-                                }
-                                catch
-                                {
-                                    // If all else fails, create a placeholder rectangle
-                                    var rect = new System.Windows.Shapes.Rectangle
-                                    {
-                                        Width = element.Width,
-                                        Height = element.Height,
-                                        Fill = Brushes.LightGray,
-                                        Stroke = Brushes.DarkGray,
-                                        StrokeThickness = 2,
-                                        Tag = element.Content
-                                    };
-                                    result = rect;
-                                    break;
-                                }
-                            }
-                            
-                            result = image;
-                        }
-                        catch
-                        {
-                            // Fallback to rectangle if image loading fails
-                            var rect = new System.Windows.Shapes.Rectangle
-                            {
-                                Width = element.Width,
-                                Height = element.Height,
-                                Fill = Brushes.LightGray,
-                                Stroke = Brushes.DarkGray,
-                                StrokeThickness = 2,
-                                Tag = element.Content
-                            };
-                            result = rect;
-                        }
-                    }
-                    else
-                    {
-                        // No content, create placeholder rectangle
-                        var rect = new System.Windows.Shapes.Rectangle
-                        {
-                            Width = element.Width,
-                            Height = element.Height,
-                            Fill = Brushes.LightGray,
-                            Stroke = Brushes.DarkGray,
-                            StrokeThickness = 2,
-                            Tag = "No Image Data"
-                        };
-                        result = rect;
-                    }
-                    break;
-            }
-            
-            // Apply rotation if specified
-            if (result != null && element.Rotation != 0)
-            {
-                var rotateTransform = new RotateTransform(element.Rotation);
-                if (result is FrameworkElement fe)
-                {
-                    fe.RenderTransformOrigin = new Point(0.5, 0.5);
-                }
-                result.RenderTransform = rotateTransform;
-                
-                // Store rotation in our dictionary instead of Tag to avoid conflicts
-                elementRotations[result] = element.Rotation;
-            }
-            
-            return result;
-        }
-
-        private void Print_Click(object sender, RoutedEventArgs e)
-        {
-            // Use live template for immediate printing
-            var liveTemplate = CreateLiveTemplate();
-            var win = new EvoDesigner.UI.PrintPreviewWindow(liveTemplate, lastResultTable);
-            win.ShowDialog();
-        }
-
         private void PrintPreview_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[DEBUG] Print Preview button clicked");
             var liveTemplate = CreateLiveTemplate();
+            Console.WriteLine($"[DEBUG] Live template created with {liveTemplate.Elements.Count} elements");
             var win = new EvoDesigner.UI.PrintPreviewWindow(liveTemplate, lastResultTable);
+            Console.WriteLine("[DEBUG] PrintPreviewWindow created, showing dialog");
             win.ShowDialog();
-        }
-
-        private EvoDesigner.Models.LabelTemplate CreateLiveTemplate()
-        {
-            var liveTemplate = new EvoDesigner.Models.LabelTemplate
-            {
-                TemplateName = CurrentTemplate.TemplateName,
-                LabelWidth = CurrentTemplate.LabelWidth > 0 ? CurrentTemplate.LabelWidth : _labelWidthMm,
-                LabelHeight = CurrentTemplate.LabelHeight > 0 ? CurrentTemplate.LabelHeight : _labelHeightMm,
-                MarginLeft = CurrentTemplate.MarginLeft,
-                MarginRight = CurrentTemplate.MarginRight,
-                MarginTop = CurrentTemplate.MarginTop,
-                MarginBottom = CurrentTemplate.MarginBottom
-            };
-
-            // Get consistent list of label elements (same as used for field mapping)
-            var labelElements = GetLabelElements();
-            
-            // Convert label elements to template elements
-            int elementIndex = 0;
-            foreach (UIElement child in labelElements)
-            {
-                var labelElement = new EvoDesigner.Models.LabelElement
-                {
-                    X = Canvas.GetLeft(child),
-                    Y = Canvas.GetTop(child),
-                    Width = child is FrameworkElement fe ? fe.Width : 100,
-                    Height = child is FrameworkElement fe2 ? fe2.Height : 30
-                };
-                
-                if (child is TextBlock tb)
-                {
-                    // Check if this is a barcode fallback display
-                    if (tb.Text.StartsWith("[") && tb.Text.EndsWith("]"))
-                    {
-                        var barcodeDisplayText = tb.Text.Trim('[', ']');
-                        switch (barcodeDisplayText)
-                        {
-                            case "EAN-13":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.EAN13;
-                                labelElement.Content = "4000000000004";
-                                labelElement.BarcodeType = "EAN13";
-                                break;
-                            case "EAN-8":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.EAN8;
-                                labelElement.Content = "40000007";
-                                labelElement.BarcodeType = "EAN8";
-                                break;
-                            case "UPC-A":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.UPCA;
-                                labelElement.Content = "012345678905";
-                                labelElement.BarcodeType = "UPCA";
-                                break;
-                            case "UPC-E":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.UPCE;
-                                labelElement.Content = "01234565";
-                                labelElement.BarcodeType = "UPCE";
-                                break;
-                            case "Code 128":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.Code128;
-                                labelElement.Content = "HELLO123";
-                                labelElement.BarcodeType = "Code128";
-                                break;
-                            case "Code 39":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.Code39;
-                                labelElement.Content = "HELLO39";
-                                labelElement.BarcodeType = "Code39";
-                                break;
-                            case "QR Code":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
-                                labelElement.Content = "Sample QR Data";
-                                labelElement.BarcodeType = "QRCode";
-                                break;
-                            case "Aztec":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.Aztec;
-                                labelElement.Content = "Sample Aztec Data";
-                                labelElement.BarcodeType = "Aztec";
-                                break;
-                            case "Data Matrix":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.DataMatrix;
-                                labelElement.Content = "Sample Data Matrix";
-                                labelElement.BarcodeType = "DataMatrix";
-                                break;
-                            case "GS1 DataBar":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.GS1DataBar;
-                                labelElement.Content = "01234567890123";
-                                labelElement.BarcodeType = "GS1DataBar";
-                                break;
-                            case "PDF417":
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.PDF417;
-                                labelElement.Content = "Sample PDF417 Data";
-                                labelElement.BarcodeType = "PDF417";
-                                break;
-                            default:
-                                labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
-                                labelElement.Content = tb.Text;
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
-                        labelElement.Content = tb.Text;
-                    }
-                        
-                    labelElement.FontSize = tb.FontSize;
-                    labelElement.FontFamily = tb.FontFamily.ToString();
-                    labelElement.FontWeight = tb.FontWeight.ToString();
-                    labelElement.FontStyle = tb.FontStyle.ToString();
-                    labelElement.Foreground = tb.Foreground.ToString();
-                }
-                else if (child is System.Windows.Shapes.Rectangle rect)
-                {
-                    labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
-                    string tagStr = rect.Tag?.ToString() ?? "";
-                    
-                    // Handle base64 image data stored in tag
-                    if (tagStr.StartsWith("ImageData:"))
-                    {
-                        labelElement.ImageData = tagStr.Substring("ImageData:".Length);
-                        labelElement.Content = ""; // Clear content since we have base64 data
-                    }
-                    else
-                    {
-                        labelElement.Content = tagStr;
-                    }
-                }
-                else if (child is Image imageElement)
-                {
-                    if (imageElement.Tag?.ToString() == "QRCode" || imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
-                    {
-                        labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
-                        // Extract data from tag if available
-                        if (imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
-                            labelElement.Content = imageElement.Tag.ToString().Substring("QRCodeData:".Length);
-                        else
-                            labelElement.Content = "Sample QR Data";
-                    }
-                    else if (imageElement.Tag?.ToString()?.StartsWith("BarcodeData:") == true)
-                    {
-                        var tagStr = imageElement.Tag.ToString();
-                        var parts = tagStr.Split(':');
-                        if (parts.Length >= 3)
-                        {
-                            var barcodeType = parts[1];
-                            var barcodeData = string.Join(":", parts.Skip(2));
-                            
-                            // Map barcode type to enum
-                            labelElement.Type = GetLabelElementTypeFromBarcodeType(barcodeType);
-                            labelElement.Content = barcodeData;
-                            labelElement.BarcodeType = barcodeType;
-                        }
-                        else
-                        {
-                            labelElement.Type = EvoDesigner.Models.LabelElementType.EAN13;
-                            labelElement.Content = "4000000000004";
-                            labelElement.BarcodeType = "EAN13";
-                        }
-                    }
-                    else
-                    {
-                        labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
-                        string tagStr = imageElement.Tag?.ToString() ?? "";
-                        
-                        // Handle base64 image data stored in tag
-                        if (tagStr.StartsWith("ImageData:"))
-                        {
-                            labelElement.ImageData = tagStr.Substring("ImageData:".Length);
-                            labelElement.Content = ""; // Clear content since we have base64 data
-                        }
-                        else
-                        {
-                            labelElement.Content = tagStr;
-                        }
-                    }
-                }
-                
-                // Capture rotation from Tag if present, otherwise from RenderTransform
-                if (child is FrameworkElement feTag && feTag.Tag is double tagAngle)
-                {
-                    labelElement.Rotation = tagAngle;
-                }
-                else if (child.RenderTransform is RotateTransform rotateTransform)
-                {
-                    labelElement.Rotation = rotateTransform.Angle;
-                }
-                else
-                {
-                    labelElement.Rotation = 0; // Default rotation
-                }
-                
-                liveTemplate.Elements.Add(labelElement);
-                elementIndex++;
-            }
-
-            // Copy field mappings from current template
-            liveTemplate.FieldMappings = CurrentTemplate.FieldMappings ?? new List<EvoDesigner.Models.FieldMapping>();
-            
-            return liveTemplate;
+            Console.WriteLine("[DEBUG] PrintPreviewWindow dialog closed");
         }
 
         private void DataSource_Click(object sender, RoutedEventArgs e)
@@ -2939,173 +2455,42 @@ namespace EvoDesigner
                     Query = win.Query
                 };
                 
-                SetDirty(true); // Mark template as modified
+                SetDirty(true);
             }
         }
 
-        private void RefreshData_Click(object sender, RoutedEventArgs e)
+        private void BringForward_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (selectedElement != null)
             {
-                // Check if data source is configured
-                if (_currentDataSource == null || string.IsNullOrEmpty(_currentDataSource.Host) || string.IsNullOrEmpty(_currentDataSource.Query))
+                int idx = LabelCanvas.Children.IndexOf(selectedElement);
+                if (idx < LabelCanvas.Children.Count - 1)
                 {
-                    MessageBox.Show("Please configure a data source first.\n\nGo to File > Setup Data Source to configure your database connection and query.", 
-                        "Data Source Not Configured", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return;
+                    LabelCanvas.Children.RemoveAt(idx);
+                    LabelCanvas.Children.Insert(idx + 1, selectedElement);
                 }
-
-                // Set loading state
-                RefreshDataButton.IsEnabled = false;
-                RefreshDataButton.Content = "⏳ Loading...";
-                DataStatusTextBlock.Text = "Connecting to database...";
-                DataStatusTextBlock.Foreground = Brushes.Orange;
-
-                // Force UI update
-                Application.Current.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
-
-                // Create connection string
-                var connectionString = $"Server={_currentDataSource.Host};Port={_currentDataSource.Port};Database={_currentDataSource.Database};User={_currentDataSource.Username};Password={_currentDataSource.Password};";
-
-                // Execute query
-                var mysqlService = new MySqlService();
-                mysqlService.ConnectionString = connectionString;
-                
-                DataStatusTextBlock.Text = "Executing query...";
-                Application.Current.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
-                
-                lastResultTable = mysqlService.ExecuteQuery(_currentDataSource.Query);
-
-                if (lastResultTable != null && lastResultTable.Rows.Count > 0)
-                {
-                    DataStatusTextBlock.Text = $"{lastResultTable.Rows.Count} rows";
-                    DataStatusTextBlock.Foreground = Brushes.Green;
-                    
-                    MessageBox.Show($"Data refreshed successfully!\n\nLoaded {lastResultTable.Rows.Count} rows with {lastResultTable.Columns.Count} columns.", 
-                        "Data Refresh Complete", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    DataStatusTextBlock.Text = "No data";
-                    DataStatusTextBlock.Foreground = Brushes.Gray;
-                    
-                    MessageBox.Show("Query executed successfully but returned no data.", 
-                        "No Data", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                DataStatusTextBlock.Text = "Error";
-                DataStatusTextBlock.Foreground = Brushes.Red;
-                
-                MessageBox.Show($"Error refreshing data:\n\n{ex.Message}", 
-                    "Data Refresh Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                // Restore button state
-                RefreshDataButton.IsEnabled = true;
-                RefreshDataButton.Content = "⟳ Refresh";
             }
         }
 
-        private List<UIElement> GetLabelElements()
+        private void SendBackward_Click(object sender, RoutedEventArgs e)
         {
-            var labelElements = new List<UIElement>();
-            foreach (UIElement child in LabelCanvas.Children)
+            if (selectedElement != null)
             {
-                // Skip resize handles (Thumb controls)
-                if (!(child is System.Windows.Controls.Primitives.Thumb))
+                int idx = LabelCanvas.Children.IndexOf(selectedElement);
+                if (idx > 0)
                 {
-                    labelElements.Add(child);
+                    LabelCanvas.Children.RemoveAt(idx);
+                    LabelCanvas.Children.Insert(idx - 1, selectedElement);
                 }
             }
-            return labelElements;
         }
 
-        private void MapFields_Click(object sender, RoutedEventArgs e)
+        private void SetDirty(bool isDirty = true)
         {
-            if (lastResultTable == null || LabelCanvas.Children.Count == 0)
-            {
-                MessageBox.Show("Please fetch data and add label elements to the canvas first.", "No Data or Elements", 
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            
-            // Get consistent list of label elements
-            var labelElements = GetLabelElements();
-            
-            if (labelElements.Count == 0)
-            {
-                MessageBox.Show("No label elements found on the canvas.", "No Elements", 
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-            
-            var win = new EvoDesigner.UI.FieldMappingWindow(labelElements, lastResultTable);
-            if (win.ShowDialog() == true)
-            {
-                CurrentTemplate.FieldMappings = win.Mappings;
-                ApplyDataToElements();
-            }
+            _isDirty = isDirty;
+            string baseTitle = "TaggJack - Label Designer";
+            this.Title = _isDirty ? $"{baseTitle} *" : baseTitle;
         }
-
-        private void ApplyDataToElements()
-        {
-            if (lastResultTable == null || CurrentTemplate.FieldMappings.Count == 0) return;
-            var row = lastResultTable.Rows[0];
-            foreach (var mapping in CurrentTemplate.FieldMappings)
-            {
-                if (mapping.ElementIndex < 0 || mapping.ElementIndex >= LabelCanvas.Children.Count) continue;
-                var el = LabelCanvas.Children[mapping.ElementIndex];
-                var value = row[mapping.FieldName]?.ToString();
-                
-                if (el is TextBlock tb) 
-                {
-                    tb.Text = value;
-                }
-                else if (el is Rectangle rect) 
-                {
-                    rect.Tag = value;
-                }
-                else if (el is Image imageElement)
-                {
-                    if (imageElement.Tag?.ToString() == "QRCode" || imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
-                    {
-                        // This is a QR code - generate new QR code with the data
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            var newQRImage = CreateBarcodeImage("QRCode", value, imageElement.Width, imageElement.Height);
-                            imageElement.Source = newQRImage.Source;
-                            imageElement.Tag = $"QRCodeData:{value}";
-                        }
-                    }
-                    else if (imageElement.Tag?.ToString()?.StartsWith("BarcodeData:") == true)
-                    {
-                        // This is a barcode - generate new barcode with the data
-                        if (!string.IsNullOrEmpty(value))
-                        {
-                            var tagStr = imageElement.Tag.ToString();
-                            var parts = tagStr.Split(':');
-                            if (parts.Length >= 2)
-                            {
-                                var barcodeType = parts[1]; // Get the actual barcode type
-                                var newBarcodeImage = CreateBarcodeImage(barcodeType, value, imageElement.Width, imageElement.Height);
-                                imageElement.Source = newBarcodeImage.Source;
-                                imageElement.Tag = $"BarcodeData:{barcodeType}:{value}";
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // Regular image
-                        imageElement.Tag = value;
-                    }
-                }
-            }
-        }
-
-        #region Zoom Functionality
 
         private void InitializeZoomControls()
         {
@@ -3115,24 +2500,7 @@ namespace EvoDesigner
             ZoomResetButton.Click += (s, e) => ZoomReset();
             ZoomFitButton.Click += (s, e) => ZoomToFit();
             
-            // Add mouse wheel zoom support
-            CanvasScrollViewer.PreviewMouseWheel += CanvasScrollViewer_PreviewMouseWheel;
-            
             UpdateZoomDisplay();
-        }
-
-        private void CanvasScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            // Check if Ctrl key is pressed for zoom
-            if (Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                e.Handled = true;
-                
-                if (e.Delta > 0)
-                    ZoomIn();
-                else
-                    ZoomOut();
-            }
         }
 
         private void ZoomIn()
@@ -3161,7 +2529,6 @@ namespace EvoDesigner
 
         private void ZoomToFit()
         {
-            // Calculate zoom to fit the label in the visible area
             var scrollViewerSize = new Size(CanvasScrollViewer.ActualWidth - 20, CanvasScrollViewer.ActualHeight - 20);
             var labelSize = new Size(LabelCanvas.Width, LabelCanvas.Height);
             
@@ -3177,16 +2544,9 @@ namespace EvoDesigner
 
         private void ApplyZoom()
         {
-            // Scale the canvas content
             CanvasScaleTransform.ScaleX = _zoomFactor;
             CanvasScaleTransform.ScaleY = _zoomFactor;
-            
-            // Don't scale rulers - instead update them to account for zoom in their content generation
-            // This keeps line thickness and text size constant
-            
-            // Update rulers to generate marks with proper spacing for current zoom
             UpdateRulers();
-            
             UpdateZoomDisplay();
         }
 
@@ -3195,103 +2555,371 @@ namespace EvoDesigner
             ZoomTextBlock.Text = $"{(_zoomFactor * 100):F0}%";
         }
 
-        private void About_Click(object sender, RoutedEventArgs e)
+        private EvoDesigner.Models.LabelTemplate CreateLiveTemplate()
         {
-            MessageBox.Show("Evolabs IT Solutions Ltd (c) 2025", "About EvoDesigner", 
-                MessageBoxButton.OK, MessageBoxImage.Information);
-        }
+            var liveTemplate = new EvoDesigner.Models.LabelTemplate
+            {
+                TemplateName = CurrentTemplate.TemplateName,
+                LabelWidth = CurrentTemplate.LabelWidth > 0 ? CurrentTemplate.LabelWidth : _labelWidthMm,
+                LabelHeight = CurrentTemplate.LabelHeight > 0 ? CurrentTemplate.LabelHeight : _labelHeightMm,
+                MarginLeft = CurrentTemplate.MarginLeft,
+                MarginRight = CurrentTemplate.MarginRight,
+                MarginTop = CurrentTemplate.MarginTop,
+                MarginBottom = CurrentTemplate.MarginBottom
+            };
 
-        private void ResizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Open the resize dialog
-            var resizeDialog = new EvoDesigner.UI.LabelResizeWindow(_labelWidthMm, _labelHeightMm);
+            var labelElements = GetLabelElements();
             
-            if (resizeDialog.ShowDialog() == true)
+            foreach (UIElement child in labelElements)
             {
-                // Get the new dimensions and resize mode
-                double newWidthMm = resizeDialog.NewWidth;
-                double newHeightMm = resizeDialog.NewHeight;
-                var resizeMode = resizeDialog.SelectedResizeMode;
-                
-                // Calculate scale factors
-                double scaleX = newWidthMm / _labelWidthMm;
-                double scaleY = newHeightMm / _labelHeightMm;
-                
-                // Update label dimensions
-                _labelWidthMm = newWidthMm;
-                _labelHeightMm = newHeightMm;
-                UpdateDisplayedDimensions();
-                
-                // Apply resize based on selected mode
-                switch (resizeMode)
+                var labelElement = new EvoDesigner.Models.LabelElement
                 {
-                    case EvoDesigner.UI.LabelResizeMode.ResizeElements:
-                        ResizeElements(scaleX, scaleY);
-                        break;
+                    X = Canvas.GetLeft(child),
+                    Y = Canvas.GetTop(child),
+                    Width = child is FrameworkElement fe ? fe.Width : 100,
+                    Height = child is FrameworkElement fe2 ? fe2.Height : 30
+                };
+                
+                if (child is TextBlock tb)
+                {
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
+                    labelElement.Content = tb.Text;
+                    labelElement.FontSize = tb.FontSize;
+                    labelElement.FontFamily = tb.FontFamily.ToString();
+                    labelElement.FontWeight = tb.FontWeight.ToString();
+                    labelElement.FontStyle = tb.FontStyle.ToString();
+                    labelElement.Foreground = tb.Foreground.ToString();
+                    labelElement.TextDecorations = GetTextDecorationsString(tb.TextDecorations);
+                }
+                else if (child is Image img && img.Tag != null)
+                {
+                    string tagString = img.Tag.ToString();
+                    if (tagString.StartsWith("BarcodeData:"))
+                    {
+                        // Parse the tag: "BarcodeData:{symbology}:{data}"
+                        var parts = tagString.Split(':');
+                        if (parts.Length >= 3)
+                        {
+                            string symbology = parts[1];
+                            string data = string.Join(":", parts.Skip(2)); // Rejoin in case data contains colons
+                            
+                            // Map symbology to element type
+                            switch (symbology.ToUpper())
+                            {
+                                case "EAN13":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.EAN13;
+                                    break;
+                                case "EAN8":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.EAN8;
+                                    break;
+                                case "UPCA":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.UPCA;
+                                    break;
+                                case "UPCE":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.UPCE;
+                                    break;
+                                case "CODE128":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.Code128;
+                                    break;
+                                case "CODE39":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.Code39;
+                                    break;
+                                case "QRCODE":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
+                                    break;
+                                case "AZTEC":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.Aztec;
+                                    break;
+                                case "DATAMATRIX":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.DataMatrix;
+                                    break;
+                                case "GS1DATABAR":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.GS1DataBar;
+                                    break;
+                                case "PDF417":
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.PDF417;
+                                    break;
+                                default:
+                                    labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode;
+                                    break;
+                            }
+                            
+                            labelElement.Content = data;
+                            labelElement.BarcodeType = symbology;
+                        }
+                    }
+                    else if (tagString.StartsWith("ImageData:"))
+                    {
+                        // Regular image with base64 data
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                        labelElement.ImageData = tagString.Substring("ImageData:".Length);
+                        labelElement.Content = ""; // Clear content since we have ImageData
+                    }
+                    else
+                    {
+                        // Regular image with other tag or path
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                        labelElement.Content = tagString;
+                    }
+                }
+                else if (child is Image imgRegular)
+                {
+                    // Image without barcode tag - treat as regular image
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                    labelElement.Content = imgRegular.Source?.ToString() ?? "";
+                }
+                
+                if (child.RenderTransform is RotateTransform rotateTransform)
+                {
+                    labelElement.Rotation = rotateTransform.Angle;
+                }
+                else
+                {
+                    labelElement.Rotation = 0;
+                }
+                
+                liveTemplate.Elements.Add(labelElement);
+            }
+
+            liveTemplate.FieldMappings = CurrentTemplate.FieldMappings ?? new List<EvoDesigner.Models.FieldMapping>();
+            
+            return liveTemplate;
+        }
+
+        private List<UIElement> GetLabelElements()
+        {
+            var labelElements = new List<UIElement>();
+            foreach (UIElement child in LabelCanvas.Children)
+            {
+                if (!(child is System.Windows.Controls.Primitives.Thumb))
+                {
+                    labelElements.Add(child);
+                }
+            }
+            return labelElements;
+        }
+
+        private string GetTextDecorationsString(TextDecorationCollection? decorations)
+        {
+            if (decorations == null || decorations.Count == 0)
+            {
+                return "";
+            }
+                
+            if (decorations == System.Windows.TextDecorations.Underline)
+            {
+                return "Underline";
+            }
+            else if (decorations == System.Windows.TextDecorations.Strikethrough)
+            {
+                return "Strikethrough";
+            }
+            else if (decorations == System.Windows.TextDecorations.OverLine)
+            {
+                return "Overline";
+            }
+            else if (decorations == System.Windows.TextDecorations.Baseline)
+            {
+                return "Baseline";
+            }
+                
+            foreach (var decoration in decorations)
+            {
+                switch (decoration.Location)
+                {
+                    case TextDecorationLocation.Underline:
+                        return "Underline";
+                    case TextDecorationLocation.Strikethrough:
+                        return "Strikethrough";
+                    case TextDecorationLocation.OverLine:
+                        return "Overline";
+                    case TextDecorationLocation.Baseline:
+                        return "Baseline";
+                }
+            }
+            
+            return "";
+        }
+
+        private UIElement? CreateElementFromTemplate(EvoDesigner.Models.LabelElement element)
+        {
+            UIElement? result = null;
+            
+            switch (element.Type)
+            {
+                case EvoDesigner.Models.LabelElementType.Text:
+                    var textBlock = new TextBlock
+                    {
+                        Text = element.Content ?? "Text",
+                        FontSize = element.FontSize,
+                        Width = element.Width,
+                        Height = element.Height
+                    };
+                    
+                    // Apply font properties if available
+                    if (!string.IsNullOrEmpty(element.FontFamily))
+                        textBlock.FontFamily = new FontFamily(element.FontFamily);
+                    if (!string.IsNullOrEmpty(element.FontWeight))
+                        textBlock.FontWeight = element.FontWeight.Contains("Bold") ? FontWeights.Bold : FontWeights.Normal;
+                    if (!string.IsNullOrEmpty(element.FontStyle))
+                        textBlock.FontStyle = element.FontStyle.Contains("Italic") ? FontStyles.Italic : FontStyles.Normal;
+                    
+                    result = textBlock;
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.Image:
+                    try
+                    {
+                        BitmapImage? bitmap = null;
                         
-                    case EvoDesigner.UI.LabelResizeMode.RepositionElements:
-                        RepositionElements(scaleX, scaleY);
-                        break;
-                        
-                    case EvoDesigner.UI.LabelResizeMode.CanvasOnly:
-                        // Do nothing - just resize the canvas
-                        break;
-                }
-                
-                // Update the canvas size
-                UpdateCanvasSize();
-                UpdateGrid();
-                UpdateMarginGuidelines();
+                        // First try to load from ImageData (base64)
+                        if (!string.IsNullOrEmpty(element.ImageData))
+                        {
+                            var imageBytes = Convert.FromBase64String(element.ImageData);
+                            bitmap = new BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.StreamSource = new MemoryStream(imageBytes);
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                        }
+                        // Fallback to Content if it's a data URL
+                        else if (!string.IsNullOrEmpty(element.Content) && element.Content.StartsWith("data:image"))
+                        {
+                            var base64Data = element.Content.Split(',')[1];
+                            var imageBytes = Convert.FromBase64String(base64Data);
+                            bitmap = new BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.StreamSource = new MemoryStream(imageBytes);
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                        }
+                        // Fallback to Content if it's a file path
+                        else if (!string.IsNullOrEmpty(element.Content) && System.IO.File.Exists(element.Content))
+                        {
+                            bitmap = new BitmapImage();
+                            bitmap.BeginInit();
+                            bitmap.UriSource = new Uri(element.Content);
+                            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmap.EndInit();
+                        }
+
+                        if (bitmap != null)
+                        {
+                            var image = new Image
+                            {
+                                Source = bitmap,
+                                Width = element.Width,
+                                Height = element.Height,
+                                Stretch = Stretch.Uniform,
+                                Tag = !string.IsNullOrEmpty(element.ImageData) ? $"ImageData:{element.ImageData}" : element.Content
+                            };
+                            result = image;
+                        }
+                        else
+                        {
+                            // Fallback to rectangle if no valid image data
+                            var rect = new System.Windows.Shapes.Rectangle
+                            {
+                                Width = element.Width,
+                                Height = element.Height,
+                                Fill = Brushes.LightGray,
+                                Stroke = Brushes.DarkGray,
+                                StrokeThickness = 2,
+                                Tag = element.Content ?? "No Image Data"
+                            };
+                            result = rect;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Fallback to rectangle if image loading fails
+                        var rect = new System.Windows.Shapes.Rectangle
+                        {
+                            Width = element.Width,
+                            Height = element.Height,
+                            Fill = Brushes.LightGray,
+                            Stroke = Brushes.DarkGray,
+                            StrokeThickness = 2,
+                            Tag = $"Image Load Error: {ex.Message}"
+                        };
+                        result = rect;
+                    }
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.QRCode:
+                    result = CreateBarcodeImage("QRCODE", element.Content ?? "Sample QR Data", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.EAN13:
+                case EvoDesigner.Models.LabelElementType.Barcode13: // Legacy support
+                    result = CreateBarcodeImage("EAN13", element.Content ?? "4000000000004", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.EAN8:
+                case EvoDesigner.Models.LabelElementType.Barcode8: // Legacy support
+                    result = CreateBarcodeImage("EAN8", element.Content ?? "40000007", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.UPCA:
+                    result = CreateBarcodeImage("UPCA", element.Content ?? "012345678905", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.UPCE:
+                    result = CreateBarcodeImage("UPCE", element.Content ?? "01234565", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.Code128:
+                    result = CreateBarcodeImage("CODE128", element.Content ?? "HELLO123", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.Code39:
+                    result = CreateBarcodeImage("CODE39", element.Content ?? "HELLO39", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.Aztec:
+                    result = CreateBarcodeImage("AZTEC", element.Content ?? "Sample Aztec Data", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.DataMatrix:
+                    result = CreateBarcodeImage("DATAMATRIX", element.Content ?? "Sample Data Matrix", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.GS1DataBar:
+                    result = CreateBarcodeImage("GS1DATABAR", element.Content ?? "]C101234567890128", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.PDF417:
+                    result = CreateBarcodeImage("PDF417", element.Content ?? "Sample PDF417 Data", element.Width, element.Height);
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.Barcode: // Legacy support
+                    result = CreateBarcodeImage("CODE128", element.Content ?? "LEGACY", element.Width, element.Height);
+                    break;
             }
-        }
-        
-        private void ResizeElements(double scaleX, double scaleY)
-        {
-            foreach (UIElement element in LabelCanvas.Children)
+            
+            // Apply rotation if specified
+            if (result != null && element.Rotation != 0)
             {
-                // Scale position
-                double left = Canvas.GetLeft(element);
-                double top = Canvas.GetTop(element);
-                if (!double.IsNaN(left)) Canvas.SetLeft(element, left * scaleX);
-                if (!double.IsNaN(top)) Canvas.SetTop(element, top * scaleY);
-                
-                // Scale size
-                if (element is FrameworkElement fe)
+                var rotateTransform = new RotateTransform(element.Rotation);
+                if (result is FrameworkElement fe)
                 {
-                    if (!double.IsNaN(fe.Width)) fe.Width *= scaleX;
-                    if (!double.IsNaN(fe.Height)) fe.Height *= scaleY;
+                    fe.RenderTransformOrigin = new Point(0.5, 0.5);
                 }
+                result.RenderTransform = rotateTransform;
                 
-                // Scale font size for text elements
-                if (element is TextBlock textBlock)
-                {
-                    textBlock.FontSize *= Math.Min(scaleX, scaleY); // Use smaller scale for text
-                }
+                // Store rotation in our dictionary
+                elementRotations[result] = element.Rotation;
             }
+            
+            return result;
         }
-        
-        private void RepositionElements(double scaleX, double scaleY)
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            foreach (UIElement element in LabelCanvas.Children)
+            if (!PromptSaveChanges())
             {
-                // Only scale position, not size
-                double left = Canvas.GetLeft(element);
-                double top = Canvas.GetTop(element);
-                if (!double.IsNaN(left)) Canvas.SetLeft(element, left * scaleX);
-                if (!double.IsNaN(top)) Canvas.SetTop(element, top * scaleY);
+                e.Cancel = true;
             }
-        }
-
-        #endregion
-
-        #region Exit and Save Tracking
-
-        private void SetDirty(bool isDirty = true)
-        {
-            _isDirty = isDirty;
-            // Update title to show if unsaved changes exist
-            string baseTitle = "EvoDesigner - Label Designer";
-            this.Title = _isDirty ? $"{baseTitle} *" : baseTitle;
         }
 
         private bool PromptSaveChanges()
@@ -3354,6 +2982,104 @@ namespace EvoDesigner
             }
         }
 
+        private void SaveAsTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Populate template with current canvas content
+                CurrentTemplate.Elements.Clear();
+                CurrentTemplate.TemplateName = System.IO.Path.GetFileNameWithoutExtension(_currentFilePath ?? "Untitled Template");
+                
+                // Save all canvas elements (excluding resize handles)
+                foreach (UIElement child in LabelCanvas.Children)
+                {
+                    if (child is System.Windows.Controls.Primitives.Thumb) continue; // Skip resize handles
+                    
+                    var labelElement = new EvoDesigner.Models.LabelElement
+                    {
+                        X = Canvas.GetLeft(child),
+                        Y = Canvas.GetTop(child),
+                        Width = child is FrameworkElement fe ? fe.Width : 100,
+                        Height = child is FrameworkElement fe2 ? fe2.Height : 30,
+                        Rotation = elementRotations.ContainsKey(child) ? elementRotations[child] : 
+                                  (child.RenderTransform is RotateTransform rotateTransform ? rotateTransform.Angle : 0)
+                    };
+                    
+                    if (child is TextBlock tb)
+                    {
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
+                        labelElement.Content = tb.Text;
+                        labelElement.FontSize = tb.FontSize;
+                        labelElement.FontFamily = tb.FontFamily.ToString();
+                        labelElement.FontWeight = tb.FontWeight.ToString();
+                        labelElement.FontStyle = tb.FontStyle.ToString();
+                        labelElement.Foreground = tb.Foreground.ToString();
+                        labelElement.TextDecorations = GetTextDecorationsString(tb.TextDecorations);
+                    }
+                    
+                    CurrentTemplate.Elements.Add(labelElement);
+                }
+
+                // Save data source configuration if available
+                if (_currentDataSource != null)
+                {
+                    CurrentTemplate.DataSource = _currentDataSource;
+                }
+
+                var dlg = new Microsoft.Win32.SaveFileDialog 
+                { 
+                    Filter = "Label Template (*.xml)|*.xml",
+                    DefaultExt = "xml",
+                    FileName = "MyTemplate"
+                };
+                
+                if (dlg.ShowDialog() == true)
+                {
+                    var serializer = new System.Xml.Serialization.XmlSerializer(typeof(EvoDesigner.Models.LabelTemplate));
+                    using var fs = new System.IO.FileStream(dlg.FileName, System.IO.FileMode.Create);
+                    serializer.Serialize(fs, CurrentTemplate);
+                    
+                    // Reset dirty flag and update current file path
+                    _currentFilePath = dlg.FileName;
+                    SetDirty(false);
+                    
+                    MessageBox.Show($"Template saved successfully to:\n{dlg.FileName}", "Success", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving template:\n{ex.Message}", "Save Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void MapFields_Click(object sender, RoutedEventArgs e)
+        {
+            if (lastResultTable == null || LabelCanvas.Children.Count == 0)
+            {
+                MessageBox.Show("Please fetch data and add label elements to the canvas first.", "No Data or Elements", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            
+            // Get consistent list of label elements
+            var labelElements = GetLabelElements();
+            
+            if (labelElements.Count == 0)
+            {
+                MessageBox.Show("No label elements found on the canvas.", "No Elements", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            
+            var win = new EvoDesigner.UI.FieldMappingWindow(labelElements, lastResultTable);
+            if (win.ShowDialog() == true)
+            {
+                CurrentTemplate.FieldMappings = win.Mappings;
+            }
+        }
+
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             if (PromptSaveChanges())
@@ -3362,14 +3088,178 @@ namespace EvoDesigner
             }
         }
 
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void About_Click(object sender, RoutedEventArgs e)
         {
-            if (!PromptSaveChanges())
+            var aboutWindow = new UI.AboutWindow();
+            aboutWindow.Owner = this;
+            aboutWindow.ShowDialog();
+        }
+
+        private async void RefreshData_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentDataSource == null)
             {
-                e.Cancel = true; // Cancel the closing if user chose to cancel
+                MessageBox.Show("No data source configured. Please setup a data source first.", "No Data Source", 
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Show refreshing status
+            var dataStatusTextBlock = FindName("DataStatusTextBlock") as TextBlock;
+            if (dataStatusTextBlock != null)
+            {
+                dataStatusTextBlock.Text = "Refreshing data...";
+                dataStatusTextBlock.FontStyle = FontStyles.Italic;
+            }
+
+            // Disable the refresh button during operation
+            var refreshButton = sender as Button;
+            if (refreshButton != null)
+            {
+                refreshButton.IsEnabled = false;
+            }
+
+            try
+            {
+                // Add a small delay to ensure UI updates
+                await Task.Delay(100);
+
+                // Run the database operation on a background thread
+                await Task.Run(() =>
+                {
+                    // Build connection string from current data source
+                    var connectionString = $"Server={_currentDataSource.Host};Port={_currentDataSource.Port};Database={_currentDataSource.Database};Uid={_currentDataSource.Username};Pwd={_currentDataSource.Password};";
+                    
+                    // Execute the query using MySqlService
+                    var service = new EvoDesigner.Services.MySqlService { ConnectionString = connectionString };
+                    lastResultTable = service.ExecuteQuery(_currentDataSource.Query);
+                });
+                
+                // Update data status display with final results (back on UI thread)
+                UpdateDataStatus();
+                
+                if (lastResultTable != null)
+                {
+                    MessageBox.Show($"Data refreshed successfully! Fetched {lastResultTable.Rows.Count} rows with {lastResultTable.Columns.Count} columns.", 
+                        "Refresh Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Data refreshed but no data returned.", "Refresh Complete", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                
+                SetDirty(true); // Mark template as dirty since data has changed
+            }
+            catch (Exception ex)
+            {
+                // Reset status on error
+                if (dataStatusTextBlock != null)
+                {
+                    dataStatusTextBlock.Text = "Refresh failed";
+                    dataStatusTextBlock.FontStyle = FontStyles.Italic;
+                }
+                
+                MessageBox.Show($"Failed to refresh data: {ex.Message}", "Refresh Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                // Re-enable the refresh button
+                if (refreshButton != null)
+                {
+                    refreshButton.IsEnabled = true;
+                }
             }
         }
 
-        #endregion
+        private void UpdateDataStatus()
+        {
+            var dataStatusTextBlock = FindName("DataStatusTextBlock") as TextBlock;
+            if (dataStatusTextBlock != null)
+            {
+                if (lastResultTable != null && lastResultTable.Rows.Count > 0)
+                {
+                    dataStatusTextBlock.Text = $"{lastResultTable.Rows.Count} rows, {lastResultTable.Columns.Count} fields";
+                    dataStatusTextBlock.FontStyle = FontStyles.Normal;
+                }
+                else
+                {
+                    dataStatusTextBlock.Text = "No data";
+                    dataStatusTextBlock.FontStyle = FontStyles.Italic;
+                }
+            }
+        }
+
+        private void ResizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            var resizeWindow = new UI.LabelResizeWindow(_labelWidthMm, _labelHeightMm);
+            if (resizeWindow.ShowDialog() == true)
+            {
+                // Get the old dimensions for scaling calculations
+                double oldWidth = _labelWidthMm;
+                double oldHeight = _labelHeightMm;
+                
+                // Update the label dimensions
+                _labelWidthMm = resizeWindow.NewWidth;
+                _labelHeightMm = resizeWindow.NewHeight;
+                
+                // Update the current template
+                CurrentTemplate.LabelWidth = _labelWidthMm;
+                CurrentTemplate.LabelHeight = _labelHeightMm;
+                
+                // Calculate scaling factors
+                double scaleX = _labelWidthMm / oldWidth;
+                double scaleY = _labelHeightMm / oldHeight;
+                
+                // Apply the resize mode to all elements on the canvas
+                foreach (UIElement element in LabelCanvas.Children.OfType<UIElement>().ToList())
+                {
+                    if (element == null) continue;
+                    
+                    switch (resizeWindow.SelectedResizeMode)
+                    {
+                        case UI.LabelResizeMode.ResizeElements:
+                            // Scale element size and position proportionally
+                            if (element is FrameworkElement fe)
+                            {
+                                Canvas.SetLeft(element, Canvas.GetLeft(element) * scaleX);
+                                Canvas.SetTop(element, Canvas.GetTop(element) * scaleY);
+                                fe.Width = fe.Width * scaleX;
+                                fe.Height = fe.Height * scaleY;
+                                
+                                // Scale font size for text elements
+                                if (fe is TextBlock tb)
+                                {
+                                    tb.FontSize = tb.FontSize * Math.Min(scaleX, scaleY);
+                                }
+                            }
+                            break;
+                            
+                        case UI.LabelResizeMode.RepositionElements:
+                            // Only reposition elements proportionally, keep their size
+                            Canvas.SetLeft(element, Canvas.GetLeft(element) * scaleX);
+                            Canvas.SetTop(element, Canvas.GetTop(element) * scaleY);
+                            break;
+                            
+                        case UI.LabelResizeMode.CanvasOnly:
+                            // Don't modify elements at all
+                            break;
+                    }
+                }
+                
+                // Update the canvas size and related UI
+                UpdateCanvasSize();
+                UpdateMarginGuidelines();
+                UpdateGrid();
+                
+                // Update the dimension displays
+                LabelWidthDisplay.Text = $"{_labelWidthMm:F1} mm";
+                LabelHeightDisplay.Text = $"{_labelHeightMm:F1} mm";
+                
+                // Mark as dirty since we've made changes
+                SetDirty(true);
+            }
+        }
     }
 }

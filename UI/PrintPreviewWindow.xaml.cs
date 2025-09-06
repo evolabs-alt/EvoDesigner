@@ -10,6 +10,8 @@ using System.Linq;
 using System.Printing;
 using System.Windows.Documents;
 using System.Windows.Xps;
+using System;
+using System.IO;
 
 namespace EvoDesigner.UI
 {
@@ -99,9 +101,6 @@ namespace EvoDesigner.UI
                 var currentRow = dataTable.Rows[currentRecordIndex];
                 var fieldValue = currentRow[mapping.FieldName]?.ToString() ?? "";
                 
-                // Debug output to console
-                System.Diagnostics.Debug.WriteLine($"Element {elementIndex}: Mapping found for field '{mapping.FieldName}', Record {currentRecordIndex}, Value: '{fieldValue}'");
-                
                 return !string.IsNullOrEmpty(fieldValue) ? fieldValue : element.Content ?? "";
             }
             
@@ -117,13 +116,13 @@ namespace EvoDesigner.UI
         {
             try
             {
-                // Debug output to confirm rendering is happening
-                System.Diagnostics.Debug.WriteLine($"RenderPreview called for record {currentRecordIndex}");
-                
                 // Update label size information in header
                 LabelSizeInfo.Text = $"Label Size: {template.LabelWidth}mm × {template.LabelHeight}mm";
                 
                 PreviewCanvas.Children.Clear();
+                
+                // Set canvas background to white for print preview
+                PreviewCanvas.Background = Brushes.White;
                 
                 // Convert mm to screen pixels for preview
                 double canvasWidthPx = MeasurementService.MmToScreenPixels(template.LabelWidth);
@@ -164,7 +163,7 @@ namespace EvoDesigner.UI
                             var tb = new TextBlock 
                             { 
                                 Text = elementContent, 
-                                FontSize = el.FontSize,
+                                FontSize = el.FontSize > 0 ? el.FontSize : 12, // Use 12 as default if 0 or negative
                                 Width = el.Width,
                                 Height = el.Height
                             };
@@ -185,7 +184,7 @@ namespace EvoDesigner.UI
                             try 
                             {
                                 if (!string.IsNullOrEmpty(el.Foreground))
-                                    tb.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.Foreground));
+                                    tb.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.Foreground) ?? Brushes.Black);
                                 else
                                     tb.Foreground = Brushes.Black;
                             }
@@ -194,17 +193,41 @@ namespace EvoDesigner.UI
                                 tb.Foreground = Brushes.Black;
                             }
                             
+                            // Safe text decorations setting
+                            try
+                            {
+                                if (!string.IsNullOrEmpty(el.TextDecorations))
+                                {
+                                    switch (el.TextDecorations.ToLower())
+                                    {
+                                        case "underline":
+                                            tb.TextDecorations = System.Windows.TextDecorations.Underline;
+                                            break;
+                                        case "strikethrough":
+                                            tb.TextDecorations = System.Windows.TextDecorations.Strikethrough;
+                                            break;
+                                        case "overline":
+                                            tb.TextDecorations = System.Windows.TextDecorations.OverLine;
+                                            break;
+                                        case "baseline":
+                                            tb.TextDecorations = System.Windows.TextDecorations.Baseline;
+                                            break;
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                // Ignore invalid text decorations
+                            }
+                            
                             uiEl = tb;
                             break;
                             
                         case LabelElementType.Image:
-                            var rect = new Rectangle { Width = el.Width, Height = el.Height };
-                            try 
+                            if (!string.IsNullOrEmpty(el.ImageData))
                             {
-                                // First check if we have base64 image data
-                                if (!string.IsNullOrEmpty(el.ImageData))
+                                try
                                 {
-                                    // Convert base64 to BitmapImage
                                     byte[] imageBytes = Convert.FromBase64String(el.ImageData);
                                     using (var ms = new System.IO.MemoryStream(imageBytes))
                                     {
@@ -213,69 +236,50 @@ namespace EvoDesigner.UI
                                         bitmapImage.StreamSource = ms;
                                         bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                                         bitmapImage.EndInit();
-                                        
+                                        bitmapImage.Freeze();
+
                                         var imgBrush = new ImageBrush();
                                         imgBrush.ImageSource = bitmapImage;
-                                        imgBrush.Stretch = Stretch.Uniform; // Fit image within bounds, maintain aspect ratio
+                                        imgBrush.Stretch = Stretch.Uniform;
                                         imgBrush.AlignmentX = AlignmentX.Center;
                                         imgBrush.AlignmentY = AlignmentY.Center;
-                                        rect.Fill = imgBrush;
+
+                                        var rect = new Rectangle
+                                        {
+                                            Width = el.Width,
+                                            Height = el.Height,
+                                            Fill = imgBrush,
+                                            Stroke = Brushes.DarkGray,
+                                            StrokeThickness = 1
+                                        };
+                                        uiEl = rect;
                                     }
                                 }
-                                // Fallback to file path if no base64 data
-                                else if (!string.IsNullOrEmpty(el.Content) && System.IO.File.Exists(el.Content))
+                                catch (Exception ex)
                                 {
-                                    var imgBrush = new ImageBrush();
-                                    imgBrush.ImageSource = new BitmapImage(new System.Uri(el.Content));
-                                    imgBrush.Stretch = Stretch.Uniform; // Fit image within bounds, maintain aspect ratio
-                                    imgBrush.AlignmentX = AlignmentX.Center;
-                                    imgBrush.AlignmentY = AlignmentY.Center;
-                                    rect.Fill = imgBrush;
-                                }
-                                else
-                                {
-                                    // No image data available - show placeholder
-                                    rect.Fill = Brushes.LightGray;
-                                    rect.Stroke = Brushes.DarkGray;
-                                    rect.StrokeThickness = 1;
-                                    
-                                    // Add "No Image" text overlay
-                                    var noImageText = new TextBlock
+                                    var rect = new Rectangle
                                     {
-                                        Text = "No Image",
-                                        FontSize = 10,
-                                        Foreground = Brushes.DarkGray,
-                                        HorizontalAlignment = HorizontalAlignment.Center,
-                                        VerticalAlignment = VerticalAlignment.Center,
-                                        TextAlignment = TextAlignment.Center
+                                        Width = el.Width,
+                                        Height = el.Height,
+                                        Fill = Brushes.LightGray,
+                                        Stroke = Brushes.Red,
+                                        StrokeThickness = 2
                                     };
-                                    Canvas.SetLeft(noImageText, el.X + el.Width / 2 - 25);
-                                    Canvas.SetTop(noImageText, el.Y + el.Height / 2 - 7);
-                                    PreviewCanvas.Children.Add(noImageText);
+                                    uiEl = rect;
                                 }
-                            } 
-                            catch (Exception ex)
-                            { 
-                                // Error loading image - show error placeholder
-                                rect.Fill = Brushes.LightCoral; 
-                                rect.Stroke = Brushes.Red;
-                                rect.StrokeThickness = 1;
-                                
-                                // Add error text overlay
-                                var errorText = new TextBlock
-                                {
-                                    Text = "Image Error",
-                                    FontSize = 9,
-                                    Foreground = Brushes.DarkRed,
-                                    HorizontalAlignment = HorizontalAlignment.Center,
-                                    VerticalAlignment = VerticalAlignment.Center,
-                                    TextAlignment = TextAlignment.Center
-                                };
-                                Canvas.SetLeft(errorText, el.X + el.Width / 2 - 30);
-                                Canvas.SetTop(errorText, el.Y + el.Height / 2 - 7);
-                                PreviewCanvas.Children.Add(errorText);
                             }
-                            uiEl = rect;
+                            else
+                            {
+                                var rect = new Rectangle
+                                {
+                                    Width = el.Width,
+                                    Height = el.Height,
+                                    Fill = Brushes.LightGray,
+                                    Stroke = Brushes.DarkGray,
+                                    StrokeThickness = 1
+                                };
+                                uiEl = rect;
+                            }
                             break;
                             
                         case LabelElementType.Barcode13:
@@ -292,22 +296,23 @@ namespace EvoDesigner.UI
                         case LabelElementType.GS1DataBar:
                         case LabelElementType.PDF417:
                             // Generate actual barcode for preview using dynamic content
-                            try
+                            var barcodeFormat = GetBarcodeFormatString(el.Type);
+                            var barcodeImg = CreateBarcodeImage(barcodeFormat, elementContent, el.Width, el.Height);
+                            if (barcodeImg != null)
                             {
-                                var barcodeImg = GenerateBarcodeImage(elementContent, el.Type, el.Width, el.Height);
                                 uiEl = barcodeImg;
                             }
-                            catch
+                            else
                             {
-                                // Fallback to text representation
+                                // Show error text when barcode generation fails
                                 var barcodeTypeName = GetBarcodeTypeName(el.Type);
                                 var barcodeTb = new TextBlock 
                                 { 
-                                    Text = $"[{barcodeTypeName}]\n{elementContent}",
-                                    FontSize = Math.Min(el.FontSize, 10),
+                                    Text = $"[{barcodeTypeName}] GENERATION ERROR\nData: {elementContent}",
+                                    FontSize = 8,
                                     Width = el.Width,
                                     Height = el.Height,
-                                    Foreground = Brushes.DarkBlue,
+                                    Foreground = Brushes.Red,
                                     TextWrapping = TextWrapping.Wrap
                                 };
                                 uiEl = barcodeTb;
@@ -316,21 +321,23 @@ namespace EvoDesigner.UI
                             
                         case LabelElementType.QRCode:
                             // Generate actual QR code for preview using dynamic content
-                            try
+                            Console.WriteLine($"[DEBUG] Creating QR code, Content: '{elementContent}', Size: {el.Width}x{el.Height}");
+                            var qrImg = CreateBarcodeImage("QRCODE", elementContent, el.Width, el.Height);
+                            Console.WriteLine($"[DEBUG] CreateBarcodeImage for QR returned: {(qrImg != null ? "SUCCESS" : "NULL")}");
+                            if (qrImg != null)
                             {
-                                var qrImg = GenerateQRCodeImage(elementContent, el.Width, el.Height);
                                 uiEl = qrImg;
                             }
-                            catch
+                            else
                             {
-                                // Fallback to text representation
+                                // Show error text when QR code generation fails
                                 var qrTb = new TextBlock 
                                 { 
-                                    Text = $"[QR Code]\n{elementContent}",
-                                    FontSize = Math.Min(el.FontSize, 10),
+                                    Text = $"[QR Code] GENERATION ERROR\nData: {elementContent}",
+                                    FontSize = 8,
                                     Width = el.Width,
                                     Height = el.Height,
-                                    Foreground = Brushes.DarkRed,
+                                    Foreground = Brushes.Red,
                                     TextWrapping = TextWrapping.Wrap
                                 };
                                 uiEl = qrTb;
@@ -386,6 +393,28 @@ namespace EvoDesigner.UI
             }
         }
 
+        private string GetBarcodeFormatString(LabelElementType type)
+        {
+            return type switch
+            {
+                LabelElementType.EAN13 => "EAN13",
+                LabelElementType.EAN8 => "EAN8",
+                LabelElementType.UPCA => "UPCA",
+                LabelElementType.UPCE => "UPCE",
+                LabelElementType.Code128 => "CODE128",
+                LabelElementType.Code39 => "CODE39",
+                LabelElementType.Aztec => "AZTEC",
+                LabelElementType.DataMatrix => "DATAMATRIX",
+                LabelElementType.GS1DataBar => "GS1DATABAR",
+                LabelElementType.PDF417 => "PDF417",
+                LabelElementType.QRCode => "QRCODE",
+                LabelElementType.Barcode13 => "EAN13", // Legacy support
+                LabelElementType.Barcode8 => "EAN8",   // Legacy support
+                LabelElementType.Barcode => "EAN13",   // Legacy support
+                _ => "CODE128"
+            };
+        }
+
         private string GetBarcodeTypeName(LabelElementType type)
         {
             return type switch
@@ -407,80 +436,167 @@ namespace EvoDesigner.UI
             };
         }
 
-        private Image GenerateBarcodeImage(string content, LabelElementType type, double width, double height)
+        private Image CreateBarcodeImage(string symbology, string data, double width = 120, double height = 60)
         {
-            var writer = new ZXing.BarcodeWriterPixelData();
-            
-            // Map LabelElementType to ZXing.BarcodeFormat
-            writer.Format = type switch
+            try
             {
-                LabelElementType.EAN13 => ZXing.BarcodeFormat.EAN_13,
-                LabelElementType.EAN8 => ZXing.BarcodeFormat.EAN_8,
-                LabelElementType.UPCA => ZXing.BarcodeFormat.UPC_A,
-                LabelElementType.UPCE => ZXing.BarcodeFormat.UPC_E,
-                LabelElementType.Code128 => ZXing.BarcodeFormat.CODE_128,
-                LabelElementType.Code39 => ZXing.BarcodeFormat.CODE_39,
-                LabelElementType.Aztec => ZXing.BarcodeFormat.AZTEC,
-                LabelElementType.DataMatrix => ZXing.BarcodeFormat.DATA_MATRIX,
-                LabelElementType.GS1DataBar => ZXing.BarcodeFormat.RSS_14, // RSS is the old name for GS1 DataBar
-                LabelElementType.PDF417 => ZXing.BarcodeFormat.PDF_417,
-                LabelElementType.Barcode13 => ZXing.BarcodeFormat.EAN_13, // Legacy support
-                LabelElementType.Barcode8 => ZXing.BarcodeFormat.EAN_8,   // Legacy support
-                LabelElementType.Barcode => ZXing.BarcodeFormat.EAN_13,   // Legacy support
-                _ => ZXing.BarcodeFormat.EAN_13
-            };
-            
-            var pixelData = writer.Write(content);
-            var bmp = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
-            var bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, pixelData.Width, pixelData.Height), 
-                System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
-            System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bmpData.Scan0, pixelData.Pixels.Length);
-            bmp.UnlockBits(bmpData);
-            
-            var ms = new System.IO.MemoryStream();
-            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-            ms.Position = 0;
-            
-            var bi = new BitmapImage();
-            bi.BeginInit();
-            bi.StreamSource = ms;
-            bi.CacheOption = BitmapCacheOption.OnLoad;
-            bi.EndInit();
-            
-            return new Image 
-            { 
-                Source = bi, 
-                Width = width, 
-                Height = height,
-                Stretch = Stretch.Uniform
-            };
-        }
+                ZXing.BarcodeFormat format;
+                string defaultData;
 
-        private Image GenerateQRCodeImage(string content, double width, double height)
-        {
-            var qrGenerator = new QRCoder.QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(content, QRCoder.QRCodeGenerator.ECCLevel.Q);
-            var qrCode = new QRCoder.QRCode(qrCodeData);
-            
-            using (var bitmap = qrCode.GetGraphic(10))
-            {
-                var ms = new System.IO.MemoryStream();
-                bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                ms.Position = 0;
-                
-                var bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.StreamSource = ms;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.EndInit();
-
-                return new Image
+                switch (symbology.ToUpper())
                 {
-                    Source = bitmapImage,
+                    case "EAN13":
+                        format = ZXing.BarcodeFormat.EAN_13;
+                        defaultData = "4000000000004"; // Valid EAN-13 with checksum
+                        break;
+                    case "EAN8":
+                        format = ZXing.BarcodeFormat.EAN_8;
+                        defaultData = "40000007"; // Valid EAN-8 with checksum
+                        break;
+                    case "UPCA":
+                        format = ZXing.BarcodeFormat.UPC_A;
+                        defaultData = "012345678905"; // Valid UPC-A with checksum
+                        break;
+                    case "UPCE":
+                        format = ZXing.BarcodeFormat.UPC_E;
+                        defaultData = "01234565"; // Valid UPC-E with checksum
+                        break;
+                    case "CODE128":
+                        format = ZXing.BarcodeFormat.CODE_128;
+                        defaultData = "HELLO123";
+                        break;
+                    case "CODE39":
+                        format = ZXing.BarcodeFormat.CODE_39;
+                        defaultData = "HELLO39";
+                        break;
+                    case "QRCODE":
+                        format = ZXing.BarcodeFormat.QR_CODE;
+                        defaultData = "Sample QR Data";
+                        break;
+                    case "AZTEC":
+                        format = ZXing.BarcodeFormat.AZTEC;
+                        defaultData = "Sample Aztec Data";
+                        break;
+                    case "DATAMATRIX":
+                        format = ZXing.BarcodeFormat.DATA_MATRIX;
+                        defaultData = "Sample Data Matrix";
+                        break;
+                    case "GS1DATABAR":
+                        format = ZXing.BarcodeFormat.CODE_128; // Use Code 128 for GS1
+                        defaultData = "01234567890123";
+                        break;
+                    case "PDF417":
+                        format = ZXing.BarcodeFormat.PDF_417;
+                        defaultData = "Sample PDF417 Data";
+                        break;
+                    default:
+                        format = ZXing.BarcodeFormat.CODE_128;
+                        defaultData = "DEFAULT";
+                        break;
+                }
+
+                // Use provided data, fallback to default if empty
+                if (string.IsNullOrWhiteSpace(data))
+                    data = defaultData;
+
+                var writer = new ZXing.BarcodeWriterPixelData();
+                writer.Format = format;
+                
+                var options = new ZXing.Common.EncodingOptions
+                {
+                    Width = (int)width * 2,
+                    Height = (int)height * 2,
+                    Margin = 1
+                };
+
+                if (format == ZXing.BarcodeFormat.QR_CODE)
+                {
+                    options.Margin = 1;
+                }
+                else if (format == ZXing.BarcodeFormat.PDF_417)
+                {
+                    options.Margin = 5;
+                }
+
+                writer.Options = options;
+                
+                var pixelData = writer.Write(data);
+                var bmp = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                var bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, pixelData.Width, pixelData.Height), 
+                    System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bmpData.Scan0, pixelData.Pixels.Length);
+                bmp.UnlockBits(bmpData);
+                
+                using (var memory = new MemoryStream())
+                {
+                    bmp.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                    memory.Position = 0;
+                    var bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = memory;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+
+                    var image = new Image
+                    {
+                        Source = bitmapImage,
+                        Width = width,
+                        Height = height,
+                        Stretch = Stretch.Uniform,
+                        Tag = $"BarcodeData:{symbology}:{data}"
+                    };
+                    
+                    return image;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DEBUG] Barcode generation failed: {ex.Message}");
+                // Fallback to text if barcode generation fails
+                var fallbackText = new TextBlock
+                {
+                    Text = $"[{symbology}]",
+                    FontSize = 10,
+                    Foreground = Brushes.DarkBlue,
                     Width = width,
                     Height = height,
-                    Stretch = Stretch.Uniform
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextAlignment = TextAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap
                 };
+
+                // Create a container to hold the text
+                var border = new Border
+                {
+                    Width = width,
+                    Height = height,
+                    BorderBrush = Brushes.LightGray,
+                    BorderThickness = new Thickness(1),
+                    Child = fallbackText
+                };
+
+                // Since we need to return an Image, create a dummy transparent image
+                var dummyBitmap = new System.Drawing.Bitmap(1, 1);
+                using (var memory = new MemoryStream())
+                {
+                    dummyBitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                    memory.Position = 0;
+                    var bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    bitmapImage.StreamSource = memory;
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.EndInit();
+
+                    return new Image
+                    {
+                        Source = bitmapImage,
+                        Width = width,
+                        Height = height,
+                        Opacity = 0.1,
+                        Tag = $"BarcodeError:{symbology}:{data}"
+                    };
+                }
             }
         }
 
@@ -488,33 +604,51 @@ namespace EvoDesigner.UI
         {
             try
             {
+                Console.WriteLine("[DEBUG] Print_Click started");
                 var printDialog = new PrintDialog();
                 
                 // Show printer selection dialog
+                Console.WriteLine("[DEBUG] Showing print dialog");
                 if (printDialog.ShowDialog() == true)
                 {
+                    Console.WriteLine($"[DEBUG] Printer selected: {printDialog.PrintQueue?.Name ?? "Unknown"}");
+                    
                     // Ask user how many records to print
                     var printChoice = ShowPrintOptionsDialog();
-                    if (printChoice == null) return; // User cancelled
+                    if (printChoice == null) 
+                    {
+                        Console.WriteLine("[DEBUG] User cancelled print options dialog");
+                        return; // User cancelled
+                    }
+                    
+                    Console.WriteLine($"[DEBUG] Print choice: printAll={printChoice.Value.printAll}, copies={printChoice.Value.copies}");
                     
                     // Print based on user choice
                     if (printChoice.Value.printAll && dataTable != null && dataTable.Rows.Count > 1)
                     {
                         // Print all records (1 copy each)
                         var allRecordIndices = Enumerable.Range(0, dataTable.Rows.Count).ToArray();
+                        Console.WriteLine($"[DEBUG] Printing all {allRecordIndices.Length} records");
                         PrintMultipleLabels(printDialog, allRecordIndices, 1);
-                        // Removed success popup - printing completed silently
                     }
                     else
                     {
                         // Print current record with specified copies
+                        Console.WriteLine($"[DEBUG] Printing current record (index {currentRecordIndex}) with {printChoice.Value.copies} copies");
                         PrintMultipleLabels(printDialog, new[] { currentRecordIndex }, printChoice.Value.copies);
-                        // Removed success popup - printing completed silently
                     }
+                    
+                    Console.WriteLine("[DEBUG] Print operation completed");
+                }
+                else
+                {
+                    Console.WriteLine("[DEBUG] Print dialog cancelled");
                 }
             }
             catch (System.Exception ex)
             {
+                Console.WriteLine($"[DEBUG] Print error: {ex.Message}");
+                Console.WriteLine($"[DEBUG] Stack trace: {ex.StackTrace}");
                 MessageBox.Show($"Print error: {ex.Message}", "Error", 
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -660,58 +794,316 @@ namespace EvoDesigner.UI
 
         private void PrintMultipleLabels(PrintDialog printDialog, int[] recordIndices, int copiesPerRecord)
         {
-            // Use smaller scale for testing - maybe the issue is the DPI conversion
-            const double MM_TO_PIXELS = 3.78; // Approximate conversion (96 DPI / 25.4 mm/inch)
-            
-            // Convert label size from mm to pixels using simpler conversion
-            double labelWidthPx = template.LabelWidth * MM_TO_PIXELS;
-            double labelHeightPx = template.LabelHeight * MM_TO_PIXELS;
-            
-            // For label printing, the page size should match the label size (not printer's full area)
-            var pageSize = new Size(labelWidthPx, labelHeightPx);
-            
-            // Each page contains exactly one label
-            int labelsPerRow = 1;
-            
-            // Create list of all labels to print (including copies)
-            var allLabels = new List<int>();
-            foreach (var recordIndex in recordIndices)
+            try
             {
-                for (int copy = 0; copy < copiesPerRecord; copy++)
-                {
-                    allLabels.Add(recordIndex);
-                }
-            }
-            
-            // Create document with one page per label
-            var document = new FixedDocument();
-            
-            // Create one page for each label
-            foreach (var recordIndex in allLabels)
-            {
-                var page = CreatePageWithLabels(new[] { recordIndex }, 
-                    labelWidthPx, labelHeightPx, pageSize, labelsPerRow);
+                Console.WriteLine($"[DEBUG] PrintMultipleLabels started - {recordIndices.Length} records, {copiesPerRecord} copies each");
                 
-                var pageContent = new PageContent();
-                ((System.Windows.Markup.IAddChild)pageContent).AddChild(page);
-                document.Pages.Add(pageContent);
+                // Use the actual label size from template
+                double pageWidth = template.LabelWidth * 96.0 / 25.4; // Convert mm to DIP (Device Independent Pixels)
+                double pageHeight = template.LabelHeight * 96.0 / 25.4; // Convert mm to DIP
+                
+                Console.WriteLine($"[DEBUG] Template label size: {template.LabelWidth}mm x {template.LabelHeight}mm");
+                Console.WriteLine($"[DEBUG] Page size: {pageWidth} x {pageHeight} DIP");
+                
+                // Simplified approach: print each label as a separate document
+                foreach (var recordIndex in recordIndices)
+                {
+                    for (int copy = 0; copy < copiesPerRecord; copy++)
+                    {
+                        Console.WriteLine($"[DEBUG] Printing record {recordIndex}, copy {copy + 1}");
+                        
+                        // Create a simple FixedDocument with one page
+                        var document = new FixedDocument();
+                        var page = new FixedPage();
+                        
+                        page.Width = pageWidth;
+                        page.Height = pageHeight;
+                        
+                        Console.WriteLine($"[DEBUG] Page size: {pageWidth} x {pageHeight}");
+                        
+                        // Create the print canvas for this record
+                        var printCanvas = CreateSimplePrintCanvas(recordIndex, pageWidth, pageHeight);
+                        
+                        Console.WriteLine($"[DEBUG] Print canvas created with {printCanvas.Children.Count} children");
+                        
+                        // Add canvas to page
+                        page.Children.Add(printCanvas);
+                        
+                        Console.WriteLine($"[DEBUG] Canvas added to page. Page now has {page.Children.Count} children");
+                        
+                        // Add page to document
+                        var pageContent = new PageContent();
+                        ((System.Windows.Markup.IAddChild)pageContent).AddChild(page);
+                        document.Pages.Add(pageContent);
+                        
+                        Console.WriteLine($"[DEBUG] Document created with {document.Pages.Count} page(s)");
+                        
+                        // Print this single label
+                        Console.WriteLine("[DEBUG] Sending to printer...");
+                        try 
+                        {
+                            printDialog.PrintDocument(document.DocumentPaginator, $"TaggJack Label {recordIndex + 1}-{copy + 1}");
+                            Console.WriteLine("[DEBUG] Print command sent successfully");
+                        }
+                        catch (Exception printEx)
+                        {
+                            Console.WriteLine($"[DEBUG] Print command failed: {printEx.Message}");
+                            Console.WriteLine($"[DEBUG] Print error stack trace: {printEx.StackTrace}");
+                            throw; // Re-throw to be caught by outer handler
+                        }
+                        
+                        // Add a small delay between print jobs to ensure they don't interfere
+                        System.Threading.Thread.Sleep(100);
+                    }
+                }
+                
+                Console.WriteLine("[DEBUG] All labels sent to printer");
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine($"[DEBUG] PrintMultipleLabels error: {ex.Message}");
+                Console.WriteLine($"[DEBUG] Stack trace: {ex.StackTrace}");
+                throw; // Re-throw to be caught by caller
+            }
+        }
+
+        private Canvas CreateSimplePrintCanvas(int recordIndex, double canvasWidth, double canvasHeight)
+        {
+            Console.WriteLine($"[DEBUG] CreateSimplePrintCanvas: record {recordIndex}, canvas size {canvasWidth}x{canvasHeight}");
+            Console.WriteLine($"[DEBUG] Template has {template.Elements.Count} elements");
+            Console.WriteLine($"[DEBUG] Template label size: {template.LabelWidth}mm x {template.LabelHeight}mm");
+            
+            var canvas = new Canvas();
+            canvas.Width = canvasWidth;
+            canvas.Height = canvasHeight;
+            canvas.Background = Brushes.White;
+            
+            // Use NO SCALING - same as preview renders elements at their original sizes and positions
+            Console.WriteLine($"[DEBUG] Using NO SCALING - same as preview");
+            
+            int elementIndex = 0;
+            int addedElements = 0;
+            
+            foreach (var el in template.Elements)
+            {
+                Console.WriteLine($"[DEBUG] Processing element {elementIndex}: Type={el.Type}, Content='{el.Content}', Position=({el.X}, {el.Y}), Size=({el.Width}x{el.Height})");
+                
+                UIElement? uiEl = null;
+                string elementContent = GetElementContentForRecord(el, elementIndex, recordIndex);
+                
+                Console.WriteLine($"[DEBUG] Element content: '{elementContent}'");
+                
+                switch (el.Type)
+                {
+                    case LabelElementType.Text:
+                        var tb = new TextBlock 
+                        { 
+                            Text = elementContent, 
+                            FontSize = el.FontSize > 0 ? el.FontSize : 12, // Use 12 as default if 0 or negative
+                            Width = el.Width,  // NO SCALING - same as preview
+                            Height = el.Height // NO SCALING - same as preview
+                        };
+                        
+                        // Safe font family setting
+                        try 
+                        {
+                            if (!string.IsNullOrEmpty(el.FontFamily))
+                                tb.FontFamily = new FontFamily(el.FontFamily);
+                        }
+                        catch { /* Use default font family */ }
+                        
+                        // Safe font weight setting
+                        tb.FontWeight = (el.FontWeight?.Contains("Bold") == true ? FontWeights.Bold : FontWeights.Normal);
+                        tb.FontStyle = (el.FontStyle?.Contains("Italic") == true ? FontStyles.Italic : FontStyles.Normal);
+                        
+                        // Safe color setting
+                        try 
+                        {
+                            if (!string.IsNullOrEmpty(el.Foreground))
+                                tb.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.Foreground) ?? Brushes.Black);
+                            else
+                                tb.Foreground = Brushes.Black;
+                        }
+                        catch 
+                        {
+                            tb.Foreground = Brushes.Black;
+                        }
+                        
+                        Console.WriteLine($"[DEBUG] Created TextBlock: '{tb.Text}', FontSize={tb.FontSize}");
+                        uiEl = tb;
+                        break;
+                        
+                    case LabelElementType.Image:
+                        if (!string.IsNullOrEmpty(el.ImageData))
+                        {
+                            try
+                            {
+                                // Use a more robust approach: create bitmap from byte array directly
+                                byte[] imageBytes = Convert.FromBase64String(el.ImageData);
+                                
+                                // Create BitmapImage with proper initialization for printing
+                                var bitmapImage = new BitmapImage();
+                                bitmapImage.BeginInit();
+                                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                bitmapImage.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                                bitmapImage.StreamSource = new System.IO.MemoryStream(imageBytes);
+                                bitmapImage.EndInit();
+                                bitmapImage.Freeze(); // Important for threading and print context
+                                
+                                var img = new System.Windows.Controls.Image
+                                {
+                                    Source = bitmapImage,
+                                    Width = el.Width,
+                                    Height = el.Height,
+                                    Stretch = Stretch.Uniform,
+                                    StretchDirection = StretchDirection.Both
+                                };
+                                
+                                Console.WriteLine($"[DEBUG] Created actual Image for printing: {img.Width}x{img.Height}");
+                                uiEl = img;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"[DEBUG] Image load error in print: {ex.Message}");
+                                // Fall back to a clear placeholder if image loading fails
+                                var rect = new Rectangle
+                                {
+                                    Width = el.Width,
+                                    Height = el.Height,
+                                    Fill = Brushes.LightGray,
+                                    Stroke = Brushes.Red,
+                                    StrokeThickness = 2
+                                };
+                                uiEl = rect;
+                            }
+                        }
+                        else
+                        {
+                            // No image data - show placeholder
+                            var rect = new Rectangle
+                            {
+                                Width = el.Width,
+                                Height = el.Height,
+                                Fill = Brushes.LightGray,
+                                Stroke = Brushes.DarkGray,
+                                StrokeThickness = 1
+                            };
+                            Console.WriteLine($"[DEBUG] Created Image placeholder for printing: {rect.Width}x{rect.Height}");
+                            uiEl = rect;
+                        }
+                        break;
+                        
+                    case LabelElementType.EAN13:
+                    case LabelElementType.EAN8:
+                    case LabelElementType.UPCA:
+                    case LabelElementType.UPCE:
+                    case LabelElementType.Code128:
+                    case LabelElementType.Code39:
+                    case LabelElementType.Aztec:
+                    case LabelElementType.DataMatrix:
+                    case LabelElementType.GS1DataBar:
+                    case LabelElementType.PDF417:
+                    case LabelElementType.QRCode:
+                    case LabelElementType.Barcode13:
+                    case LabelElementType.Barcode8:
+                    case LabelElementType.Barcode:
+                        // Create actual barcode using SAME SIZE as preview
+                        var barcodeImage = CreateBarcodeImage(GetBarcodeFormatString(el.Type), elementContent, 
+                            el.Width, el.Height); // NO SCALING - same as preview
+                        
+                        if (barcodeImage != null)
+                        {
+                            Console.WriteLine($"[DEBUG] Created {el.Type} barcode image: {barcodeImage.Width}x{barcodeImage.Height}");
+                            uiEl = barcodeImage;
+                        }
+                        else
+                        {
+                            // Fallback to text if barcode generation fails - SAME SIZE as preview
+                            var barcodeText = new TextBlock 
+                            { 
+                                Text = $"[{el.Type}: {elementContent}]",
+                                FontSize = 8,
+                                Width = el.Width,   // NO SCALING - same as preview
+                                Height = el.Height, // NO SCALING - same as preview
+                                Foreground = Brushes.Black,
+                                TextAlignment = TextAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center
+                            };
+                            Console.WriteLine($"[DEBUG] Created {el.Type} fallback text");
+                            uiEl = barcodeText;
+                        }
+                        break;
+                        
+                    default:
+                        var unknownText = new TextBlock
+                        {
+                            Text = $"[Unknown: {el.Type}]",
+                            FontSize = 8,
+                            Width = el.Width,   // NO SCALING - same as preview
+                            Height = el.Height, // NO SCALING - same as preview
+                            Foreground = Brushes.Red,
+                            TextAlignment = TextAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        Console.WriteLine($"[DEBUG] Created unknown element type: {el.Type}");
+                        uiEl = unknownText;
+                        break;
+                }
+                
+                if (uiEl != null)
+                {
+                    // Use EXACT SAME positioning as preview - NO SCALING
+                    double x = el.X;
+                    double y = el.Y;
+                    
+                    Canvas.SetLeft(uiEl, x);
+                    Canvas.SetTop(uiEl, y);
+                    
+                    // Apply rotation if specified - SAME as preview
+                    if (el.Rotation != 0)
+                    {
+                        var rotateTransform = new RotateTransform(el.Rotation);
+                        if (uiEl is FrameworkElement fe)
+                        {
+                            fe.RenderTransformOrigin = new Point(0.5, 0.5);
+                        }
+                        uiEl.RenderTransform = rotateTransform;
+                    }
+                    
+                    canvas.Children.Add(uiEl);
+                    addedElements++;
+                    
+                    Console.WriteLine($"[DEBUG] Added element {elementIndex} ({el.Type}) to canvas at position ({x}, {y}). Canvas now has {canvas.Children.Count} children");
+                }
+                else
+                {
+                    Console.WriteLine($"[DEBUG] Failed to create UI element for element {elementIndex}");
+                }
+                
+                elementIndex++;
             }
             
-            // Print the entire document as one job
-            printDialog.PrintDocument(document.DocumentPaginator, 
-                $"Labels - {allLabels.Count} label(s) on {document.Pages.Count} page(s)");
+            Console.WriteLine($"[DEBUG] Canvas completed: {addedElements} elements added out of {template.Elements.Count} template elements");
+            Console.WriteLine($"[DEBUG] Final canvas children count: {canvas.Children.Count}");
+            
+            return canvas;
         }
 
         private FixedPage CreatePageWithLabels(int[] recordIndices, double labelWidthPx, double labelHeightPx, 
             Size pageSize, int labelsPerRow)
         {
+            Console.WriteLine($"[DEBUG] CreatePageWithLabels: {recordIndices.Length} records, page size {labelWidthPx}x{labelHeightPx}");
+            
             var page = new FixedPage();
             page.Width = labelWidthPx;  // Page size should match label size
             page.Height = labelHeightPx;
             
+            Console.WriteLine($"[DEBUG] FixedPage created with size {page.Width}x{page.Height}");
+            
             // For single label per page, just add one label at position (0,0)
             if (recordIndices.Length > 0)
             {
+                Console.WriteLine($"[DEBUG] Creating label canvas for record {recordIndices[0]}");
                 var labelCanvas = CreatePrintCanvas(recordIndices[0], labelWidthPx, labelHeightPx);
                 
                 // Position the label at top-left of the page
@@ -719,6 +1111,11 @@ namespace EvoDesigner.UI
                 Canvas.SetTop(labelCanvas, 0);
                 
                 page.Children.Add(labelCanvas);
+                Console.WriteLine($"[DEBUG] Label canvas added to page. Page now has {page.Children.Count} children");
+            }
+            else
+            {
+                Console.WriteLine("[DEBUG] No record indices provided!");
             }
             
             return page;
@@ -726,10 +1123,14 @@ namespace EvoDesigner.UI
 
         private Canvas CreatePrintCanvas(int recordIndex, double canvasWidthPx, double canvasHeightPx)
         {
+            Console.WriteLine($"[DEBUG] CreatePrintCanvas: record {recordIndex}, canvas size {canvasWidthPx}x{canvasHeightPx}");
+            
             var printCanvas = new Canvas();
             printCanvas.Background = Brushes.White;
             printCanvas.Width = canvasWidthPx;
             printCanvas.Height = canvasHeightPx;
+            
+            Console.WriteLine($"[DEBUG] Print canvas created with size {printCanvas.Width}x{printCanvas.Height}");
             
             // Calculate proper scale factor from screen to print
             // Screen measurements in template are in pixels at screen DPI (72)
@@ -737,6 +1138,8 @@ namespace EvoDesigner.UI
             double screenToMmFactor = 1.0 / MeasurementService.PIXELS_PER_MM_SCREEN; // Convert screen pixels to mm
             double mmToPrintFactor = canvasWidthPx / template.LabelWidth; // Convert mm to print pixels
             double scaleFactor = mmToPrintFactor * screenToMmFactor;
+            
+            Console.WriteLine($"[DEBUG] Scale factor: {scaleFactor}");
             
             int elementIndex = 0;
             foreach (var el in template.Elements)
@@ -751,7 +1154,7 @@ namespace EvoDesigner.UI
                         var tb = new TextBlock 
                         { 
                             Text = elementContent, 
-                            FontSize = el.FontSize * scaleFactor,
+                            FontSize = el.FontSize > 0 ? (el.FontSize * scaleFactor) : (12 * scaleFactor), // Use 12 as default
                             Width = el.Width * scaleFactor,
                             Height = el.Height * scaleFactor
                         };
@@ -793,22 +1196,60 @@ namespace EvoDesigner.UI
                         };
                         try 
                         {
-                            if (!string.IsNullOrEmpty(elementContent) && System.IO.File.Exists(elementContent))
+                            // First check if we have base64 image data
+                            if (!string.IsNullOrEmpty(el.ImageData))
                             {
+                                // Convert base64 to BitmapImage using simpler approach
+                                byte[] imageBytes = Convert.FromBase64String(el.ImageData);
+                                using (var ms = new System.IO.MemoryStream(imageBytes))
+                                {
+                                    var bitmapImage = new BitmapImage();
+                                    bitmapImage.BeginInit();
+                                    bitmapImage.StreamSource = ms;
+                                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                    bitmapImage.EndInit();
+                                    bitmapImage.Freeze(); // Freeze to make it cross-thread safe and improve performance
+                                    
+                                    var imgBrush = new ImageBrush();
+                                    imgBrush.ImageSource = bitmapImage;
+                                    imgBrush.Stretch = Stretch.Uniform;
+                                    imgBrush.AlignmentX = AlignmentX.Center;
+                                    imgBrush.AlignmentY = AlignmentY.Center;
+                                    rect.Fill = imgBrush;
+                                }
+                            }
+                            // Fallback to file path if no base64 data
+                            else if (!string.IsNullOrEmpty(elementContent) && System.IO.File.Exists(elementContent))
+                            {
+                                var bitmapImage = new BitmapImage();
+                                bitmapImage.BeginInit();
+                                bitmapImage.UriSource = new System.Uri(elementContent);
+                                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                bitmapImage.EndInit();
+                                bitmapImage.Freeze(); // Freeze for performance
+                                
                                 var imgBrush = new ImageBrush();
-                                imgBrush.ImageSource = new BitmapImage(new System.Uri(elementContent));
+                                imgBrush.ImageSource = bitmapImage;
+                                imgBrush.Stretch = Stretch.Uniform;
+                                imgBrush.AlignmentX = AlignmentX.Center;
+                                imgBrush.AlignmentY = AlignmentY.Center;
                                 rect.Fill = imgBrush;
                             }
                             else
                             {
+                                // No image data available - show placeholder
                                 rect.Fill = Brushes.LightGray;
                                 rect.Stroke = Brushes.DarkGray;
                                 rect.StrokeThickness = 1;
                             }
                         } 
-                        catch 
+                        catch (Exception ex)
                         { 
-                            rect.Fill = Brushes.LightGray; 
+                            // Log the actual error for debugging
+                            Console.WriteLine($"[DEBUG] Error loading image for print: {ex.Message}");
+                            rect.Fill = Brushes.LightGray;
+                            rect.Stroke = Brushes.Red;
+                            rect.StrokeThickness = 2;
                         }
                         uiEl = rect;
                         break;
@@ -827,20 +1268,20 @@ namespace EvoDesigner.UI
                     case LabelElementType.GS1DataBar:
                     case LabelElementType.PDF417:
                         // Create a completely new barcode image for printing
-                        try
+                        var barcodeImg = GenerateBarcodeImageForPrint(elementContent, el.Type, 
+                            el.Width * scaleFactor, el.Height * scaleFactor);
+                        if (barcodeImg != null)
                         {
-                            var barcodeImg = GenerateBarcodeImageForPrint(elementContent, el.Type, 
-                                el.Width * scaleFactor, el.Height * scaleFactor);
                             uiEl = barcodeImg;
                         }
-                        catch
+                        else
                         {
                             // Fallback to text if barcode generation fails
                             var barcodeTypeName = GetBarcodeTypeName(el.Type);
                             var barcodeTb = new TextBlock 
                             { 
                                 Text = $"[{barcodeTypeName}: {elementContent}]",
-                                FontSize = 8 * scaleFactor,
+                                FontSize = Math.Max(8 * scaleFactor, 1), // Ensure FontSize is at least 1
                                 Width = el.Width * scaleFactor,
                                 Height = el.Height * scaleFactor,
                                 Foreground = Brushes.Black
@@ -851,19 +1292,19 @@ namespace EvoDesigner.UI
                         
                     case LabelElementType.QRCode:
                         // Create a completely new QR code image for printing
-                        try
+                        var qrImg = GenerateQRCodeImageForPrint(elementContent, 
+                            el.Width * scaleFactor, el.Height * scaleFactor);
+                        if (qrImg != null)
                         {
-                            var qrImg = GenerateQRCodeImageForPrint(elementContent, 
-                                el.Width * scaleFactor, el.Height * scaleFactor);
                             uiEl = qrImg;
                         }
-                        catch
+                        else
                         {
                             // Fallback to text if QR generation fails
                             var qrTb = new TextBlock 
                             { 
                                 Text = $"[QR: {elementContent}]",
-                                FontSize = 8 * scaleFactor,
+                                FontSize = Math.Max(8 * scaleFactor, 1), // Ensure FontSize is at least 1
                                 Width = el.Width * scaleFactor,
                                 Height = el.Height * scaleFactor,
                                 Foreground = Brushes.Black
@@ -898,19 +1339,22 @@ namespace EvoDesigner.UI
                 elementIndex++;
             }
             
+            Console.WriteLine($"[DEBUG] CreatePrintCanvas completed. Canvas has {printCanvas.Children.Count} elements from {template.Elements.Count} template elements");
+            
             return printCanvas;
         }
 
         // Create separate barcode generation method for printing to avoid element reuse
-        private Image GenerateBarcodeImageForPrint(string content, LabelElementType type, double width, double height)
+        private Image? GenerateBarcodeImageForPrint(string content, LabelElementType type, double width, double height)
         {
-            return GenerateBarcodeImage(content, type, width, height);
+            var barcodeFormat = GetBarcodeFormatString(type);
+            return CreateBarcodeImage(barcodeFormat, content, width, height);
         }
 
         // Create separate QR code generation method for printing to avoid element reuse  
-        private Image GenerateQRCodeImageForPrint(string content, double width, double height)
+        private Image? GenerateQRCodeImageForPrint(string content, double width, double height)
         {
-            return GenerateQRCodeImage(content, width, height);
+            return CreateBarcodeImage("QRCODE", content, width, height);
         }
 
         private string GetElementContentForRecord(LabelElement element, int elementIndex, int recordIndex)
@@ -928,6 +1372,73 @@ namespace EvoDesigner.UI
             }
             
             return element.Content ?? "";
+        }
+
+        private string ValidateBarcodeContent(string content, LabelElementType type)
+        {
+            if (string.IsNullOrEmpty(content))
+            {
+                // Return default valid content for each barcode type
+                return type switch
+                {
+                    LabelElementType.EAN13 => "4000000000004",
+                    LabelElementType.EAN8 => "40000007",
+                    LabelElementType.UPCA => "012345678905",
+                    LabelElementType.UPCE => "01234565",
+                    LabelElementType.Code128 => "HELLO123",
+                    LabelElementType.Code39 => "HELLO39",
+                    _ => "4000000000004"
+                };
+            }
+            
+            // Validate and fix content based on barcode type
+            switch (type)
+            {
+                case LabelElementType.EAN13:
+                case LabelElementType.Barcode13:
+                    // EAN-13 needs exactly 12 or 13 digits
+                    string digits = new string(content.Where(char.IsDigit).ToArray());
+                    if (digits.Length > 13)
+                    {
+                        return digits.Substring(0, 13);
+                    }
+                    else if (digits.Length < 12)
+                    {
+                        return digits.PadLeft(12, '0');
+                    }
+                    return digits;
+                    
+                case LabelElementType.EAN8:
+                case LabelElementType.Barcode8:
+                    // EAN-8 needs exactly 7 or 8 digits
+                    string digits8 = new string(content.Where(char.IsDigit).ToArray());
+                    if (digits8.Length > 8)
+                    {
+                        return digits8.Substring(0, 8);
+                    }
+                    else if (digits8.Length < 7)
+                    {
+                        return digits8.PadLeft(7, '0');
+                    }
+                    return digits8;
+                    
+                case LabelElementType.UPCA:
+                    // UPC-A needs exactly 11 or 12 digits
+                    string digitsUPCA = new string(content.Where(char.IsDigit).ToArray());
+                    if (digitsUPCA.Length > 12)
+                    {
+                        return digitsUPCA.Substring(0, 12);
+                    }
+                    else if (digitsUPCA.Length < 11)
+                    {
+                        return digitsUPCA.PadLeft(11, '0');
+                    }
+                    return digitsUPCA;
+                    
+                default:
+                    // For other barcode types, just return the content as-is
+                    return content;
+            }
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)

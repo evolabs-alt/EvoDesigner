@@ -7,6 +7,9 @@ namespace EvoDesigner.Models
         Text, 
         Image, 
         QRCode,
+        // Drawing Tools
+        Line,
+        Rectangle,
         // Retail Checkout
         EAN13,
         EAN8, 
@@ -47,7 +50,7 @@ namespace EvoDesigner.Models
     [System.Xml.Serialization.XmlElement]
     public string FontFamily { get; set; }
     [System.Xml.Serialization.XmlElement]
-    public double FontSize { get; set; }
+    public double FontSize { get; set; } = 12; // Default font size
     [System.Xml.Serialization.XmlElement]
     public string FontWeight { get; set; }
     [System.Xml.Serialization.XmlElement]
@@ -60,5 +63,13 @@ namespace EvoDesigner.Models
     public string? ImageData { get; set; } // Base64 encoded image data for portability
     [System.Xml.Serialization.XmlElement]
     public double Rotation { get; set; } = 0; // Rotation angle in degrees (0-360)
+    [System.Xml.Serialization.XmlElement]
+    public string? TextAlignment { get; set; } = "Left"; // Left, Center, Right
+    [System.Xml.Serialization.XmlElement]
+    public string? VerticalAlignment { get; set; } = "Top"; // Top, Center, Bottom
+    [System.Xml.Serialization.XmlElement]
+    public double BorderWidth { get; set; } = 1; // Border thickness for lines and rectangles
+    [System.Xml.Serialization.XmlElement]
+    public string? BorderColor { get; set; } = "Black"; // Border color for lines and rectangles
     }
 }

@@ -51,11 +51,11 @@
 
         <Style x:Key="ToolboxButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="Margin" Value="0,2"/>
-            <Setter Property="Height" Value="36"/>
-            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Margin" Value="0,1"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="FontSize" Value="11"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Padding" Value="12,4"/>
         </Style>
 
         <Style x:Key="CompactButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
@@ -313,6 +313,38 @@
                     </StackPanel>
                 </Border>
                 
+                <!-- Text Alignment Controls -->
+                <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
+                        Padding="12,8" x:Name="AlignmentToolbar">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="🔤" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                        <TextBlock Text="Align" VerticalAlignment="Center" Margin="0,0,12,0" 
+                                  FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
+                        
+                        <!-- Horizontal Alignment -->
+                        <Button x:Name="AlignLeftButton" Content="L" Width="32" Height="28" Margin="0,0,2,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Left" FontSize="12" FontWeight="Bold"
+                               Click="AlignLeft_Click"/>
+                        <Button x:Name="AlignCenterButton" Content="C" Width="32" Height="28" Margin="0,0,2,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Center" FontSize="12" FontWeight="Bold"
+                               Click="AlignCenter_Click"/>
+                        <Button x:Name="AlignRightButton" Content="R" Width="32" Height="28" Margin="0,0,8,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Right" FontSize="12" FontWeight="Bold"
+                               Click="AlignRight_Click"/>
+                        
+                        <!-- Vertical Alignment -->
+                        <Button x:Name="AlignTopButton" Content="T" Width="32" Height="28" Margin="0,0,2,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Top" FontSize="12" FontWeight="Bold"
+                               Click="AlignTop_Click"/>
+                        <Button x:Name="AlignMiddleButton" Content="M" Width="32" Height="28" Margin="0,0,2,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Middle" FontSize="12" FontWeight="Bold"
+                               Click="AlignMiddle_Click"/>
+                        <Button x:Name="AlignBottomButton" Content="B" Width="32" Height="28"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Bottom" FontSize="12" FontWeight="Bold"
+                               Click="AlignBottom_Click"/>
+                    </StackPanel>
+                </Border>
+                
                 <!-- Data Controls -->
                 <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
                         Padding="12,8">
@@ -345,6 +377,18 @@
                            ToolTip="Add text element with customizable fonts and styles"/>
                     <Button Content="Image" Style="{StaticResource ToolboxButtonStyle}"
                            ToolTip="Add image element (PNG, JPEG, BMP supported)"/>
+                    
+                    <!-- Drawing Tools -->
+                    <TextBlock Text="Drawing" Style="{StaticResource SectionHeaderStyle}" 
+                              FontSize="12" Margin="0,16,0,8"/>
+                    <Button Content="Line" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Draw lines with customizable width and color"/>
+                    <Button Content="Rectangle" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Draw rectangles with customizable border width and color"/>
+                    
+                    <!-- Barcodes -->
+                    <TextBlock Text="Barcodes" Style="{StaticResource SectionHeaderStyle}" 
+                              FontSize="12" Margin="0,16,0,8"/>
                     <Button Content="EAN-13" Style="{StaticResource ToolboxButtonStyle}"
                            ToolTip="European Article Number (13-digit) - Most common retail barcode"/>
                     <Button Content="EAN-8" Style="{StaticResource ToolboxButtonStyle}"

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>FontSize Test</TemplateName>
+  <LabelWidth>70</LabelWidth>
+  <LabelHeight>30</LabelHeight>
+  <MarginLeft>5</MarginLeft>
+  <MarginRight>5</MarginRight>
+  <MarginTop>5</MarginTop>
+  <MarginBottom>5</MarginBottom>
+  <Elements>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>200</Width>
+      <Height>50</Height>
+      <Content>Test Text with Size 18</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>18</FontSize>
+      <FontWeight>Bold</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>#FF000000</Foreground>
+    </LabelElement>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>70</Y>
+      <Width>200</Width>
+      <Height>30</Height>
+      <Content>Another text with Size 24</Content>
+      <FontFamily>Times New Roman</FontFamily>
+      <FontSize>24</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Italic</FontStyle>
+      <Foreground>#FFFF0000</Foreground>
+    </LabelElement>
+  </Elements>
+</LabelTemplate>

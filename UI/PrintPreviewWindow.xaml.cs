@@ -27,21 +27,57 @@ namespace EvoDesigner.UI
             this.template = template;
             this.dataTable = dataTable;
             
+            Console.WriteLine($"[DEBUG] PrintPreviewWindow constructor called with template containing {template.Elements.Count} elements");
+            
             SetupNavigation();
-            RenderPreview();
+            RenderPreview(this.template);
+        }
+
+        private Canvas? GetPreviewCanvas()
+        {
+            return FindName("PreviewCanvas") as Canvas;
+        }
+
+        private StackPanel? GetNavigationPanel()
+        {
+            return FindName("NavigationPanel") as StackPanel;
+        }
+
+        private Button? GetPrevButton()
+        {
+            return FindName("PrevButton") as Button;
+        }
+
+        private Button? GetNextButton()
+        {
+            return FindName("NextButton") as Button;
+        }
+
+        private TextBlock? GetRecordCounter()
+        {
+            return FindName("RecordCounter") as TextBlock;
+        }
+
+        private TextBlock? GetLabelSizeInfo()
+        {
+            return FindName("LabelSizeInfo") as TextBlock;
         }
 
         private void SetupNavigation()
         {
             if (dataTable != null && dataTable.Rows.Count > 1)
             {
-                NavigationPanel.Visibility = Visibility.Visible;
+                var navPanel = GetNavigationPanel();
+                if (navPanel != null)
+                    navPanel.Visibility = Visibility.Visible;
                 UpdateNavigationButtons();
                 UpdateRecordCounter();
             }
             else
             {
-                NavigationPanel.Visibility = Visibility.Collapsed;
+                var navPanel = GetNavigationPanel();
+                if (navPanel != null)
+                    navPanel.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -49,15 +85,22 @@ namespace EvoDesigner.UI
         {
             if (dataTable == null) return;
             
-            PrevButton.IsEnabled = currentRecordIndex > 0;
-            NextButton.IsEnabled = currentRecordIndex < dataTable.Rows.Count - 1;
+            var prevBtn = GetPrevButton();
+            var nextBtn = GetNextButton();
+            
+            if (prevBtn != null)
+                prevBtn.IsEnabled = currentRecordIndex > 0;
+            if (nextBtn != null)
+                nextBtn.IsEnabled = currentRecordIndex < dataTable.Rows.Count - 1;
         }
 
         private void UpdateRecordCounter()
         {
             if (dataTable == null) return;
             
-            RecordCounter.Text = $"Record {currentRecordIndex + 1} of {dataTable.Rows.Count}";
+            var counter = GetRecordCounter();
+            if (counter != null)
+                counter.Text = $"Record {currentRecordIndex + 1} of {dataTable.Rows.Count}";
         }
 
         private void PrevRecord_Click(object sender, RoutedEventArgs e)
@@ -109,6 +152,7 @@ namespace EvoDesigner.UI
 
         private void RenderPreview()
         {
+            Console.WriteLine("[DEBUG] RenderPreview() parameterless called");
             RenderPreview(template);
         }
 
@@ -116,57 +160,67 @@ namespace EvoDesigner.UI
         {
             try
             {
-                // Update label size information in header
-                LabelSizeInfo.Text = $"Label Size: {template.LabelWidth}mm × {template.LabelHeight}mm";
+                Console.WriteLine($"[DEBUG] RenderPreview called with template containing {template.Elements.Count} elements");
                 
-                PreviewCanvas.Children.Clear();
+                // Update label size information in header
+                var labelSizeInfo = GetLabelSizeInfo();
+                if (labelSizeInfo != null)
+                    labelSizeInfo.Text = $"Label Size: {template.LabelWidth}mm × {template.LabelHeight}mm";
+                
+                var previewCanvas = GetPreviewCanvas();
+                Console.WriteLine($"[DEBUG] PreviewCanvas found: {previewCanvas != null}");
+                if (previewCanvas == null) return;
+                
+                previewCanvas.Children.Clear();
                 
                 // Set canvas background to white for print preview
-                PreviewCanvas.Background = Brushes.White;
+                previewCanvas.Background = Brushes.White;
                 
                 // Convert mm to screen pixels for preview
                 double canvasWidthPx = MeasurementService.MmToScreenPixels(template.LabelWidth);
                 double canvasHeightPx = MeasurementService.MmToScreenPixels(template.LabelHeight);
                 
+                Console.WriteLine($"[DEBUG] Canvas size: {canvasWidthPx} x {canvasHeightPx} pixels");
+                
                 // Ensure minimum canvas size
                 canvasWidthPx = Math.Max(canvasWidthPx, 200);
                 canvasHeightPx = Math.Max(canvasHeightPx, 100);
                 
-                PreviewCanvas.Width = canvasWidthPx;
-                PreviewCanvas.Height = canvasHeightPx;
+                previewCanvas.Width = canvasWidthPx;
+                previewCanvas.Height = canvasHeightPx;
                 
                 // Set explicit clip geometry to ensure elements outside label bounds are cut off
-                PreviewCanvas.Clip = new RectangleGeometry(new Rect(0, 0, canvasWidthPx, canvasHeightPx));
-                
-                // Add a debug border to show canvas bounds
-                var debugBorder = new Rectangle
-                {
-                    Width = canvasWidthPx,
-                    Height = canvasHeightPx,
-                    Stroke = Brushes.LightGray,
-                    StrokeThickness = 1,
-                    Fill = Brushes.Transparent
-                };
-                Canvas.SetLeft(debugBorder, 0);
-                Canvas.SetTop(debugBorder, 0);
-                PreviewCanvas.Children.Add(debugBorder);
+                previewCanvas.Clip = new RectangleGeometry(new Rect(0, 0, canvasWidthPx, canvasHeightPx));
                 
                 int elementIndex = 0;
+                Console.WriteLine($"[DEBUG] Starting to process {template.Elements.Count} elements");
                 foreach (var el in template.Elements)
                 {
+                    Console.WriteLine($"[DEBUG] Processing element {elementIndex}: Type={el.Type}, Size={el.Width}x{el.Height}, Position={el.X},{el.Y}");
                     UIElement? uiEl = null;
                     string elementContent = GetElementContent(el, elementIndex);
                     
                     switch (el.Type)
                     {
                         case LabelElementType.Text:
+                            Console.WriteLine($"[DEBUG] Creating text element: '{elementContent}', Size: {el.Width}x{el.Height}, FontSize: {el.FontSize}");
+                            
+                            // Create a container without visible border for text positioning
+                            var textContainer = new Border
+                            {
+                                Width = el.Width,
+                                Height = el.Height,
+                                Background = Brushes.Transparent
+                            };
+                            
                             var tb = new TextBlock 
                             { 
                                 Text = elementContent, 
                                 FontSize = el.FontSize > 0 ? el.FontSize : 12, // Use 12 as default if 0 or negative
-                                Width = el.Width,
-                                Height = el.Height
+                                TextWrapping = TextWrapping.Wrap
                             };
+                            
+                            Console.WriteLine($"[DEBUG] TextBlock created with text: '{tb.Text}', FontSize: {tb.FontSize}");
                             
                             // Safe font family setting
                             try 
@@ -192,6 +246,36 @@ namespace EvoDesigner.UI
                             {
                                 tb.Foreground = Brushes.Black;
                             }
+                            
+                            // Text alignment within bounding box
+                            switch (el.TextAlignment?.ToLower())
+                            {
+                                case "center":
+                                    tb.TextAlignment = TextAlignment.Center;
+                                    break;
+                                case "right":
+                                    tb.TextAlignment = TextAlignment.Right;
+                                    break;
+                                default: // "left" or null
+                                    tb.TextAlignment = TextAlignment.Left;
+                                    break;
+                            }
+                            
+                            // Vertical alignment within bounding box
+                            switch (el.VerticalAlignment?.ToLower())
+                            {
+                                case "center":
+                                    tb.VerticalAlignment = VerticalAlignment.Center;
+                                    break;
+                                case "bottom":
+                                    tb.VerticalAlignment = VerticalAlignment.Bottom;
+                                    break;
+                                default: // "top" or null
+                                    tb.VerticalAlignment = VerticalAlignment.Top;
+                                    break;
+                            }
+                            
+                            Console.WriteLine($"[DEBUG] Text alignment set: TextAlignment={tb.TextAlignment}, VerticalAlignment={tb.VerticalAlignment}");
                             
                             // Safe text decorations setting
                             try
@@ -220,7 +304,11 @@ namespace EvoDesigner.UI
                                 // Ignore invalid text decorations
                             }
                             
-                            uiEl = tb;
+                            // Add TextBlock to the container
+                            textContainer.Child = tb;
+                            uiEl = textContainer;
+                            
+                            Console.WriteLine($"[DEBUG] Text element created, positioned at ({el.X}, {el.Y})");
                             break;
                             
                         case LabelElementType.Image:
@@ -343,6 +431,66 @@ namespace EvoDesigner.UI
                                 uiEl = qrTb;
                             }
                             break;
+                            
+                        case LabelElementType.Line:
+                            // Create a container for the line to ensure proper positioning
+                            var linePreviewContainer = new Canvas
+                            {
+                                Width = el.Width,
+                                Height = el.Height,
+                                Background = Brushes.Transparent
+                            };
+                            
+                            var line = new System.Windows.Shapes.Line
+                            {
+                                X1 = 0,
+                                Y1 = el.Height / 2,
+                                X2 = el.Width,
+                                Y2 = el.Height / 2,
+                                StrokeThickness = el.BorderWidth > 0 ? el.BorderWidth : 1
+                            };
+                            
+                            // Set line color
+                            try
+                            {
+                                if (!string.IsNullOrEmpty(el.BorderColor))
+                                    line.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
+                                else
+                                    line.Stroke = Brushes.Black;
+                            }
+                            catch
+                            {
+                                line.Stroke = Brushes.Black;
+                            }
+                            
+                            linePreviewContainer.Children.Add(line);
+                            uiEl = linePreviewContainer;
+                            break;
+                            
+                        case LabelElementType.Rectangle:
+                            var rectangle = new System.Windows.Shapes.Rectangle
+                            {
+                                Width = el.Width,
+                                Height = el.Height,
+                                StrokeThickness = el.BorderWidth > 0 ? el.BorderWidth : 1,
+                                Fill = Brushes.Transparent
+                            };
+                            
+                            // Set border color
+                            try
+                            {
+                                if (!string.IsNullOrEmpty(el.BorderColor))
+                                    rectangle.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
+                                else
+                                    rectangle.Stroke = Brushes.Black;
+                            }
+                            catch
+                            {
+                                rectangle.Stroke = Brushes.Black;
+                            }
+                            
+                            uiEl = rectangle;
+                            break;
                     }
                     
                     if (uiEl != null)
@@ -361,7 +509,13 @@ namespace EvoDesigner.UI
                             uiEl.RenderTransform = rotateTransform;
                         }
                         
-                        PreviewCanvas.Children.Add(uiEl);
+                        Console.WriteLine($"[DEBUG] Adding element {elementIndex} to preview canvas: {uiEl?.GetType().Name}");
+                        previewCanvas.Children.Add(uiEl);
+                        Console.WriteLine($"[DEBUG] Element added successfully. Canvas now has {previewCanvas.Children.Count} children");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[DEBUG] Element {elementIndex} created NULL UIElement");
                     }
                     
                     elementIndex++;
@@ -382,7 +536,7 @@ namespace EvoDesigner.UI
                     };
                     Canvas.SetLeft(noElementsText, canvasWidthPx / 2 - 150);
                     Canvas.SetTop(noElementsText, canvasHeightPx / 2 - 20);
-                    PreviewCanvas.Children.Add(noElementsText);
+                    previewCanvas.Children.Add(noElementsText);
                 }
             }
             catch (System.Exception ex)
@@ -571,8 +725,7 @@ namespace EvoDesigner.UI
                 {
                     Width = width,
                     Height = height,
-                    BorderBrush = Brushes.LightGray,
-                    BorderThickness = new Thickness(1),
+                    Background = Brushes.Transparent,
                     Child = fallbackText
                 };
 
@@ -805,21 +958,20 @@ namespace EvoDesigner.UI
                 Console.WriteLine($"[DEBUG] Template label size: {template.LabelWidth}mm x {template.LabelHeight}mm");
                 Console.WriteLine($"[DEBUG] Page size: {pageWidth} x {pageHeight} DIP");
                 
-                // Simplified approach: print each label as a separate document
+                // Create a single document with multiple pages
+                var document = new FixedDocument();
+                int totalPages = 0;
+                
                 foreach (var recordIndex in recordIndices)
                 {
                     for (int copy = 0; copy < copiesPerRecord; copy++)
                     {
-                        Console.WriteLine($"[DEBUG] Printing record {recordIndex}, copy {copy + 1}");
+                        Console.WriteLine($"[DEBUG] Creating page for record {recordIndex}, copy {copy + 1}");
                         
-                        // Create a simple FixedDocument with one page
-                        var document = new FixedDocument();
+                        // Create a new page for this label
                         var page = new FixedPage();
-                        
                         page.Width = pageWidth;
                         page.Height = pageHeight;
-                        
-                        Console.WriteLine($"[DEBUG] Page size: {pageWidth} x {pageHeight}");
                         
                         // Create the print canvas for this record
                         var printCanvas = CreateSimplePrintCanvas(recordIndex, pageWidth, pageHeight);
@@ -829,32 +981,34 @@ namespace EvoDesigner.UI
                         // Add canvas to page
                         page.Children.Add(printCanvas);
                         
-                        Console.WriteLine($"[DEBUG] Canvas added to page. Page now has {page.Children.Count} children");
-                        
-                        // Add page to document
+                        // Add page to the single document
                         var pageContent = new PageContent();
                         ((System.Windows.Markup.IAddChild)pageContent).AddChild(page);
                         document.Pages.Add(pageContent);
                         
-                        Console.WriteLine($"[DEBUG] Document created with {document.Pages.Count} page(s)");
-                        
-                        // Print this single label
-                        Console.WriteLine("[DEBUG] Sending to printer...");
-                        try 
-                        {
-                            printDialog.PrintDocument(document.DocumentPaginator, $"TaggJack Label {recordIndex + 1}-{copy + 1}");
-                            Console.WriteLine("[DEBUG] Print command sent successfully");
-                        }
-                        catch (Exception printEx)
-                        {
-                            Console.WriteLine($"[DEBUG] Print command failed: {printEx.Message}");
-                            Console.WriteLine($"[DEBUG] Print error stack trace: {printEx.StackTrace}");
-                            throw; // Re-throw to be caught by outer handler
-                        }
-                        
-                        // Add a small delay between print jobs to ensure they don't interfere
-                        System.Threading.Thread.Sleep(100);
+                        totalPages++;
+                        Console.WriteLine($"[DEBUG] Added page {totalPages} to document");
                     }
+                }
+                
+                Console.WriteLine($"[DEBUG] Document created with {document.Pages.Count} total page(s)");
+                
+                // Send the single multi-page document to printer
+                Console.WriteLine("[DEBUG] Sending multi-page document to printer...");
+                try 
+                {
+                    string jobName = recordIndices.Length == 1 ? 
+                        $"TaggJack Label - Record {recordIndices[0] + 1} ({copiesPerRecord} copies)" :
+                        $"TaggJack Labels - {recordIndices.Length} records ({totalPages} pages)";
+                    
+                    printDialog.PrintDocument(document.DocumentPaginator, jobName);
+                    Console.WriteLine("[DEBUG] Multi-page print job sent successfully");
+                }
+                catch (Exception printEx)
+                {
+                    Console.WriteLine($"[DEBUG] Print command failed: {printEx.Message}");
+                    Console.WriteLine($"[DEBUG] Print error stack trace: {printEx.StackTrace}");
+                    throw; // Re-throw to be caught by outer handler
                 }
                 
                 Console.WriteLine("[DEBUG] All labels sent to printer");
@@ -896,12 +1050,19 @@ namespace EvoDesigner.UI
                 switch (el.Type)
                 {
                     case LabelElementType.Text:
+                        // Create a border container for print (without visible border)
+                        var textContainer = new Border
+                        {
+                            Width = el.Width,
+                            Height = el.Height,
+                            Background = Brushes.Transparent
+                        };
+                        
                         var tb = new TextBlock 
                         { 
                             Text = elementContent, 
                             FontSize = el.FontSize > 0 ? el.FontSize : 12, // Use 12 as default if 0 or negative
-                            Width = el.Width,  // NO SCALING - same as preview
-                            Height = el.Height // NO SCALING - same as preview
+                            TextWrapping = TextWrapping.Wrap
                         };
                         
                         // Safe font family setting
@@ -929,8 +1090,39 @@ namespace EvoDesigner.UI
                             tb.Foreground = Brushes.Black;
                         }
                         
-                        Console.WriteLine($"[DEBUG] Created TextBlock: '{tb.Text}', FontSize={tb.FontSize}");
-                        uiEl = tb;
+                        // Text alignment within bounding box
+                        switch (el.TextAlignment?.ToLower())
+                        {
+                            case "center":
+                                tb.TextAlignment = TextAlignment.Center;
+                                break;
+                            case "right":
+                                tb.TextAlignment = TextAlignment.Right;
+                                break;
+                            default: // "left" or null
+                                tb.TextAlignment = TextAlignment.Left;
+                                break;
+                        }
+                        
+                        // Vertical alignment within bounding box
+                        switch (el.VerticalAlignment?.ToLower())
+                        {
+                            case "center":
+                                tb.VerticalAlignment = VerticalAlignment.Center;
+                                break;
+                            case "bottom":
+                                tb.VerticalAlignment = VerticalAlignment.Bottom;
+                                break;
+                            default: // "top" or null
+                                tb.VerticalAlignment = VerticalAlignment.Top;
+                                break;
+                        }
+                        
+                        // Add TextBlock to the container
+                        textContainer.Child = tb;
+                        
+                        Console.WriteLine($"[DEBUG] Created TextBlock with alignment: '{tb.Text}', FontSize={tb.FontSize}, TextAlign={tb.TextAlignment}, VerticalAlign={tb.VerticalAlignment}");
+                        uiEl = textContainer;
                         break;
                         
                     case LabelElementType.Image:
@@ -1032,6 +1224,68 @@ namespace EvoDesigner.UI
                             Console.WriteLine($"[DEBUG] Created {el.Type} fallback text");
                             uiEl = barcodeText;
                         }
+                        break;
+                        
+                    case LabelElementType.Line:
+                        // Create a container for the line to ensure proper positioning
+                        var lineContainer = new Canvas
+                        {
+                            Width = el.Width,
+                            Height = el.Height,
+                            Background = Brushes.Transparent
+                        };
+                        
+                        var printLine = new System.Windows.Shapes.Line
+                        {
+                            X1 = 0,
+                            Y1 = el.Height / 2,
+                            X2 = el.Width,
+                            Y2 = el.Height / 2,
+                            StrokeThickness = el.BorderWidth > 0 ? el.BorderWidth : 1
+                        };
+                        
+                        // Set line color
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(el.BorderColor))
+                                printLine.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
+                            else
+                                printLine.Stroke = Brushes.Black;
+                        }
+                        catch
+                        {
+                            printLine.Stroke = Brushes.Black;
+                        }
+                        
+                        lineContainer.Children.Add(printLine);
+                        Console.WriteLine($"[DEBUG] Created Line for printing: {el.Width}x{el.Height}, Thickness: {printLine.StrokeThickness}");
+                        uiEl = lineContainer;
+                        break;
+                        
+                    case LabelElementType.Rectangle:
+                        var printRectangle = new System.Windows.Shapes.Rectangle
+                        {
+                            Width = el.Width,
+                            Height = el.Height,
+                            StrokeThickness = el.BorderWidth > 0 ? el.BorderWidth : 1,
+                            Fill = Brushes.Transparent
+                        };
+                        
+                        // Set border color
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(el.BorderColor))
+                                printRectangle.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
+                            else
+                                printRectangle.Stroke = Brushes.Black;
+                        }
+                        catch
+                        {
+                            printRectangle.Stroke = Brushes.Black;
+                        }
+                        
+                        Console.WriteLine($"[DEBUG] Created Rectangle for printing: {printRectangle.Width}x{printRectangle.Height}, BorderWidth: {printRectangle.StrokeThickness}");
+                        uiEl = printRectangle;
                         break;
                         
                     default:

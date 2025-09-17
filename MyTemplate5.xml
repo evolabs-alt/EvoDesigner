@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Untitled Template</TemplateName>
+  <LabelWidth>70</LabelWidth>
+  <LabelHeight>30</LabelHeight>
+  <MarginLeft>2</MarginLeft>
+  <MarginRight>2</MarginRight>
+  <MarginTop>2</MarginTop>
+  <MarginBottom>2</MarginBottom>
+  <Elements>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>88.88346456692909</X>
+      <Y>37.1129133858268</Y>
+      <Width>100</Width>
+      <Height>30</Height>
+      <FontSize>12</FontSize>
+      <Rotation>0</Rotation>
+      <TextAlignment>Left</TextAlignment>
+      <VerticalAlignment>Top</VerticalAlignment>
+      <BorderWidth>1</BorderWidth>
+      <BorderColor>Black</BorderColor>
+    </LabelElement>
+  </Elements>
+  <FieldMappings />
+</LabelTemplate>

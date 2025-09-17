@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Font Properties Test</TemplateName>
+  <LabelWidth>70</LabelWidth>
+  <LabelHeight>30</LabelHeight>
+  <MarginLeft>5</MarginLeft>
+  <MarginRight>5</MarginRight>
+  <MarginTop>5</MarginTop>
+  <MarginBottom>5</MarginBottom>
+  <Elements>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>200</Width>
+      <Height>40</Height>
+      <Content>Test Red Arial Bold 20pt</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>20</FontSize>
+      <FontWeight>Bold</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>#FFFF0000</Foreground>
+      <Rotation>0</Rotation>
+      <TextAlignment>Left</TextAlignment>
+      <VerticalAlignment>Top</VerticalAlignment>
+    </LabelElement>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>60</Y>
+      <Width>200</Width>
+      <Height>40</Height>
+      <Content>Blue Times Italic 16pt</Content>
+      <FontFamily>Times New Roman</FontFamily>
+      <FontSize>16</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Italic</FontStyle>
+      <Foreground>#FF0000FF</Foreground>
+      <Rotation>15</Rotation>
+      <TextAlignment>Center</TextAlignment>
+      <VerticalAlignment>Center</VerticalAlignment>
+    </LabelElement>
+  </Elements>
+</LabelTemplate>

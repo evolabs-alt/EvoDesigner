@@ -175,19 +175,5 @@ namespace EvoDesigner.UI
             DialogResult = false;
             Close();
         }
-
-        private void FieldMapping_Click(object sender, RoutedEventArgs e)
-        {
-            if (ResultTable == null || ResultTable.Rows.Count == 0)
-            {
-                MessageBox.Show("Please execute a query first to get field information.", "No Data", 
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            // For now, we'll show a message - this would need to be connected to the main window's elements
-            MessageBox.Show("Field mapping functionality requires label elements from the main design canvas. Please use the Field Mapping option from the main window after setting up your data source.", 
-                "Field Mapping", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
     }
 }

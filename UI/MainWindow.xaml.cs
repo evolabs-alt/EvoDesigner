@@ -68,6 +68,7 @@ namespace EvoDesigner
 
         public MainWindow()
         {
+            Console.WriteLine("[DEBUG] MainWindow constructor called");
             InitializeComponent();
             
             // Load configuration on startup
@@ -924,6 +925,12 @@ namespace EvoDesigner
                 else if (content?.Contains("Image") == true)
                     btn.PreviewMouseDown += (s, e) => StartDrag("Image");
                 
+                // Drawing tools
+                else if (content?.Contains("Line") == true)
+                    btn.PreviewMouseDown += (s, e) => StartDrag("Line");
+                else if (content?.Contains("Rectangle") == true)
+                    btn.PreviewMouseDown += (s, e) => StartDrag("Rectangle");
+                
                 // Retail checkout - updated to match emoji content
                 else if (content?.Contains("EAN-13") == true)
                     btn.PreviewMouseDown += (s, e) => StartDrag("EAN13");
@@ -1037,7 +1044,17 @@ namespace EvoDesigner
                 switch (elementType)
                 {
                     case "Text":
-                        newElement = new TextBlock { Text = "Text", FontSize = 16, Foreground = Brushes.Black };
+                        var textBlock = new TextBlock { Text = "Text", FontSize = 16, Foreground = Brushes.Black };
+                        var border = new Border
+                        {
+                            Child = textBlock,
+                            BorderBrush = Brushes.LightGray,
+                            BorderThickness = new Thickness(1),
+                            Background = Brushes.Transparent,
+                            Width = 100,
+                            Height = 30
+                        };
+                        newElement = border;
                         break;
                     case "Image":
                         // Prompt user to select an image file
@@ -1066,6 +1083,41 @@ namespace EvoDesigner
                             // User cancelled - create placeholder rectangle
                             newElement = new Rectangle { Width = 60, Height = 60, Fill = Brushes.LightGray, Stroke = Brushes.DarkGray, StrokeThickness = 2, Tag = "No Image Selected" };
                         }
+                        break;
+                    
+                    case "Line":
+                        // Create a container canvas for the line that can be resized
+                        var lineContainer = new Canvas
+                        {
+                            Width = 100,
+                            Height = 30,
+                            Background = Brushes.Transparent
+                        };
+                        
+                        var line = new System.Windows.Shapes.Line
+                        {
+                            X1 = 0,
+                            Y1 = 15, // Half of container height
+                            X2 = 100, // Full container width
+                            Y2 = 15,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 1
+                        };
+                        
+                        lineContainer.Children.Add(line);
+                        newElement = lineContainer;
+                        break;
+                    
+                    case "Rectangle":
+                        var rectangle = new System.Windows.Shapes.Rectangle
+                        {
+                            Width = 100,
+                            Height = 60,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 1,
+                            Fill = Brushes.Transparent
+                        };
+                        newElement = rectangle;
                         break;
                     
                     // Retail Checkout
@@ -1902,6 +1954,14 @@ namespace EvoDesigner
                     fe.Height = Math.Max(20, fe.ActualHeight + e.VerticalChange);
                     Canvas.SetLeft(resizeThumb, Canvas.GetLeft(fe) + fe.Width - 6);
                     Canvas.SetTop(resizeThumb, Canvas.GetTop(fe) + fe.Height - 6);
+                    
+                    // Update line element if this is a line container
+                    if (fe is Canvas lineCanvas && lineCanvas.Children.Count > 0 && lineCanvas.Children[0] is System.Windows.Shapes.Line lineElement)
+                    {
+                        lineElement.X2 = fe.Width;
+                        lineElement.Y1 = fe.Height / 2;
+                        lineElement.Y2 = fe.Height / 2;
+                    }
                 };
                 LabelCanvas.Children.Add(resizeThumb);
             }
@@ -1922,8 +1982,14 @@ namespace EvoDesigner
             {
                 ElementPropertiesPanel.Children.Clear();
                 
-                if (element is TextBlock tb)
+                // Handle Border containers with TextBlock children (new text elements)
+                if (element is Border border && border.Child is TextBlock tb)
                 {
+                    // Debug: Log current TextBlock properties
+                    var debugMsg = $"[DEBUG] ShowProperties for TextBlock: Text='{tb.Text}', FontSize={tb.FontSize}\n";
+                    System.IO.File.AppendAllText("debug.log", debugMsg);
+                    System.Console.WriteLine($"[DEBUG] ShowProperties for TextBlock: Text='{tb.Text}', FontSize={tb.FontSize}");
+                    
                     // Text property
                     var textLabel = new Label { Content = "Text:" };
                     textLabel.Style = (Style)FindResource("ModernLabelStyle");
@@ -1934,6 +2000,8 @@ namespace EvoDesigner
                     textBox.TextChanged += (s, e) => { 
                         tb.Text = textBox.Text; 
                         SetDirty(true); 
+                        var changeMsg = $"[DEBUG] Text changed to: '{tb.Text}'\n";
+                        System.IO.File.AppendAllText("debug.log", changeMsg);
                     };
                     ElementPropertiesPanel.Children.Add(textBox);
 
@@ -1988,11 +2056,89 @@ namespace EvoDesigner
                     Grid.SetColumn(fontSizeBox, 0);
                     fontSizeColorGrid.Children.Add(fontSizeBox);
                     
-                    var colorBox = new TextBox { Text = (tb.Foreground as SolidColorBrush)?.Color.ToString() ?? "#000000", Margin = new Thickness(4, 0, 0, 0) };
+                    var currentColor = ((tb.Foreground as SolidColorBrush)?.Color) ?? Colors.Black;
+                    var colorPicker = CreateColorPicker(currentColor, (newColor) => {
+                        tb.Foreground = new SolidColorBrush(newColor);
+                        SetDirty(true);
+                    });
+                    Grid.SetRow(colorPicker, 1);
+                    Grid.SetColumn(colorPicker, 1);
+                    fontSizeColorGrid.Children.Add(colorPicker);
+                    
+                    ElementPropertiesPanel.Children.Add(fontSizeColorGrid);
+                }
+                // Handle legacy TextBlock elements (for backward compatibility)
+                else if (element is TextBlock directTb)
+                {
+                    // Text property
+                    var textLabel = new Label { Content = "Text:" };
+                    textLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(textLabel);
+                    
+                    var textBox = new TextBox { Text = directTb.Text };
+                    textBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    textBox.TextChanged += (s, e) => { 
+                        directTb.Text = textBox.Text; 
+                        SetDirty(true); 
+                    };
+                    ElementPropertiesPanel.Children.Add(textBox);
+
+                    // Font Family property
+                    var fontFamilyLabel = new Label { Content = "Font Family:" };
+                    fontFamilyLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(fontFamilyLabel);
+                    
+                    var fontFamilyBox = new ComboBox { 
+                        ItemsSource = System.Windows.Media.Fonts.SystemFontFamilies.Select(f => f.Source).OrderBy(f => f),
+                        SelectedItem = directTb.FontFamily.Source 
+                    };
+                    fontFamilyBox.Style = (Style)FindResource("ModernComboBoxStyle");
+                    fontFamilyBox.SelectionChanged += (s, e) => {
+                        if (fontFamilyBox.SelectedItem != null) {
+                            directTb.FontFamily = new FontFamily(fontFamilyBox.SelectedItem.ToString());
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(fontFamilyBox);
+
+                    // Font Size and Text Color properties on same line
+                    var fontSizeColorGrid = new Grid();
+                    fontSizeColorGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    fontSizeColorGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                    fontSizeColorGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                    fontSizeColorGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                    
+                    // Labels row
+                    var fontSizeLabel = new Label { Content = "Font Size:" };
+                    fontSizeLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    Grid.SetRow(fontSizeLabel, 0);
+                    Grid.SetColumn(fontSizeLabel, 0);
+                    fontSizeColorGrid.Children.Add(fontSizeLabel);
+                    
+                    var colorLabel = new Label { Content = "Text Color:" };
+                    colorLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    Grid.SetRow(colorLabel, 0);
+                    Grid.SetColumn(colorLabel, 1);
+                    fontSizeColorGrid.Children.Add(colorLabel);
+                    
+                    // TextBoxes row
+                    var fontSizeBox = new TextBox { Text = directTb.FontSize.ToString(), Margin = new Thickness(0, 0, 4, 0) };
+                    fontSizeBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    fontSizeBox.TextChanged += (s, e) => {
+                        if (double.TryParse(fontSizeBox.Text, out double size)) {
+                            directTb.FontSize = size;
+                            SetDirty(true);
+                        }
+                    };
+                    Grid.SetRow(fontSizeBox, 1);
+                    Grid.SetColumn(fontSizeBox, 0);
+                    fontSizeColorGrid.Children.Add(fontSizeBox);
+                    
+                    var colorBox = new TextBox { Text = (directTb.Foreground as SolidColorBrush)?.Color.ToString() ?? "#000000", Margin = new Thickness(4, 0, 0, 0) };
                     colorBox.Style = (Style)FindResource("ModernTextBoxStyle");
                     colorBox.TextChanged += (s, e) => {
                         try { 
-                            tb.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorBox.Text)); 
+                            directTb.Foreground = (SolidColorBrush)(new BrushConverter().ConvertFrom(colorBox.Text)); 
                             SetDirty(true);
                         } catch { }
                     };
@@ -2004,10 +2150,10 @@ namespace EvoDesigner
                 }
                 else if (element is Rectangle rect)
                 {
-                    // Rectangle/Image properties
-                    var imageLabel = new Label { Content = "Image Properties" };
-                    imageLabel.Style = (Style)FindResource("ModernLabelStyle");
-                    ElementPropertiesPanel.Children.Add(imageLabel);
+                    // Rectangle properties
+                    var rectLabel = new Label { Content = "Rectangle Properties" };
+                    rectLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(rectLabel);
                     
                     // Width property
                     var widthLabel = new Label { Content = "Width:" };
@@ -2038,6 +2184,133 @@ namespace EvoDesigner
                         }
                     };
                     ElementPropertiesPanel.Children.Add(heightBox);
+                    
+                    // Border Width property
+                    var borderWidthLabel = new Label { Content = "Border Width:" };
+                    borderWidthLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(borderWidthLabel);
+                    
+                    var borderWidthBox = new TextBox { Text = rect.StrokeThickness.ToString() };
+                    borderWidthBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    borderWidthBox.TextChanged += (s, e) => {
+                        if (double.TryParse(borderWidthBox.Text, out double thickness)) {
+                            rect.StrokeThickness = thickness;
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(borderWidthBox);
+                    
+                    // Border Color property
+                    var borderColorLabel = new System.Windows.Controls.Label { Content = "Border Color:" };
+                    borderColorLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(borderColorLabel);
+                    
+                    var currentBorderColor = ((rect.Stroke as SolidColorBrush)?.Color) ?? Colors.Black;
+                    var borderColorPicker = CreateColorPicker(currentBorderColor, (newColor) => {
+                        rect.Stroke = new SolidColorBrush(newColor);
+                        SetDirty(true);
+                    });
+                    ElementPropertiesPanel.Children.Add(borderColorPicker);
+                }
+                else if (element is Canvas canvas && canvas.Children.Count > 0 && canvas.Children[0] is System.Windows.Shapes.Line line)
+                {
+                    // Line container properties
+                    var lineLabel = new Label { Content = "Line Properties" };
+                    lineLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(lineLabel);
+                    
+                    // Length property (controls container width and line X2)
+                    var lengthLabel = new Label { Content = "Length:" };
+                    lengthLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(lengthLabel);
+                    
+                    var lengthBox = new TextBox { Text = canvas.Width.ToString() };
+                    lengthBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    lengthBox.TextChanged += (s, e) => {
+                        if (double.TryParse(lengthBox.Text, out double length)) {
+                            canvas.Width = length;
+                            line.X2 = length; // Update line end point
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(lengthBox);
+                    
+                    // Line Thickness property
+                    var thicknessLabel = new Label { Content = "Line Width:" };
+                    thicknessLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(thicknessLabel);
+                    
+                    var thicknessBox = new TextBox { Text = line.StrokeThickness.ToString() };
+                    thicknessBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    thicknessBox.TextChanged += (s, e) => {
+                        if (double.TryParse(thicknessBox.Text, out double thickness)) {
+                            line.StrokeThickness = thickness;
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(thicknessBox);
+                    
+                    // Line Color property
+                    var lineColorLabel = new System.Windows.Controls.Label { Content = "Line Color:" };
+                    lineColorLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(lineColorLabel);
+                    
+                    var currentLineColor = ((line.Stroke as SolidColorBrush)?.Color) ?? Colors.Black;
+                    var lineColorPicker = CreateColorPicker(currentLineColor, (newColor) => {
+                        line.Stroke = new SolidColorBrush(newColor);
+                        SetDirty(true);
+                    });
+                    ElementPropertiesPanel.Children.Add(lineColorPicker);
+                }
+                else if (element is System.Windows.Shapes.Line directLine)
+                {
+                    // Direct Line properties (legacy support)
+                    var lineLabel = new Label { Content = "Line Properties" };
+                    lineLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(lineLabel);
+                    
+                    // Length property
+                    var lengthLabel = new Label { Content = "Length:" };
+                    lengthLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(lengthLabel);
+                    
+                    var lengthBox = new TextBox { Text = directLine.Width.ToString() };
+                    lengthBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    lengthBox.TextChanged += (s, e) => {
+                        if (double.TryParse(lengthBox.Text, out double w)) {
+                            directLine.Width = w;
+                            directLine.X2 = w; // Update line end point
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(lengthBox);
+                    
+                    // Line Thickness property
+                    var thicknessLabel = new Label { Content = "Line Width:" };
+                    thicknessLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(thicknessLabel);
+                    
+                    var thicknessBox = new TextBox { Text = directLine.StrokeThickness.ToString() };
+                    thicknessBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    thicknessBox.TextChanged += (s, e) => {
+                        if (double.TryParse(thicknessBox.Text, out double thickness)) {
+                            directLine.StrokeThickness = thickness;
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(thicknessBox);
+                    
+                    // Line Color property
+                    var lineColorLabel = new System.Windows.Controls.Label { Content = "Line Color:" };
+                    lineColorLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(lineColorLabel);
+                    
+                    var currentDirectLineColor = ((directLine.Stroke as SolidColorBrush)?.Color) ?? Colors.Black;
+                    var directLineColorPicker = CreateColorPicker(currentDirectLineColor, (newColor) => {
+                        directLine.Stroke = new SolidColorBrush(newColor);
+                        SetDirty(true);
+                    });
+                    ElementPropertiesPanel.Children.Add(directLineColorPicker);
                 }
                 else if (element is Image img)
                 {
@@ -2237,24 +2510,69 @@ namespace EvoDesigner
                         labelElement.Foreground = tb.Foreground.ToString();
                         labelElement.TextDecorations = GetTextDecorationsString(tb.TextDecorations);
                     }
+                    else if (child is Border border && border.Child is TextBlock borderText)
+                    {
+                        // Handle Border elements containing TextBlocks (new text elements created through UI)
+                        if (borderText.Text == "[EAN-13]")
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode13;
+                        else if (borderText.Text == "[EAN-8]")
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode8;
+                        else if (borderText.Text == "[QR Code]")
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
+                        else
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
+                            
+                        labelElement.Content = borderText.Text;
+                        labelElement.FontSize = borderText.FontSize;
+                        labelElement.FontFamily = borderText.FontFamily.ToString();
+                        labelElement.FontWeight = borderText.FontWeight.ToString();
+                        labelElement.FontStyle = borderText.FontStyle.ToString();
+                        labelElement.Foreground = borderText.Foreground.ToString();
+                        labelElement.TextDecorations = GetTextDecorationsString(borderText.TextDecorations);
+                    }
                     else if (child is System.Windows.Shapes.Rectangle rect)
                     {
-                        labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                        // Check if this is a drawing rectangle or an image placeholder
                         string tagStr = rect.Tag?.ToString() ?? "";
                         
-                        // Handle file path in rectangle tag - convert to base64
-                        if (!string.IsNullOrEmpty(tagStr) && tagStr != "Missing Image Data" && tagStr != "No Image Data")
+                        // If it's a transparent rectangle with stroke, it's a drawing rectangle
+                        if (rect.Fill == Brushes.Transparent && rect.Stroke != null)
                         {
-                            if (System.IO.File.Exists(tagStr))
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Rectangle;
+                            labelElement.BorderWidth = rect.StrokeThickness;
+                            labelElement.BorderColor = (rect.Stroke as SolidColorBrush)?.Color.ToString() ?? "Black";
+                        }
+                        else
+                        {
+                            // It's an image placeholder
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
+                            
+                            // Handle file path in rectangle tag - convert to base64
+                            if (!string.IsNullOrEmpty(tagStr) && tagStr != "Missing Image Data" && tagStr != "No Image Data")
                             {
-                                labelElement.ImageData = ConvertImageToBase64(tagStr);
-                                labelElement.Content = ""; // Clear file path since we have base64 data
-                            }
-                            else
-                            {
-                                labelElement.Content = tagStr; // Keep as fallback
+                                if (System.IO.File.Exists(tagStr))
+                                {
+                                    labelElement.ImageData = ConvertImageToBase64(tagStr);
+                                    labelElement.Content = ""; // Clear file path since we have base64 data
+                                }
+                                else
+                                {
+                                    labelElement.Content = tagStr; // Keep as fallback
+                                }
                             }
                         }
+                    }
+                    else if (child is Canvas canvas && canvas.Children.Count > 0 && canvas.Children[0] is System.Windows.Shapes.Line lineInCanvas)
+                    {
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Line;
+                        labelElement.BorderWidth = lineInCanvas.StrokeThickness;
+                        labelElement.BorderColor = (lineInCanvas.Stroke as SolidColorBrush)?.Color.ToString() ?? "Black";
+                    }
+                    else if (child is System.Windows.Shapes.Line directLine)
+                    {
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Line;
+                        labelElement.BorderWidth = directLine.StrokeThickness;
+                        labelElement.BorderColor = (directLine.Stroke as SolidColorBrush)?.Color.ToString() ?? "Black";
                     }
                     else if (child is Image imageElement)
                     {
@@ -2428,13 +2746,30 @@ namespace EvoDesigner
 
         private void PrintPreview_Click(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("[DEBUG] Print Preview button clicked");
-            var liveTemplate = CreateLiveTemplate();
-            Console.WriteLine($"[DEBUG] Live template created with {liveTemplate.Elements.Count} elements");
-            var win = new EvoDesigner.UI.PrintPreviewWindow(liveTemplate, lastResultTable);
-            Console.WriteLine("[DEBUG] PrintPreviewWindow created, showing dialog");
-            win.ShowDialog();
-            Console.WriteLine("[DEBUG] PrintPreviewWindow dialog closed");
+            try
+            {
+                File.WriteAllText("debug.log", "[DEBUG] ==> Starting CreateLiveTemplate\n");
+                Console.WriteLine("[DEBUG] ==> Starting CreateLiveTemplate");
+                var liveTemplate = CreateLiveTemplate();
+                Console.WriteLine($"[DEBUG] Live template created with {liveTemplate.Elements.Count} elements");
+                
+                // Debug: Show what elements we have
+                for (int i = 0; i < liveTemplate.Elements.Count; i++)
+                {
+                    var elem = liveTemplate.Elements[i];
+                    Console.WriteLine($"[DEBUG] Element {i}: Type={elem.Type}, Content='{elem.Content}', Size={elem.Width}x{elem.Height}, Pos=({elem.X},{elem.Y})");
+                }
+                
+                var previewWin = new EvoDesigner.UI.PrintPreviewWindow(liveTemplate, lastResultTable);
+                Console.WriteLine("[DEBUG] PrintPreviewWindow created, showing dialog");
+                previewWin.ShowDialog();
+                Console.WriteLine("[DEBUG] PrintPreviewWindow dialog closed");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DEBUG] ERROR in PrintPreview_Click: {ex.Message}");
+                MessageBox.Show($"Error opening print preview: {ex.Message}", "Print Preview Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void DataSource_Click(object sender, RoutedEventArgs e)
@@ -2557,6 +2892,9 @@ namespace EvoDesigner
 
         private EvoDesigner.Models.LabelTemplate CreateLiveTemplate()
         {
+            var logMessage = "[DEBUG] CreateLiveTemplate called\n";
+            File.AppendAllText("debug.log", logMessage);
+            Console.WriteLine("[DEBUG] CreateLiveTemplate called");
             var liveTemplate = new EvoDesigner.Models.LabelTemplate
             {
                 TemplateName = CurrentTemplate.TemplateName,
@@ -2569,9 +2907,15 @@ namespace EvoDesigner
             };
 
             var labelElements = GetLabelElements();
+            var countMessage = $"[DEBUG] Found {labelElements.Count} label elements on canvas\n";
+            File.AppendAllText("debug.log", countMessage);
+            Console.WriteLine($"[DEBUG] Found {labelElements.Count} label elements on canvas");
             
             foreach (UIElement child in labelElements)
             {
+                var childMessage = $"[DEBUG] Processing canvas child: {child.GetType().Name}\n";
+                File.AppendAllText("debug.log", childMessage);
+                Console.WriteLine($"[DEBUG] Processing canvas child: {child.GetType().Name}");
                 var labelElement = new EvoDesigner.Models.LabelElement
                 {
                     X = Canvas.GetLeft(child),
@@ -2582,6 +2926,9 @@ namespace EvoDesigner
                 
                 if (child is TextBlock tb)
                 {
+                    var textMessage = $"[DEBUG] Found TextBlock: '{tb.Text}'\n";
+                    File.AppendAllText("debug.log", textMessage);
+                    Console.WriteLine($"[DEBUG] Found TextBlock: '{tb.Text}'");
                     labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
                     labelElement.Content = tb.Text;
                     labelElement.FontSize = tb.FontSize;
@@ -2668,6 +3015,103 @@ namespace EvoDesigner
                     labelElement.Type = EvoDesigner.Models.LabelElementType.Image;
                     labelElement.Content = imgRegular.Source?.ToString() ?? "";
                 }
+                else if (child is Canvas canvas)
+                {
+                    var canvasMessage = $"[DEBUG] Found Canvas with {canvas.Children.Count} children\n";
+                    File.AppendAllText("debug.log", canvasMessage);
+                    Console.WriteLine($"[DEBUG] Found Canvas with {canvas.Children.Count} children");
+                    
+                    // Check if this canvas contains a line or rectangle
+                    var line = canvas.Children.OfType<System.Windows.Shapes.Line>().FirstOrDefault();
+                    var rectangle = canvas.Children.OfType<System.Windows.Shapes.Rectangle>().FirstOrDefault();
+                    
+                    if (line != null)
+                    {
+                        var lineMessage = $"[DEBUG] Found Line in Canvas: X1={line.X1}, Y1={line.Y1}, X2={line.X2}, Y2={line.Y2}\n";
+                        File.AppendAllText("debug.log", lineMessage);
+                        Console.WriteLine($"[DEBUG] Found Line in Canvas: X1={line.X1}, Y1={line.Y1}, X2={line.X2}, Y2={line.Y2}");
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Line;
+                        labelElement.BorderWidth = line.StrokeThickness;
+                        labelElement.BorderColor = line.Stroke?.ToString() ?? "#000000";
+                        labelElement.Content = $"{line.X1},{line.Y1},{line.X2},{line.Y2}";
+                    }
+                    else if (rectangle != null)
+                    {
+                        var rectMessage = $"[DEBUG] Found Rectangle in Canvas: Width={rectangle.Width}, Height={rectangle.Height}\n";
+                        File.AppendAllText("debug.log", rectMessage);
+                        Console.WriteLine($"[DEBUG] Found Rectangle in Canvas: Width={rectangle.Width}, Height={rectangle.Height}");
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Rectangle;
+                        labelElement.BorderWidth = rectangle.StrokeThickness;
+                        labelElement.BorderColor = rectangle.Stroke?.ToString() ?? "#000000";
+                        labelElement.Content = "";
+                        labelElement.Width = double.IsNaN(rectangle.Width) ? labelElement.Width : rectangle.Width;
+                        labelElement.Height = double.IsNaN(rectangle.Height) ? labelElement.Height : rectangle.Height;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[DEBUG] Canvas with no recognized shapes, skipping");
+                        continue; // Skip this element if it's not a recognized shape container
+                    }
+                }
+                else if (child is System.Windows.Shapes.Rectangle directRect)
+                {
+                    var directRectMessage = $"[DEBUG] Found direct Rectangle: Width={directRect.Width}, Height={directRect.Height}\n";
+                    File.AppendAllText("debug.log", directRectMessage);
+                    Console.WriteLine($"[DEBUG] Found direct Rectangle: Width={directRect.Width}, Height={directRect.Height}");
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.Rectangle;
+                    labelElement.BorderWidth = directRect.StrokeThickness;
+                    labelElement.BorderColor = directRect.Stroke?.ToString() ?? "#000000";
+                    labelElement.Content = "";
+                    labelElement.Width = double.IsNaN(directRect.Width) ? labelElement.Width : directRect.Width;
+                    labelElement.Height = double.IsNaN(directRect.Height) ? labelElement.Height : directRect.Height;
+                }
+                else if (child is Border border)
+                {
+                    var borderMessage = $"[DEBUG] Found Border element\n";
+                    File.AppendAllText("debug.log", borderMessage);
+                    Console.WriteLine($"[DEBUG] Found Border element");
+                    
+                    // Debug: Check what's inside the border
+                    var borderChildMsg = $"[DEBUG] Border.Child type: {border.Child?.GetType().Name ?? "null"}\n";
+                    File.AppendAllText("debug.log", borderChildMsg);
+                    Console.WriteLine($"[DEBUG] Border.Child type: {border.Child?.GetType().Name ?? "null"}");
+                    
+                    // Check if the border contains a TextBlock
+                    if (border.Child is TextBlock borderText)
+                    {
+                        var borderTextMessage = $"[DEBUG] Border contains TextBlock: '{borderText.Text}'\n";
+                        File.AppendAllText("debug.log", borderTextMessage);
+                        Console.WriteLine($"[DEBUG] Border contains TextBlock: '{borderText.Text}'");
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
+                        labelElement.Content = borderText.Text;
+                        labelElement.FontSize = borderText.FontSize;
+                        labelElement.FontFamily = borderText.FontFamily.ToString();
+                        labelElement.FontWeight = borderText.FontWeight.ToString();
+                        labelElement.FontStyle = borderText.FontStyle.ToString();
+                        labelElement.Foreground = borderText.Foreground.ToString();
+                        labelElement.TextDecorations = GetTextDecorationsString(borderText.TextDecorations);
+                        
+                        // Debug: Log what's being saved
+                        var saveDebugMsg = $"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}'\n";
+                        File.AppendAllText("debug.log", saveDebugMsg);
+                        Console.WriteLine($"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}'");
+                        
+                        // CRITICAL FIX: Add missing continue statement to prevent falling through to "unrecognized element" logic
+                        // Without this, the labelElement gets created but then skipped!
+                    }
+                    else
+                    {
+                        var noTextBlockMsg = $"[DEBUG] Border with no TextBlock, skipping\n";
+                        File.AppendAllText("debug.log", noTextBlockMsg);
+                        Console.WriteLine($"[DEBUG] Border with no TextBlock, skipping");
+                        continue;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"[DEBUG] Unrecognized element type: {child.GetType().Name}, skipping");
+                    continue; // Skip unrecognized elements
+                }
                 
                 if (child.RenderTransform is RotateTransform rotateTransform)
                 {
@@ -2678,9 +3122,15 @@ namespace EvoDesigner
                     labelElement.Rotation = 0;
                 }
                 
+                var elemMessage = $"[DEBUG] Created label element: Type={labelElement.Type}, Size={labelElement.Width}x{labelElement.Height}\n";
+                File.AppendAllText("debug.log", elemMessage);
+                Console.WriteLine($"[DEBUG] Created label element: Type={labelElement.Type}, Size={labelElement.Width}x{labelElement.Height}");
                 liveTemplate.Elements.Add(labelElement);
             }
-
+            
+            var finalMessage = $"[DEBUG] Final live template has {liveTemplate.Elements.Count} elements\n";
+            File.AppendAllText("debug.log", finalMessage);
+            Console.WriteLine($"[DEBUG] Final live template has {liveTemplate.Elements.Count} elements");
             liveTemplate.FieldMappings = CurrentTemplate.FieldMappings ?? new List<EvoDesigner.Models.FieldMapping>();
             
             return liveTemplate;
@@ -2745,13 +3195,18 @@ namespace EvoDesigner
         {
             UIElement? result = null;
             
+            // Debug: Log what's being loaded
+            var loadDebugMsg = $"[DEBUG] LOADING: Text='{element.Content}', FontSize={element.FontSize}, FontFamily='{element.FontFamily}', Color='{element.Foreground}'\n";
+            System.IO.File.AppendAllText("debug.log", loadDebugMsg);
+            System.Console.WriteLine($"[DEBUG] LOADING: Text='{element.Content}', FontSize={element.FontSize}, FontFamily='{element.FontFamily}', Color='{element.Foreground}'");
+            
             switch (element.Type)
             {
                 case EvoDesigner.Models.LabelElementType.Text:
                     var textBlock = new TextBlock
                     {
                         Text = element.Content ?? "Text",
-                        FontSize = element.FontSize,
+                        FontSize = element.FontSize > 0 ? element.FontSize : 12, // Use 12 as default if 0 or negative
                         Width = element.Width,
                         Height = element.Height
                     };
@@ -2764,7 +3219,56 @@ namespace EvoDesigner
                     if (!string.IsNullOrEmpty(element.FontStyle))
                         textBlock.FontStyle = element.FontStyle.Contains("Italic") ? FontStyles.Italic : FontStyles.Normal;
                     
-                    result = textBlock;
+                    // Apply foreground color if available
+                    if (!string.IsNullOrEmpty(element.Foreground))
+                    {
+                        try
+                        {
+                            var colorConverter = new BrushConverter();
+                            var brush = (Brush)colorConverter.ConvertFromString(element.Foreground);
+                            textBlock.Foreground = brush;
+                        }
+                        catch
+                        {
+                            // If color conversion fails, use black as default
+                            textBlock.Foreground = Brushes.Black;
+                        }
+                    }
+                    
+                    // Apply text alignment if available
+                    if (!string.IsNullOrEmpty(element.TextAlignment))
+                    {
+                        switch (element.TextAlignment.ToLower())
+                        {
+                            case "center": textBlock.TextAlignment = TextAlignment.Center; break;
+                            case "right": textBlock.TextAlignment = TextAlignment.Right; break;
+                            default: textBlock.TextAlignment = TextAlignment.Left; break;
+                        }
+                    }
+                    
+                    // Apply vertical alignment if available
+                    if (!string.IsNullOrEmpty(element.VerticalAlignment))
+                    {
+                        switch (element.VerticalAlignment.ToLower())
+                        {
+                            case "center": textBlock.VerticalAlignment = VerticalAlignment.Center; break;
+                            case "bottom": textBlock.VerticalAlignment = VerticalAlignment.Bottom; break;
+                            default: textBlock.VerticalAlignment = VerticalAlignment.Top; break;
+                        }
+                    }
+                    
+                    // Wrap text in a border for alignment support
+                    var border = new Border
+                    {
+                        Child = textBlock,
+                        BorderBrush = Brushes.LightGray,
+                        BorderThickness = new Thickness(1),
+                        Background = Brushes.Transparent,
+                        Width = element.Width,
+                        Height = element.Height
+                    };
+                    
+                    result = border;
                     break;
                     
                 case EvoDesigner.Models.LabelElementType.Image:
@@ -2844,6 +3348,66 @@ namespace EvoDesigner
                         };
                         result = rect;
                     }
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.Line:
+                    // Create a container canvas for the line that can be resized
+                    var lineCanvasContainer = new Canvas
+                    {
+                        Width = element.Width,
+                        Height = element.Height,
+                        Background = Brushes.Transparent
+                    };
+                    
+                    var lineElement = new System.Windows.Shapes.Line
+                    {
+                        X1 = 0,
+                        Y1 = element.Height / 2,
+                        X2 = element.Width,
+                        Y2 = element.Height / 2,
+                        StrokeThickness = element.BorderWidth > 0 ? element.BorderWidth : 1
+                    };
+                    
+                    // Set line color
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(element.BorderColor))
+                            lineElement.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(element.BorderColor) ?? Brushes.Black);
+                        else
+                            lineElement.Stroke = Brushes.Black;
+                    }
+                    catch
+                    {
+                        lineElement.Stroke = Brushes.Black;
+                    }
+                    
+                    lineCanvasContainer.Children.Add(lineElement);
+                    result = lineCanvasContainer;
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.Rectangle:
+                    var rectangle = new System.Windows.Shapes.Rectangle
+                    {
+                        Width = element.Width,
+                        Height = element.Height,
+                        StrokeThickness = element.BorderWidth > 0 ? element.BorderWidth : 1,
+                        Fill = Brushes.Transparent  // No fill, just border
+                    };
+                    
+                    // Set border color
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(element.BorderColor))
+                            rectangle.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(element.BorderColor) ?? Brushes.Black);
+                        else
+                            rectangle.Stroke = Brushes.Black;
+                    }
+                    catch
+                    {
+                        rectangle.Stroke = Brushes.Black;
+                    }
+                    
+                    result = rectangle;
                     break;
                     
                 case EvoDesigner.Models.LabelElementType.QRCode:
@@ -3260,6 +3824,460 @@ namespace EvoDesigner
                 // Mark as dirty since we've made changes
                 SetDirty(true);
             }
+        }
+
+        #region Text Alignment Event Handlers
+
+        private void AlignLeft_Click(object sender, RoutedEventArgs e)
+        {
+            SetTextAlignment("Left", null);
+        }
+
+        private void AlignCenter_Click(object sender, RoutedEventArgs e)
+        {
+            SetTextAlignment("Center", null);
+        }
+
+        private void AlignRight_Click(object sender, RoutedEventArgs e)
+        {
+            SetTextAlignment("Right", null);
+        }
+
+        private void AlignTop_Click(object sender, RoutedEventArgs e)
+        {
+            SetTextAlignment(null, "Top");
+        }
+
+        private void AlignMiddle_Click(object sender, RoutedEventArgs e)
+        {
+            SetTextAlignment(null, "Center");
+        }
+
+        private void AlignBottom_Click(object sender, RoutedEventArgs e)
+        {
+            SetTextAlignment(null, "Bottom");
+        }
+
+        private void SetTextAlignment(string? horizontalAlign, string? verticalAlign)
+        {
+            // Get all currently selected elements (both single and multi-selection)
+            var elementsToAlign = new List<UIElement>();
+            
+            if (selectedElements.Count > 0)
+            {
+                elementsToAlign.AddRange(selectedElements);
+            }
+            else if (selectedElement != null)
+            {
+                elementsToAlign.Add(selectedElement);
+            }
+            
+            if (elementsToAlign.Count == 0) return;
+
+            foreach (var element in elementsToAlign)
+            {
+                // Check if this is a text element (Border containing TextBlock)
+                if (element is Border border && border.Child is TextBlock textBlock)
+                {
+                    // Update horizontal alignment
+                    if (horizontalAlign != null)
+                    {
+                        switch (horizontalAlign.ToLower())
+                        {
+                            case "center": 
+                                textBlock.TextAlignment = TextAlignment.Center; 
+                                break;
+                            case "right": 
+                                textBlock.TextAlignment = TextAlignment.Right; 
+                                break;
+                            default: 
+                                textBlock.TextAlignment = TextAlignment.Left; 
+                                break;
+                        }
+                        
+                        // Store alignment in the border's tag for persistence
+                        var tag = border.Tag as string ?? "";
+                        var parts = tag.Split('|');
+                        if (parts.Length >= 2)
+                        {
+                            parts[0] = horizontalAlign;
+                            border.Tag = string.Join("|", parts);
+                        }
+                        else
+                        {
+                            border.Tag = $"{horizontalAlign}|{parts.ElementAtOrDefault(1) ?? "Top"}";
+                        }
+                    }
+
+                    // Update vertical alignment
+                    if (verticalAlign != null)
+                    {
+                        switch (verticalAlign.ToLower())
+                        {
+                            case "center": 
+                                textBlock.VerticalAlignment = VerticalAlignment.Center; 
+                                break;
+                            case "bottom": 
+                                textBlock.VerticalAlignment = VerticalAlignment.Bottom; 
+                                break;
+                            default: 
+                                textBlock.VerticalAlignment = VerticalAlignment.Top; 
+                                break;
+                        }
+                        
+                        // Store alignment in the border's tag for persistence
+                        var tag = border.Tag as string ?? "";
+                        var parts = tag.Split('|');
+                        if (parts.Length >= 2)
+                        {
+                            parts[1] = verticalAlign;
+                            border.Tag = string.Join("|", parts);
+                        }
+                        else
+                        {
+                            border.Tag = $"{parts.ElementAtOrDefault(0) ?? "Left"}|{verticalAlign}";
+                        }
+                    }
+
+                    // Also try to update the corresponding LabelElement if it exists
+                    var labelElement = CurrentTemplate?.Elements?.FirstOrDefault(e => 
+                        e.Type == LabelElementType.Text && 
+                        Math.Abs(e.X - Canvas.GetLeft(element)) < 1 && 
+                        Math.Abs(e.Y - Canvas.GetTop(element)) < 1);
+
+                    if (labelElement != null)
+                    {
+                        if (horizontalAlign != null) labelElement.TextAlignment = horizontalAlign;
+                        if (verticalAlign != null) labelElement.VerticalAlignment = verticalAlign;
+                    }
+
+                    SetDirty(true);
+                    
+                    // Refresh properties panel if this element is selected
+                    if (elementsToAlign.Count == 1)
+                    {
+                        ShowProperties(element);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        private System.Windows.Controls.Button CreateColorPicker(System.Windows.Media.Color initialColor, Action<System.Windows.Media.Color> onColorChanged)
+        {
+            var button = new System.Windows.Controls.Button
+            {
+                Width = 80,
+                Height = 25,
+                Margin = new Thickness(4, 0, 0, 0),
+                Content = "Color",
+                Background = new SolidColorBrush(initialColor),
+                BorderBrush = new SolidColorBrush(Colors.Gray),
+                BorderThickness = new Thickness(1)
+            };
+
+            button.Click += (s, e) =>
+            {
+                var colorWindow = new System.Windows.Window
+                {
+                    Title = "Color Wheel Picker",
+                    Width = 450,
+                    Height = 400,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    ResizeMode = ResizeMode.NoResize
+                };
+
+                var mainGrid = new System.Windows.Controls.Grid { Margin = new Thickness(10) };
+                mainGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new GridLength(250) });
+                mainGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition());
+                mainGrid.RowDefinitions.Add(new System.Windows.Controls.RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+                mainGrid.RowDefinitions.Add(new System.Windows.Controls.RowDefinition { Height = GridLength.Auto });
+
+                // Color wheel canvas
+                var colorWheelCanvas = new System.Windows.Controls.Canvas
+                {
+                    Width = 200,
+                    Height = 200,
+                    Background = new SolidColorBrush(Colors.White),
+                    Margin = new Thickness(10)
+                };
+                System.Windows.Controls.Grid.SetColumn(colorWheelCanvas, 0);
+                System.Windows.Controls.Grid.SetRow(colorWheelCanvas, 0);
+
+                // Draw color wheel
+                var wheelCenter = new System.Windows.Point(100, 100);
+                var wheelRadius = 90;
+                
+                // Create color wheel using rectangles in a circle
+                for (int angle = 0; angle < 360; angle += 2)
+                {
+                    for (int radius = 20; radius < wheelRadius; radius += 2)
+                    {
+                        var hue = angle;
+                        var saturation = (double)radius / wheelRadius;
+                        var brightness = 1.0; // Always max brightness for wheel display
+                        
+                        var color = HsvToRgb(hue, saturation, brightness);
+                        var rect = new System.Windows.Shapes.Rectangle
+                        {
+                            Width = 3,
+                            Height = 3,
+                            Fill = new SolidColorBrush(color)
+                        };
+                        
+                        var radians = angle * Math.PI / 180;
+                        var x = wheelCenter.X + radius * Math.Cos(radians) - 1.5;
+                        var y = wheelCenter.Y + radius * Math.Sin(radians) - 1.5;
+                        
+                        System.Windows.Controls.Canvas.SetLeft(rect, x);
+                        System.Windows.Controls.Canvas.SetTop(rect, y);
+                        colorWheelCanvas.Children.Add(rect);
+                    }
+                }
+
+                // Color wheel selector
+                var wheelSelector = new System.Windows.Shapes.Ellipse
+                {
+                    Width = 8,
+                    Height = 8,
+                    Stroke = new SolidColorBrush(Colors.White),
+                    StrokeThickness = 2,
+                    Fill = new SolidColorBrush(Colors.Transparent)
+                };
+                colorWheelCanvas.Children.Add(wheelSelector);
+
+                // Current color state - initialize from element's current color
+                var currentHsv = RgbToHsv(initialColor);
+                var currentColor = initialColor; // Start with the actual current color
+
+                // Update wheel selector position
+                Action updateWheelSelector = () =>
+                {
+                    var selectorRadius = currentHsv.S * wheelRadius;
+                    var selectorRadians = currentHsv.H * Math.PI / 180;
+                    var selectorX = wheelCenter.X + selectorRadius * Math.Cos(selectorRadians) - 4;
+                    var selectorY = wheelCenter.Y + selectorRadius * Math.Sin(selectorRadians) - 4;
+                    System.Windows.Controls.Canvas.SetLeft(wheelSelector, selectorX);
+                    System.Windows.Controls.Canvas.SetTop(wheelSelector, selectorY);
+                };
+
+                updateWheelSelector();
+
+                // Right panel for brightness and preview
+                var rightPanel = new System.Windows.Controls.StackPanel { Margin = new Thickness(10) };
+                System.Windows.Controls.Grid.SetColumn(rightPanel, 1);
+                System.Windows.Controls.Grid.SetRow(rightPanel, 0);
+
+                // Color preview - initialize with current element color
+                var previewRect = new System.Windows.Shapes.Rectangle
+                {
+                    Width = 100,
+                    Height = 60,
+                    Fill = new SolidColorBrush(currentColor), // Use currentColor (initialColor)
+                    Stroke = new SolidColorBrush(Colors.Black),
+                    StrokeThickness = 1,
+                    Margin = new Thickness(0, 0, 0, 20)
+                };
+                rightPanel.Children.Add(previewRect);
+
+                // Brightness slider - initialize with current element brightness
+                var brightnessLabel = new System.Windows.Controls.Label { Content = "Brightness:" };
+                rightPanel.Children.Add(brightnessLabel);
+
+                var brightnessSlider = new System.Windows.Controls.Slider
+                {
+                    Minimum = 0,
+                    Maximum = 1,
+                    Value = currentHsv.V, // Use actual current brightness
+                    Width = 120,
+                    Margin = new Thickness(0, 0, 0, 10)
+                };
+                rightPanel.Children.Add(brightnessSlider);
+
+                // RGB values display - initialize with current element RGB
+                var rgbPanel = new System.Windows.Controls.StackPanel { Margin = new Thickness(0, 10, 0, 0) };
+                var rgbLabel = new System.Windows.Controls.Label { Content = "RGB Values:" };
+                rgbPanel.Children.Add(rgbLabel);
+
+                var rLabel = new System.Windows.Controls.Label { Content = $"R: {currentColor.R}" };
+                var gLabel = new System.Windows.Controls.Label { Content = $"G: {currentColor.G}" };
+                var bLabel = new System.Windows.Controls.Label { Content = $"B: {currentColor.B}" };
+                rgbPanel.Children.Add(rLabel);
+                rgbPanel.Children.Add(gLabel);
+                rgbPanel.Children.Add(bLabel);
+                rightPanel.Children.Add(rgbPanel);
+
+                // Update color function
+                Action updateColor = () =>
+                {
+                    currentColor = HsvToRgb(currentHsv.H, currentHsv.S, currentHsv.V);
+                    previewRect.Fill = new SolidColorBrush(currentColor);
+                    rLabel.Content = $"R: {currentColor.R}";
+                    gLabel.Content = $"G: {currentColor.G}";
+                    bLabel.Content = $"B: {currentColor.B}";
+                    updateWheelSelector();
+                };
+
+                // Initialize the picker with current element color
+                updateWheelSelector(); // Position the wheel selector correctly
+                // All other components (preview, brightness, RGB) are already initialized correctly
+
+                // Brightness slider event
+                brightnessSlider.ValueChanged += (bs, be) =>
+                {
+                    currentHsv.V = brightnessSlider.Value;
+                    updateColor();
+                };
+
+                // Color wheel mouse events
+                colorWheelCanvas.MouseLeftButtonDown += (cs, ce) =>
+                {
+                    var position = ce.GetPosition(colorWheelCanvas);
+                    var deltaX = position.X - wheelCenter.X;
+                    var deltaY = position.Y - wheelCenter.Y;
+                    var distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+                    
+                    if (distance <= wheelRadius && distance >= 20)
+                    {
+                        var angle = Math.Atan2(deltaY, deltaX) * 180 / Math.PI;
+                        if (angle < 0) angle += 360;
+                        
+                        currentHsv.H = angle;
+                        currentHsv.S = Math.Min(distance / wheelRadius, 1.0);
+                        updateColor();
+                    }
+                };
+
+                mainGrid.Children.Add(colorWheelCanvas);
+                mainGrid.Children.Add(rightPanel);
+
+                // Buttons
+                var buttonPanel = new System.Windows.Controls.StackPanel 
+                { 
+                    Orientation = System.Windows.Controls.Orientation.Horizontal,
+                    HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                    Margin = new Thickness(0, 10, 0, 0)
+                };
+                System.Windows.Controls.Grid.SetColumnSpan(buttonPanel, 2);
+                System.Windows.Controls.Grid.SetRow(buttonPanel, 1);
+
+                var okButton = new System.Windows.Controls.Button
+                {
+                    Content = "OK",
+                    Width = 80,
+                    Height = 30,
+                    Margin = new Thickness(5)
+                };
+                okButton.Click += (os, oe) =>
+                {
+                    button.Background = new SolidColorBrush(currentColor);
+                    onColorChanged(currentColor);
+                    colorWindow.Close();
+                };
+
+                var cancelButton = new System.Windows.Controls.Button
+                {
+                    Content = "Cancel",
+                    Width = 80,
+                    Height = 30,
+                    Margin = new Thickness(5)
+                };
+                cancelButton.Click += (cs, ce) => colorWindow.Close();
+
+                buttonPanel.Children.Add(okButton);
+                buttonPanel.Children.Add(cancelButton);
+                mainGrid.Children.Add(buttonPanel);
+
+                colorWindow.Content = mainGrid;
+                colorWindow.ShowDialog();
+            };
+
+            return button;
+        }
+
+        // HSV color structure
+        private struct HsvColor
+        {
+            public double H; // Hue (0-360)
+            public double S; // Saturation (0-1)
+            public double V; // Value/Brightness (0-1)
+        }
+
+        private System.Windows.Media.Color HsvToRgb(double hue, double saturation, double value)
+        {
+            double c = value * saturation;
+            double x = c * (1 - Math.Abs((hue / 60) % 2 - 1));
+            double m = value - c;
+
+            double r, g, b;
+
+            if (hue >= 0 && hue < 60)
+            {
+                r = c; g = x; b = 0;
+            }
+            else if (hue >= 60 && hue < 120)
+            {
+                r = x; g = c; b = 0;
+            }
+            else if (hue >= 120 && hue < 180)
+            {
+                r = 0; g = c; b = x;
+            }
+            else if (hue >= 180 && hue < 240)
+            {
+                r = 0; g = x; b = c;
+            }
+            else if (hue >= 240 && hue < 300)
+            {
+                r = x; g = 0; b = c;
+            }
+            else
+            {
+                r = c; g = 0; b = x;
+            }
+
+            return System.Windows.Media.Color.FromRgb(
+                (byte)Math.Round((r + m) * 255),
+                (byte)Math.Round((g + m) * 255),
+                (byte)Math.Round((b + m) * 255)
+            );
+        }
+
+        private HsvColor RgbToHsv(System.Windows.Media.Color color)
+        {
+            double r = color.R / 255.0;
+            double g = color.G / 255.0;
+            double b = color.B / 255.0;
+
+            double max = Math.Max(r, Math.Max(g, b));
+            double min = Math.Min(r, Math.Min(g, b));
+            double delta = max - min;
+
+            var hsv = new HsvColor();
+            hsv.V = max;
+            hsv.S = max == 0 ? 0 : delta / max;
+
+            if (delta == 0)
+            {
+                hsv.H = 0;
+            }
+            else if (max == r)
+            {
+                hsv.H = 60 * (((g - b) / delta) % 6);
+            }
+            else if (max == g)
+            {
+                hsv.H = 60 * ((b - r) / delta + 2);
+            }
+            else
+            {
+                hsv.H = 60 * ((r - g) / delta + 4);
+            }
+
+            if (hsv.H < 0) hsv.H += 360;
+
+            return hsv;
         }
     }
 }

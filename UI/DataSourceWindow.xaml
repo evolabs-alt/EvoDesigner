@@ -270,7 +270,6 @@
             
             <!-- Dialog Buttons span both columns -->
             <StackPanel Grid.Row="5" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
-                <Button Content="🗺️ Field Mapping..." Width="140" Margin="0,0,12,0" Style="{StaticResource ModernButtonStyle}" Click="FieldMapping_Click"/>
                 <Button Content="✅ OK" Width="100" Margin="0,0,12,0" Style="{StaticResource ModernButtonStyle}" Click="OK_Click"/>
                 <Button Content="❌ Cancel" Width="100" Style="{StaticResource ModernButtonStyle}" Click="Cancel_Click"/>
             </StackPanel>

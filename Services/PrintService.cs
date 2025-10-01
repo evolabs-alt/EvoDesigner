@@ -31,7 +31,40 @@ namespace EvoDesigner.Services
                         using (var font = new Font(el.FontFamily ?? "Arial", (float)el.FontSize, el.FontWeight == "Bold" ? FontStyle.Bold : FontStyle.Regular))
                         using (var brush = new SolidBrush(ColorTranslator.FromHtml(el.Foreground ?? "#000000")))
                         {
-                            g.DrawString(el.Content, font, brush, (float)el.X, (float)el.Y);
+                            // Calculate text position based on alignment
+                            var textSize = g.MeasureString(el.Content, font);
+                            float x = (float)el.X;
+                            float y = (float)el.Y;
+                            
+                            // Handle horizontal text alignment
+                            switch (el.TextAlignment?.ToLower())
+                            {
+                                case "center":
+                                    x = (float)(el.X + (el.Width - textSize.Width) / 2);
+                                    break;
+                                case "right":
+                                    x = (float)(el.X + el.Width - textSize.Width);
+                                    break;
+                                default: // "left" or null
+                                    x = (float)el.X;
+                                    break;
+                            }
+                            
+                            // Handle vertical alignment
+                            switch (el.VerticalAlignment?.ToLower())
+                            {
+                                case "center":
+                                    y = (float)(el.Y + (el.Height - textSize.Height) / 2);
+                                    break;
+                                case "bottom":
+                                    y = (float)(el.Y + el.Height - textSize.Height);
+                                    break;
+                                default: // "top" or null
+                                    y = (float)el.Y;
+                                    break;
+                            }
+                            
+                            g.DrawString(el.Content, font, brush, x, y);
                         }
                         break;
                     case LabelElementType.Image:

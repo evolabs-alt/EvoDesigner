@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Underline Toggle Test</TemplateName>
+  <Width>200</Width>
+  <Height>150</Height>
+  <MarginLeft>5</MarginLeft>
+  <MarginRight>5</MarginRight>
+  <MarginTop>5</MarginTop>
+  <MarginBottom>5</MarginBottom>
+  <Elements>
+    <!-- Test 1: Single-line text without underline -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>180</Width>
+      <Height>20</Height>
+      <Content>Single-line text: click underline checkbox to add</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>11</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+      <TextDecorations></TextDecorations>
+    </LabelElement>
+    
+    <!-- Test 2: Single-line text WITH underline -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>35</Y>
+      <Width>180</Width>
+      <Height>20</Height>
+      <Content>Single-line text: click underline checkbox to remove</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>11</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Blue</Foreground>
+      <TextDecorations>Underline</TextDecorations>
+    </LabelElement>
+    
+    <!-- Test 3: Multi-line text without underline -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>60</Y>
+      <Width>180</Width>
+      <Height>40</Height>
+      <Content>Multi-line text that wraps to multiple lines: test adding underline to all lines</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>10</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Green</Foreground>
+      <TextDecorations></TextDecorations>
+    </LabelElement>
+    
+    <!-- Test 4: Multi-line text WITH underline -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>105</Y>
+      <Width>180</Width>
+      <Height>40</Height>
+      <Content>Multi-line underlined text that spans multiple lines: test removing underline from all lines</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>10</FontSize>
+      <FontWeight>Bold</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Red</Foreground>
+      <TextDecorations>Underline</TextDecorations>
+    </LabelElement>
+  </Elements>
+  <FieldMappings />
+</LabelTemplate>

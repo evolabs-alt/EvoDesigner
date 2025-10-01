@@ -217,7 +217,8 @@ namespace EvoDesigner.UI
                             { 
                                 Text = elementContent, 
                                 FontSize = el.FontSize > 0 ? el.FontSize : 12, // Use 12 as default if 0 or negative
-                                TextWrapping = TextWrapping.Wrap
+                                TextWrapping = TextWrapping.Wrap,
+                                Width = el.Width  // Keep width for horizontal text alignment, but remove height for vertical alignment
                             };
                             
                             Console.WriteLine($"[DEBUG] TextBlock created with text: '{tb.Text}', FontSize: {tb.FontSize}");
@@ -248,30 +249,48 @@ namespace EvoDesigner.UI
                             }
                             
                             // Text alignment within bounding box
+                            Console.WriteLine($"[DEBUG PRINT] el.TextAlignment = '{el.TextAlignment}'");
+                            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG PRINT] el.TextAlignment = '{el.TextAlignment}'\n");
+                            
                             switch (el.TextAlignment?.ToLower())
                             {
                                 case "center":
                                     tb.TextAlignment = TextAlignment.Center;
+                                    Console.WriteLine($"[DEBUG PRINT] Set TextAlignment.Center");
+                                    File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG PRINT] Set TextAlignment.Center\n");
                                     break;
                                 case "right":
                                     tb.TextAlignment = TextAlignment.Right;
+                                    Console.WriteLine($"[DEBUG PRINT] Set TextAlignment.Right");
+                                    File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG PRINT] Set TextAlignment.Right\n");
                                     break;
                                 default: // "left" or null
                                     tb.TextAlignment = TextAlignment.Left;
+                                    Console.WriteLine($"[DEBUG PRINT] Set TextAlignment.Left (default, was: '{el.TextAlignment}')");
+                                    File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG PRINT] Set TextAlignment.Left (default, was: '{el.TextAlignment}')\n");
                                     break;
                             }
                             
                             // Vertical alignment within bounding box
+                            Console.WriteLine($"[DEBUG PRINT] el.VerticalAlignment = '{el.VerticalAlignment}'");
+                            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG PRINT] el.VerticalAlignment = '{el.VerticalAlignment}'\n");
+                            
                             switch (el.VerticalAlignment?.ToLower())
                             {
                                 case "center":
                                     tb.VerticalAlignment = VerticalAlignment.Center;
+                                    Console.WriteLine($"[DEBUG PRINT] Set VerticalAlignment.Center");
+                                    File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG PRINT] Set VerticalAlignment.Center\n");
                                     break;
                                 case "bottom":
                                     tb.VerticalAlignment = VerticalAlignment.Bottom;
+                                    Console.WriteLine($"[DEBUG PRINT] Set VerticalAlignment.Bottom");
+                                    File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG PRINT] Set VerticalAlignment.Bottom\n");
                                     break;
                                 default: // "top" or null
                                     tb.VerticalAlignment = VerticalAlignment.Top;
+                                    Console.WriteLine($"[DEBUG PRINT] Set VerticalAlignment.Top (default, was: '{el.VerticalAlignment}')");
+                                    File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: '{el.VerticalAlignment}')\n");
                                     break;
                             }
                             
@@ -364,6 +383,68 @@ namespace EvoDesigner.UI
                                     Height = el.Height,
                                     Fill = Brushes.LightGray,
                                     Stroke = Brushes.DarkGray,
+                                    StrokeThickness = 1
+                                };
+                                uiEl = rect;
+                            }
+                            break;
+                            
+                        case LabelElementType.LinkedImage:
+                            // LinkedImage loads from URL
+                            if (!string.IsNullOrEmpty(el.Content))
+                            {
+                                try
+                                {
+                                    // Try to load image from URL
+                                    var bitmap = new BitmapImage();
+                                    bitmap.BeginInit();
+                                    bitmap.UriSource = new Uri(el.Content, UriKind.Absolute);
+                                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                                    bitmap.EndInit();
+                                    bitmap.Freeze();
+
+                                    var imgBrush = new ImageBrush();
+                                    imgBrush.ImageSource = bitmap;
+                                    imgBrush.Stretch = Stretch.Uniform;
+                                    imgBrush.AlignmentX = AlignmentX.Center;
+                                    imgBrush.AlignmentY = AlignmentY.Center;
+
+                                    var rect = new Rectangle
+                                    {
+                                        Width = el.Width,
+                                        Height = el.Height,
+                                        Fill = imgBrush,
+                                        Stroke = Brushes.DarkBlue,
+                                        StrokeThickness = 1
+                                    };
+                                    uiEl = rect;
+                                    
+                                    Console.WriteLine($"[DEBUG PRINT] LinkedImage loaded from URL: {el.Content}");
+                                }
+                                catch (Exception ex)
+                                {
+                                    // Show error rectangle if URL fails to load
+                                    var rect = new Rectangle
+                                    {
+                                        Width = el.Width,
+                                        Height = el.Height,
+                                        Fill = Brushes.LightBlue,
+                                        Stroke = Brushes.Red,
+                                        StrokeThickness = 2
+                                    };
+                                    uiEl = rect;
+                                    Console.WriteLine($"[DEBUG PRINT] LinkedImage failed to load from URL {el.Content}: {ex.Message}");
+                                }
+                            }
+                            else
+                            {
+                                // No URL provided
+                                var rect = new Rectangle
+                                {
+                                    Width = el.Width,
+                                    Height = el.Height,
+                                    Fill = Brushes.LightBlue,
+                                    Stroke = Brushes.DarkBlue,
                                     StrokeThickness = 1
                                 };
                                 uiEl = rect;
@@ -468,7 +549,36 @@ namespace EvoDesigner.UI
                             break;
                             
                         case LabelElementType.Rectangle:
-                            var rectangle = new System.Windows.Shapes.Rectangle
+                            // Use Border instead of Rectangle to support rounded corners
+                            var rectBorder = new Border
+                            {
+                                Width = el.Width,
+                                Height = el.Height,
+                                BorderThickness = new Thickness(el.BorderWidth > 0 ? el.BorderWidth : 1),
+                                Background = Brushes.Transparent,
+                                CornerRadius = new CornerRadius(el.HasRoundedCorners ? el.CornerRadius : 0)
+                            };
+                            
+                            // Set border color
+                            try
+                            {
+                                if (!string.IsNullOrEmpty(el.BorderColor))
+                                    rectBorder.BorderBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
+                                else
+                                    rectBorder.BorderBrush = Brushes.Black;
+                            }
+                            catch
+                            {
+                                rectBorder.BorderBrush = Brushes.Black;
+                            }
+                            
+                            Console.WriteLine($"[DEBUG PRINT] Rectangle: HasRoundedCorners={el.HasRoundedCorners}, CornerRadius={el.CornerRadius}");
+                            
+                            uiEl = rectBorder;
+                            break;
+                            
+                        case LabelElementType.Ellipse:
+                            var ellipse = new System.Windows.Shapes.Ellipse
                             {
                                 Width = el.Width,
                                 Height = el.Height,
@@ -480,16 +590,18 @@ namespace EvoDesigner.UI
                             try
                             {
                                 if (!string.IsNullOrEmpty(el.BorderColor))
-                                    rectangle.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
+                                    ellipse.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
                                 else
-                                    rectangle.Stroke = Brushes.Black;
+                                    ellipse.Stroke = Brushes.Black;
                             }
                             catch
                             {
-                                rectangle.Stroke = Brushes.Black;
+                                ellipse.Stroke = Brushes.Black;
                             }
                             
-                            uiEl = rectangle;
+                            Console.WriteLine($"[DEBUG PRINT] Ellipse: Width={el.Width}, Height={el.Height}");
+                            
+                            uiEl = ellipse;
                             break;
                     }
                     
@@ -1185,6 +1297,64 @@ namespace EvoDesigner.UI
                         }
                         break;
                         
+                    case LabelElementType.LinkedImage:
+                        // LinkedImage loads from URL for printing
+                        if (!string.IsNullOrEmpty(el.Content))
+                        {
+                            try
+                            {
+                                // Load image from URL for printing
+                                var bitmapImage = new BitmapImage();
+                                bitmapImage.BeginInit();
+                                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                bitmapImage.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                                bitmapImage.UriSource = new Uri(el.Content, UriKind.Absolute);
+                                bitmapImage.EndInit();
+                                bitmapImage.Freeze(); // Important for threading and print context
+                                
+                                var img = new System.Windows.Controls.Image
+                                {
+                                    Source = bitmapImage,
+                                    Width = el.Width,
+                                    Height = el.Height,
+                                    Stretch = Stretch.Uniform,
+                                    StretchDirection = StretchDirection.Both
+                                };
+                                
+                                Console.WriteLine($"[DEBUG] Created LinkedImage for printing from URL: {el.Content}");
+                                uiEl = img;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"[DEBUG] LinkedImage load error in print from URL {el.Content}: {ex.Message}");
+                                // Fall back to a clear placeholder if URL fails
+                                var rect = new Rectangle
+                                {
+                                    Width = el.Width,
+                                    Height = el.Height,
+                                    Fill = Brushes.LightBlue,
+                                    Stroke = Brushes.Red,
+                                    StrokeThickness = 2
+                                };
+                                uiEl = rect;
+                            }
+                        }
+                        else
+                        {
+                            // No URL provided - show placeholder
+                            var rect = new Rectangle
+                            {
+                                Width = el.Width,
+                                Height = el.Height,
+                                Fill = Brushes.LightBlue,
+                                Stroke = Brushes.DarkBlue,
+                                StrokeThickness = 1
+                            };
+                            Console.WriteLine($"[DEBUG] Created LinkedImage placeholder for printing: {rect.Width}x{rect.Height}");
+                            uiEl = rect;
+                        }
+                        break;
+                        
                     case LabelElementType.EAN13:
                     case LabelElementType.EAN8:
                     case LabelElementType.UPCA:
@@ -1263,7 +1433,35 @@ namespace EvoDesigner.UI
                         break;
                         
                     case LabelElementType.Rectangle:
-                        var printRectangle = new System.Windows.Shapes.Rectangle
+                        // Use Border instead of Rectangle to support rounded corners in printing
+                        var printRectBorder = new Border
+                        {
+                            Width = el.Width,
+                            Height = el.Height,
+                            BorderThickness = new Thickness(el.BorderWidth > 0 ? el.BorderWidth : 1),
+                            Background = Brushes.Transparent,
+                            CornerRadius = new CornerRadius(el.HasRoundedCorners ? el.CornerRadius : 0)
+                        };
+                        
+                        // Set border color
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(el.BorderColor))
+                                printRectBorder.BorderBrush = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
+                            else
+                                printRectBorder.BorderBrush = Brushes.Black;
+                        }
+                        catch
+                        {
+                            printRectBorder.BorderBrush = Brushes.Black;
+                        }
+                        
+                        Console.WriteLine($"[DEBUG] Created Rectangle for printing: {printRectBorder.Width}x{printRectBorder.Height}, HasRoundedCorners: {el.HasRoundedCorners}, CornerRadius: {el.CornerRadius}");
+                        uiEl = printRectBorder;
+                        break;
+                        
+                    case LabelElementType.Ellipse:
+                        var printEllipse = new System.Windows.Shapes.Ellipse
                         {
                             Width = el.Width,
                             Height = el.Height,
@@ -1275,17 +1473,17 @@ namespace EvoDesigner.UI
                         try
                         {
                             if (!string.IsNullOrEmpty(el.BorderColor))
-                                printRectangle.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
+                                printEllipse.Stroke = (SolidColorBrush)(new BrushConverter().ConvertFrom(el.BorderColor) ?? Brushes.Black);
                             else
-                                printRectangle.Stroke = Brushes.Black;
+                                printEllipse.Stroke = Brushes.Black;
                         }
                         catch
                         {
-                            printRectangle.Stroke = Brushes.Black;
+                            printEllipse.Stroke = Brushes.Black;
                         }
                         
-                        Console.WriteLine($"[DEBUG] Created Rectangle for printing: {printRectangle.Width}x{printRectangle.Height}, BorderWidth: {printRectangle.StrokeThickness}");
-                        uiEl = printRectangle;
+                        Console.WriteLine($"[DEBUG] Created Ellipse for printing: {printEllipse.Width}x{printEllipse.Height}");
+                        uiEl = printEllipse;
                         break;
                         
                     default:
@@ -1410,7 +1608,8 @@ namespace EvoDesigner.UI
                             Text = elementContent, 
                             FontSize = el.FontSize > 0 ? (el.FontSize * scaleFactor) : (12 * scaleFactor), // Use 12 as default
                             Width = el.Width * scaleFactor,
-                            Height = el.Height * scaleFactor
+                            Height = el.Height * scaleFactor,
+                            TextWrapping = TextWrapping.Wrap
                         };
                         
                         // Apply font properties
@@ -1506,6 +1705,52 @@ namespace EvoDesigner.UI
                             rect.StrokeThickness = 2;
                         }
                         uiEl = rect;
+                        break;
+                        
+                    case LabelElementType.LinkedImage:
+                        // Create Rectangle for LinkedImage printing
+                        var linkedRect = new Rectangle { 
+                            Width = el.Width * scaleFactor, 
+                            Height = el.Height * scaleFactor 
+                        };
+                        try 
+                        {
+                            // Load from URL for LinkedImage
+                            if (!string.IsNullOrEmpty(el.Content))
+                            {
+                                var bitmapImage = new BitmapImage();
+                                bitmapImage.BeginInit();
+                                bitmapImage.UriSource = new Uri(el.Content, UriKind.Absolute);
+                                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                bitmapImage.EndInit();
+                                bitmapImage.Freeze(); // Freeze for performance and thread safety
+                                
+                                var imgBrush = new ImageBrush();
+                                imgBrush.ImageSource = bitmapImage;
+                                imgBrush.Stretch = Stretch.Uniform;
+                                imgBrush.AlignmentX = AlignmentX.Center;
+                                imgBrush.AlignmentY = AlignmentY.Center;
+                                linkedRect.Fill = imgBrush;
+                                
+                                Console.WriteLine($"[DEBUG] LinkedImage loaded for print from URL: {el.Content}");
+                            }
+                            else
+                            {
+                                // No URL provided - show placeholder
+                                linkedRect.Fill = Brushes.LightBlue;
+                                linkedRect.Stroke = Brushes.DarkBlue;
+                                linkedRect.StrokeThickness = 1;
+                            }
+                        } 
+                        catch (Exception ex)
+                        { 
+                            // Log the actual error for debugging
+                            Console.WriteLine($"[DEBUG] Error loading LinkedImage for print from URL {el.Content}: {ex.Message}");
+                            linkedRect.Fill = Brushes.LightBlue;
+                            linkedRect.Stroke = Brushes.Red;
+                            linkedRect.StrokeThickness = 2;
+                        }
+                        uiEl = linkedRect;
                         break;
                         
                     case LabelElementType.Barcode13:

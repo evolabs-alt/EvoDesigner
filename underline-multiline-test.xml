@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Underline Multi-Line Test</TemplateName>
+  <Width>150</Width>
+  <Height>100</Height>
+  <MarginLeft>5</MarginLeft>
+  <MarginRight>5</MarginRight>
+  <MarginTop>5</MarginTop>
+  <MarginBottom>5</MarginBottom>
+  <Elements>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>130</Width>
+      <Height>40</Height>
+      <Content>This is a multi-line text element with underline decoration that should wrap to multiple lines.</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>12</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+      <TextDecorations>Underline</TextDecorations>
+    </LabelElement>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>55</Y>
+      <Width>130</Width>
+      <Height>35</Height>
+      <Content>Line 1: Regular text
+Line 2: Underlined text
+Line 3: More text</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>10</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Blue</Foreground>
+      <TextDecorations>Underline</TextDecorations>
+    </LabelElement>
+  </Elements>
+  <FieldMappings />
+</LabelTemplate>

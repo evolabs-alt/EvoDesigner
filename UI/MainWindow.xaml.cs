@@ -31,6 +31,10 @@ namespace EvoDesigner
         private EvoDesigner.Models.LabelTemplate CurrentTemplate = new();
         private Point dragStart;
         private bool isDragging = false;
+        private bool isDragInProgress = false; // Flag to prevent double element creation during drag operations
+        private DateTime lastElementCreationTime = DateTime.MinValue;
+        private string lastElementType = "";
+        private Point lastElementPosition = new Point(-1000, -1000);
         private UIElement? selectedElement = null;
         private DataTable? lastResultTable = null;
         private Thumb? resizeThumb = null;
@@ -100,14 +104,16 @@ namespace EvoDesigner
             if (dataSourceBtn != null) dataSourceBtn.Click += DataSource_Click;
             
             // Wire up grid toggle
-            ShowGridCheckBox.Checked += ShowGridCheckBox_Changed;
-            ShowGridCheckBox.Unchecked += ShowGridCheckBox_Changed;
+            // TODO: Re-enable when ShowGridCheckBox is added to XAML
+            // ShowGridCheckBox.Checked += ShowGridCheckBox_Changed;
+            // ShowGridCheckBox.Unchecked += ShowGridCheckBox_Changed;
 
             // Wire up template property change events (only margins now)
-            MarginLeftBox.TextChanged += TemplateDimensions_Changed;
-            MarginRightBox.TextChanged += TemplateDimensions_Changed;
-            MarginTopBox.TextChanged += TemplateDimensions_Changed;
-            MarginBottomBox.TextChanged += TemplateDimensions_Changed;
+            // TODO: Re-enable when margin textboxes are added to XAML
+            // MarginLeftBox.TextChanged += TemplateDimensions_Changed;
+            // MarginRightBox.TextChanged += TemplateDimensions_Changed;
+            // MarginTopBox.TextChanged += TemplateDimensions_Changed;
+            // MarginBottomBox.TextChanged += TemplateDimensions_Changed;
             
             // Set default template values
             InitializeDefaultTemplate();
@@ -154,10 +160,11 @@ namespace EvoDesigner
             _labelWidthMm = 70.0;
             _labelHeightMm = 30.0;
             UpdateDisplayedDimensions();
-            MarginLeftBox.Text = "2";
-            MarginRightBox.Text = "2";
-            MarginTopBox.Text = "2";
-            MarginBottomBox.Text = "2";
+            // TODO: Re-enable when margin textboxes are added to XAML
+            // MarginLeftBox.Text = "2";
+            // MarginRightBox.Text = "2";
+            // MarginTopBox.Text = "2";
+            // MarginBottomBox.Text = "2";
             
             UpdateCanvasSize();
         }
@@ -179,10 +186,16 @@ namespace EvoDesigner
             // Use internal properties instead of textboxes for dimensions
             double widthMm = _labelWidthMm;
             double heightMm = _labelHeightMm;
-            double marginLeftMm = double.TryParse(MarginLeftBox.Text, out double ml) ? ml : 2;
-            double marginRightMm = double.TryParse(MarginRightBox.Text, out double mr) ? mr : 2;
-            double marginTopMm = double.TryParse(MarginTopBox.Text, out double mt) ? mt : 2;
-            double marginBottomMm = double.TryParse(MarginBottomBox.Text, out double mb) ? mb : 2;
+            // double marginLeftMm = double.TryParse(MarginLeftBox.Text, out double ml) ? ml : 2;
+            // double marginRightMm = double.TryParse(MarginRightBox.Text, out double mr) ? mr : 2;
+            // double marginTopMm = double.TryParse(MarginTopBox.Text, out double mt) ? mt : 2;
+            // double marginBottomMm = double.TryParse(MarginBottomBox.Text, out double mb) ? mb : 2;
+            
+            // Use default values for now
+            double marginLeftMm = 2;
+            double marginRightMm = 2;
+            double marginTopMm = 2;
+            double marginBottomMm = 2;
 
             // Convert to screen pixels
             double canvasWidth = MeasurementService.MmToScreenPixels(widthMm);
@@ -391,13 +404,13 @@ namespace EvoDesigner
             GridCanvas.Width = LabelCanvas.Width;
             GridCanvas.Height = LabelCanvas.Height;
 
-            // Only show grid if checkbox is checked
-            if (ShowGridCheckBox?.IsChecked != true)
-            {
-                GridCanvas.Visibility = Visibility.Hidden;
-                return;
-            }
-            
+            // Only show grid (disable checkbox logic for now)
+            // if (ShowGridCheckBox?.IsChecked != true)
+            // {
+            //     GridCanvas.Visibility = Visibility.Hidden;
+            //     return;
+            // }
+            // For now, always show the grid
             GridCanvas.Visibility = Visibility.Visible;
             
             // Professional light grey grid colors
@@ -447,10 +460,11 @@ namespace EvoDesigner
 
         private void ShowGridCheckBox_Changed(object sender, RoutedEventArgs e)
         {
-            if (GridCanvas != null)
-            {
-                GridCanvas.Visibility = ShowGridCheckBox.IsChecked == true ? Visibility.Visible : Visibility.Hidden;
-            }
+            // TODO: Re-enable when ShowGridCheckBox and GridCanvas are available
+            // if (GridCanvas != null)
+            // {
+            //     GridCanvas.Visibility = ShowGridCheckBox.IsChecked == true ? Visibility.Visible : Visibility.Hidden;
+            // }
         }
 
         private Button FindButtonByContent(string content)
@@ -914,54 +928,85 @@ namespace EvoDesigner
         {
             // Find buttons by content and attach drag handlers
             var buttons = FindElementsByType<Button>(Content as DependencyObject);
+            var canvas = LabelCanvas; // Capture canvas reference for lambda expressions
             
             foreach (var btn in buttons)
             {
                 var content = btn.Content?.ToString();
+                string? elementType = null;
                 
                 // Basic elements
-                if (content?.Contains("Text") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("Text");
-                else if (content?.Contains("Image") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("Image");
+                if (content?.Contains("Text") == true && !content?.Contains("Linked") == true)
+                    elementType = "Text";
+                else if (content?.Contains("Image") == true && !content?.Contains("Linked") == true)
+                    elementType = "Image";
+                else if (content?.Contains("Linked Image") == true)
+                    elementType = "LinkedImage";
                 
                 // Drawing tools
                 else if (content?.Contains("Line") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("Line");
+                    elementType = "Line";
                 else if (content?.Contains("Rectangle") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("Rectangle");
+                    elementType = "Rectangle";
+                else if (content?.Contains("Ellipse") == true)
+                    elementType = "Ellipse";
                 
                 // Retail checkout - updated to match emoji content
                 else if (content?.Contains("EAN-13") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("EAN13");
+                    elementType = "EAN13";
                 else if (content?.Contains("EAN-8") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("EAN8");
+                    elementType = "EAN8";
                 else if (content?.Contains("UPC-A") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("UPCA");
+                    elementType = "UPCA";
                 else if (content?.Contains("UPC-E") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("UPCE");
+                    elementType = "UPCE";
                 
                 // Logistics
                 else if (content?.Contains("Code 128") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("Code128");
+                    elementType = "Code128";
                 else if (content?.Contains("Code 39") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("Code39");
+                    elementType = "Code39";
                 
                 // Mobile/Consumer
                 else if (content?.Contains("QR Code") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("QRCode");
+                    elementType = "QRCode";
                 else if (content?.Contains("Aztec") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("Aztec");
+                    elementType = "Aztec";
                 
                 // Healthcare/Industrial
                 else if (content?.Contains("DataMatrix") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("DataMatrix");
+                    elementType = "DataMatrix";
                 else if (content?.Contains("GS1 DataBar") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("GS1DataBar");
+                    elementType = "GS1DataBar";
                 
                 // Government
                 else if (content?.Contains("PDF417") == true)
-                    btn.PreviewMouseDown += (s, e) => StartDrag("PDF417");
+                    elementType = "PDF417";
+                
+                // If we found a matching element type, attach handlers
+                if (elementType != null)
+                {
+                    // Attach drag handler - simple approach that works
+                    btn.PreviewMouseDown += (s, e) => {
+                        StartDrag(elementType);
+                    };
+                    
+                    // Attach double-click handler for center placement
+                    btn.MouseDoubleClick += (s, e) => {
+                        // Calculate center of canvas
+                        var centerX = canvas.Width / 2;
+                        var centerY = canvas.Height / 2;
+                        
+                        // Use the same logic as drag & drop by calling a helper method
+                        CreateElementFromDrop(elementType, new Point(centerX, centerY));
+                        
+                        // Prevent drag from also executing
+                        e.Handled = true;
+                        
+                        System.IO.File.AppendAllText("linkedimage-debug.log", 
+                            $"{DateTime.Now}: Button double-click created {elementType} at center ({centerX}, {centerY}) via drop logic\n");
+                    };
+                }
             }
         }
 
@@ -980,7 +1025,16 @@ namespace EvoDesigner
 
         private void StartDrag(string elementType)
         {
-            DragDrop.DoDragDrop(this, elementType, DragDropEffects.Copy);
+            try
+            {
+                isDragInProgress = true;
+                DragDrop.DoDragDrop(this, elementType, DragDropEffects.Copy);
+            }
+            finally
+            {
+                // Reset flag after drag operation completes
+                Task.Delay(100).ContinueWith(_ => isDragInProgress = false);
+            }
         }
 
         private void LabelCanvas_Drop(object sender, DragEventArgs e)
@@ -1040,6 +1094,26 @@ namespace EvoDesigner
                 var elementType = e.Data.GetData(typeof(string)) as string;
                 if (elementType == null) return;
 
+                // Check for potential duplicate creation (within 200ms and 10px of last creation)
+                // Reduced timing and distance to be less aggressive and allow double-clicks
+                var timeSinceLastCreation = DateTime.Now - lastElementCreationTime;
+                var distanceFromLast = Math.Sqrt(Math.Pow(adjustedPosition.X - lastElementPosition.X, 2) + 
+                                                 Math.Pow(adjustedPosition.Y - lastElementPosition.Y, 2));
+                
+                if (timeSinceLastCreation.TotalMilliseconds < 200 && 
+                    distanceFromLast < 10 && 
+                    elementType == lastElementType)
+                {
+                    System.IO.File.AppendAllText("linkedimage-debug.log", 
+                        $"{DateTime.Now}: Duplicate element creation prevented - {elementType} at {adjustedPosition}\n");
+                    return;
+                }
+                
+                // Record this creation to prevent duplicates
+                lastElementCreationTime = DateTime.Now;
+                lastElementType = elementType;
+                lastElementPosition = adjustedPosition;
+
                 UIElement newElement = null;
                 switch (elementType)
                 {
@@ -1083,6 +1157,29 @@ namespace EvoDesigner
                             // User cancelled - create placeholder rectangle
                             newElement = new Rectangle { Width = 60, Height = 60, Fill = Brushes.LightGray, Stroke = Brushes.DarkGray, StrokeThickness = 2, Tag = "No Image Selected" };
                         }
+                        break;
+                    
+                    case "LinkedImage":
+                        // Create LinkedImage placeholder - no file dialog needed
+                        var linkedImageBorder = new Border
+                        {
+                            Width = 100,
+                            Height = 75,
+                            BorderBrush = Brushes.Blue,
+                            BorderThickness = new Thickness(2),
+                            Background = Brushes.LightBlue,
+                            Child = new TextBlock
+                            {
+                                Text = "LinkedImage\n[URL]",
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center,
+                                TextAlignment = TextAlignment.Center,
+                                FontSize = 10,
+                                Foreground = Brushes.DarkBlue
+                            },
+                            Tag = "LinkedImage:" // Use proper tag format for properties detection - empty URL initially
+                        };
+                        newElement = linkedImageBorder;
                         break;
                     
                     case "Line":
@@ -1192,6 +1289,217 @@ namespace EvoDesigner
             catch (Exception ex)
             {
                 MessageBox.Show($"Drop operation failed: {ex.Message}", "Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CreateElementFromDrop(string elementType, Point position)
+        {
+            try
+            {
+                var adjustedPosition = SuggestOptimalPosition(position);
+                
+                // Check for potential duplicate creation (within 200ms and 10px of last creation)
+                var timeSinceLastCreation = DateTime.Now - lastElementCreationTime;
+                var distanceFromLast = Math.Sqrt(Math.Pow(adjustedPosition.X - lastElementPosition.X, 2) + 
+                                                 Math.Pow(adjustedPosition.Y - lastElementPosition.Y, 2));
+                
+                if (timeSinceLastCreation.TotalMilliseconds < 200 && 
+                    distanceFromLast < 10 && 
+                    elementType == lastElementType)
+                {
+                    System.IO.File.AppendAllText("linkedimage-debug.log", 
+                        $"{DateTime.Now}: Duplicate element creation prevented - {elementType} at {adjustedPosition}\n");
+                    return;
+                }
+                
+                // Record this creation to prevent duplicates
+                lastElementCreationTime = DateTime.Now;
+                lastElementType = elementType;
+                lastElementPosition = adjustedPosition;
+
+                UIElement newElement = null;
+                switch (elementType)
+                {
+                    case "Text":
+                        var textBlock = new TextBlock { Text = "Text", FontSize = 16, Foreground = Brushes.Black };
+                        var border = new Border
+                        {
+                            Child = textBlock,
+                            BorderBrush = Brushes.LightGray,
+                            BorderThickness = new Thickness(1),
+                            Background = Brushes.Transparent,
+                            Width = 100,
+                            Height = 30
+                        };
+                        newElement = border;
+                        break;
+                    case "Image":
+                        // Prompt user to select an image file
+                        var openFileDialog = new Microsoft.Win32.OpenFileDialog
+                        {
+                            Filter = "Image files (*.png;*.jpg;*.jpeg;*.bmp;*.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.gif|All files (*.*)|*.*",
+                            Title = "Select Image File"
+                        };
+                        
+                        if (openFileDialog.ShowDialog() == true)
+                        {
+                            try
+                            {
+                                newElement = CreateImageFromFile(openFileDialog.FileName);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Failed to load image: {ex.Message}", "Error", 
+                                    MessageBoxButton.OK, MessageBoxImage.Error);
+                                // Create placeholder rectangle as fallback
+                                newElement = new Rectangle { Width = 60, Height = 60, Fill = Brushes.LightGray, Stroke = Brushes.DarkGray, StrokeThickness = 2, Tag = "No Image Selected" };
+                            }
+                        }
+                        else
+                        {
+                            // User cancelled - create placeholder rectangle
+                            newElement = new Rectangle { Width = 60, Height = 60, Fill = Brushes.LightGray, Stroke = Brushes.DarkGray, StrokeThickness = 2, Tag = "No Image Selected" };
+                        }
+                        break;
+                    
+                    case "LinkedImage":
+                        // Create LinkedImage placeholder - no file dialog needed
+                        var linkedImageBorder = new Border
+                        {
+                            Width = 100,
+                            Height = 75,
+                            BorderBrush = Brushes.Blue,
+                            BorderThickness = new Thickness(2),
+                            Background = Brushes.LightBlue,
+                            Child = new TextBlock
+                            {
+                                Text = "LinkedImage\n[URL]",
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center,
+                                TextAlignment = TextAlignment.Center,
+                                FontSize = 10,
+                                Foreground = Brushes.DarkBlue
+                            },
+                            Tag = "LinkedImage:" // Use proper tag format for properties detection - empty URL initially
+                        };
+                        newElement = linkedImageBorder;
+                        break;
+                    
+                    case "Line":
+                        // Create a container canvas for the line that can be resized
+                        var lineContainer = new Canvas
+                        {
+                            Width = 100,
+                            Height = 30,
+                            Background = Brushes.Transparent
+                        };
+                        
+                        var line = new System.Windows.Shapes.Line
+                        {
+                            X1 = 0,
+                            Y1 = 15, // Half of container height
+                            X2 = 100, // Full container width
+                            Y2 = 15,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 1
+                        };
+                        
+                        lineContainer.Children.Add(line);
+                        newElement = lineContainer;
+                        break;
+                    
+                    case "Rectangle":
+                        var rectangle = new System.Windows.Shapes.Rectangle
+                        {
+                            Width = 100,
+                            Height = 60,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 1,
+                            Fill = Brushes.Transparent
+                        };
+                        newElement = rectangle;
+                        break;
+                    
+                    // Retail Checkout
+                    case "EAN13":
+                        newElement = CreateBarcodeImage("EAN13", "4000000000004", 120, 60);
+                        break;
+                    case "EAN8":
+                        newElement = CreateBarcodeImage("EAN8", "40000007", 80, 60);
+                        break;
+                    case "UPCA":
+                        newElement = CreateBarcodeImage("UPCA", "012345678905", 120, 60);
+                        break;
+                    case "UPCE":
+                        newElement = CreateBarcodeImage("UPCE", "01234565", 80, 60);
+                        break;
+                    
+                    // Logistics
+                    case "Code128":
+                        newElement = CreateBarcodeImage("Code128", "HELLO123", 140, 60);
+                        break;
+                    case "Code39":
+                        newElement = CreateBarcodeImage("Code39", "HELLO39", 140, 60);
+                        break;
+                    
+                    // Mobile/Consumer
+                    case "QRCode":
+                        newElement = CreateBarcodeImage("QRCode", "Sample QR Data", 80, 80);
+                        break;
+                    case "Aztec":
+                        newElement = CreateBarcodeImage("Aztec", "Sample Aztec Data", 80, 80);
+                        break;
+                    
+                    // Healthcare/Industrial
+                    case "DataMatrix":
+                        newElement = CreateBarcodeImage("DataMatrix", "Sample Data Matrix", 80, 80);
+                        break;
+                    case "GS1DataBar":
+                        newElement = CreateBarcodeImage("GS1DataBar", "01234567890123", 120, 60);
+                        break;
+                    case "PDF417":
+                        newElement = CreateBarcodeImage("PDF417", "Sample PDF417 Data", 120, 60);
+                        break;
+                        
+                    case "Ellipse":
+                        newElement = new System.Windows.Shapes.Ellipse
+                        {
+                            Width = 100,
+                            Height = 75,
+                            Fill = Brushes.LightGray,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 2
+                        };
+                        break;
+                        
+                    default:
+                        // Fallback - shouldn't happen but just in case
+                        newElement = new Rectangle { Width = 100, Height = 60, Fill = Brushes.LightGray, Stroke = Brushes.DarkGray, StrokeThickness = 2, Tag = $"Unknown: {elementType}" };
+                        break;
+                }
+                
+                if (newElement != null)
+                {
+                    newElement.MouseLeftButtonDown += Element_MouseLeftButtonDown;
+                    
+                    // Use command to add the element
+                    var addCommand = new AddElementCommand(LabelCanvas, newElement, adjustedPosition.X, adjustedPosition.Y, $"Add {elementType}");
+                    commandHistory.ExecuteCommand(addCommand);
+                    
+                    // Mark as dirty since we added an element
+                    SetDirty(true);
+                    
+                    // Show a tooltip if the element was repositioned
+                    if (adjustedPosition != position)
+                    {
+                        ShowPositioningTooltip(newElement, "Element positioned within printable area");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Element creation failed: {ex.Message}", "Error", 
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -1982,8 +2290,87 @@ namespace EvoDesigner
             {
                 ElementPropertiesPanel.Children.Clear();
                 
+                // Handle LinkedImage Border containers FIRST (before general text borders)
+                if (element is Border linkedBorder && linkedBorder.Tag?.ToString()?.StartsWith("LinkedImage:") == true)
+                {
+                    var tagString = linkedBorder.Tag.ToString();
+                    
+                    // LinkedImage properties
+                    var linkedImageLabel = new Label { Content = "Linked Image Properties" };
+                    linkedImageLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(linkedImageLabel);
+                    
+                    // URL property
+                    var urlLabel = new Label { Content = "URL:" };
+                    urlLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(urlLabel);
+                    
+                    var currentUrl = tagString.Substring("LinkedImage:".Length);
+                    var urlBox = new TextBox { Text = currentUrl };
+                    urlBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    
+                    // Handle URL change on Enter key or losing focus
+                    urlBox.LostFocus += (s, e) => {
+                        if (!string.IsNullOrWhiteSpace(urlBox.Text) && urlBox.Text != currentUrl)
+                        {
+                            LoadLinkedImageFromUrl(linkedBorder, urlBox.Text);
+                        }
+                    };
+                    
+                    urlBox.KeyDown += (s, e) => {
+                        if (e.Key == Key.Enter)
+                        {
+                            LoadLinkedImageFromUrl(linkedBorder, urlBox.Text);
+                        }
+                    };
+                    
+                    ElementPropertiesPanel.Children.Add(urlBox);
+                    
+                    // Width and height properties for Border
+                    AddLinkedImageSizeProperties(linkedBorder, linkedBorder.Width, linkedBorder.Height);
+                }
+                // Handle LinkedImage Image elements (after URL has been loaded)
+                else if (element is Image linkedImage && linkedImage.Tag?.ToString()?.StartsWith("LinkedImage:") == true)
+                {
+                    var tagString = linkedImage.Tag.ToString();
+                    
+                    // LinkedImage properties
+                    var linkedImageLabel = new Label { Content = "Linked Image Properties" };
+                    linkedImageLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(linkedImageLabel);
+                    
+                    // URL property
+                    var urlLabel = new Label { Content = "URL:" };
+                    urlLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(urlLabel);
+                    
+                    var currentUrl = tagString.Substring("LinkedImage:".Length);
+                    var urlBox = new TextBox { Text = currentUrl };
+                    urlBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    
+                    // Handle URL change on Enter key or losing focus
+                    urlBox.LostFocus += (s, e) => {
+                        if (!string.IsNullOrWhiteSpace(urlBox.Text) && urlBox.Text != currentUrl)
+                        {
+                            // For Image elements, we need to update the image source directly
+                            UpdateLinkedImageUrl(linkedImage, urlBox.Text);
+                        }
+                    };
+                    
+                    urlBox.KeyDown += (s, e) => {
+                        if (e.Key == Key.Enter)
+                        {
+                            UpdateLinkedImageUrl(linkedImage, urlBox.Text);
+                        }
+                    };
+                    
+                    ElementPropertiesPanel.Children.Add(urlBox);
+                    
+                    // Width and height properties for Image
+                    AddLinkedImageSizeProperties(linkedImage, linkedImage.Width, linkedImage.Height);
+                }
                 // Handle Border containers with TextBlock children (new text elements)
-                if (element is Border border && border.Child is TextBlock tb)
+                else if (element is Border border && border.Child is TextBlock tb)
                 {
                     // Debug: Log current TextBlock properties
                     var debugMsg = $"[DEBUG] ShowProperties for TextBlock: Text='{tb.Text}', FontSize={tb.FontSize}\n";
@@ -2368,6 +2755,68 @@ namespace EvoDesigner
             }
         }
 
+        private void AddLinkedImageSizeProperties(FrameworkElement element, double width, double height)
+        {
+            // Width property
+            var widthLabel = new Label { Content = "Width:" };
+            widthLabel.Style = (Style)FindResource("ModernLabelStyle");
+            ElementPropertiesPanel.Children.Add(widthLabel);
+            
+            var widthBox = new TextBox { Text = width.ToString() };
+            widthBox.Style = (Style)FindResource("ModernTextBoxStyle");
+            widthBox.TextChanged += (s, e) => {
+                if (double.TryParse(widthBox.Text, out double newWidth)) {
+                    element.Width = newWidth;
+                    SetDirty(true);
+                }
+            };
+            ElementPropertiesPanel.Children.Add(widthBox);
+            
+            // Height property
+            var heightLabel = new Label { Content = "Height:" };
+            heightLabel.Style = (Style)FindResource("ModernLabelStyle");
+            ElementPropertiesPanel.Children.Add(heightLabel);
+            
+            var heightBox = new TextBox { Text = height.ToString() };
+            heightBox.Style = (Style)FindResource("ModernTextBoxStyle");
+            heightBox.TextChanged += (s, e) => {
+                if (double.TryParse(heightBox.Text, out double newHeight)) {
+                    element.Height = newHeight;
+                    SetDirty(true);
+                }
+            };
+            ElementPropertiesPanel.Children.Add(heightBox);
+        }
+
+        private void UpdateLinkedImageUrl(Image linkedImage, string newUrl)
+        {
+            if (string.IsNullOrWhiteSpace(newUrl))
+                return;
+
+            try
+            {
+                // Update the tag with the new URL
+                linkedImage.Tag = $"LinkedImage:{newUrl}";
+                
+                // Load the new image from URL
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(newUrl, UriKind.Absolute);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                
+                linkedImage.Source = bitmap;
+                
+                SetDirty(true);
+                System.IO.File.AppendAllText("linkedimage-debug.log", $"{DateTime.Now}: Updated LinkedImage URL to: {newUrl}\n");
+            }
+            catch (Exception ex)
+            {
+                System.IO.File.AppendAllText("linkedimage-debug.log", $"{DateTime.Now}: Failed to update LinkedImage URL '{newUrl}': {ex.Message}\n");
+                MessageBox.Show($"Failed to load image from URL:\n{ex.Message}", "Image Load Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
         private void AddRotationControls(UIElement element)
         {
             // Add a separator before rotation controls
@@ -2705,10 +3154,11 @@ namespace EvoDesigner
                     _labelWidthMm = CurrentTemplate.LabelWidth;
                     _labelHeightMm = CurrentTemplate.LabelHeight;
                     UpdateDisplayedDimensions();
-                    MarginLeftBox.Text = CurrentTemplate.MarginLeft.ToString("F1");
-                    MarginRightBox.Text = CurrentTemplate.MarginRight.ToString("F1");
-                    MarginTopBox.Text = CurrentTemplate.MarginTop.ToString("F1");
-                    MarginBottomBox.Text = CurrentTemplate.MarginBottom.ToString("F1");
+                    // TODO: Re-enable when margin textboxes are added to XAML
+                    // MarginLeftBox.Text = CurrentTemplate.MarginLeft.ToString("F1");
+                    // MarginRightBox.Text = CurrentTemplate.MarginRight.ToString("F1");
+                    // MarginTopBox.Text = CurrentTemplate.MarginTop.ToString("F1");
+                    // MarginBottomBox.Text = CurrentTemplate.MarginBottom.ToString("F1");
                     
                     // Update canvas size and guidelines
                     UpdateCanvasSize();
@@ -2825,6 +3275,66 @@ namespace EvoDesigner
             _isDirty = isDirty;
             string baseTitle = "TaggJack - Label Designer";
             this.Title = _isDirty ? $"{baseTitle} *" : baseTitle;
+        }
+
+        private void LoadLinkedImageFromUrl(Border linkedBorder, string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            try
+            {
+                // Update the tag with the new URL
+                linkedBorder.Tag = $"LinkedImage:{url}";
+                
+                // Create a new Image element to replace the Border placeholder
+                var img = new Image
+                {
+                    Width = linkedBorder.Width,
+                    Height = linkedBorder.Height,
+                    Stretch = Stretch.Uniform,
+                    Tag = $"LinkedImage:{url}"
+                };
+                
+                // Load the image from URL
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(url, UriKind.Absolute);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                
+                img.Source = bitmap;
+                
+                // Add event handlers for selection and interaction
+                img.MouseLeftButtonDown += Element_MouseLeftButtonDown;
+                
+                // Replace the Border placeholder with the actual Image
+                if (linkedBorder.Parent is Canvas canvas)
+                {
+                    var position = new Point(Canvas.GetLeft(linkedBorder), Canvas.GetTop(linkedBorder));
+                    canvas.Children.Remove(linkedBorder);
+                    Canvas.SetLeft(img, position.X);
+                    Canvas.SetTop(img, position.Y);
+                    canvas.Children.Add(img);
+                    
+                    // Update selection to the new image
+                    selectedElement = img;
+                    ShowProperties(img);
+                }
+                
+                SetDirty(true);
+                System.IO.File.AppendAllText("linkedimage-debug.log", $"{DateTime.Now}: Successfully loaded LinkedImage from URL: {url}\n");
+            }
+            catch (Exception ex)
+            {
+                // Show error message and keep the placeholder
+                System.IO.File.AppendAllText("linkedimage-debug.log", $"{DateTime.Now}: Failed to load LinkedImage from URL '{url}': {ex.Message}\n");
+                MessageBox.Show($"Failed to load image from URL:\n{ex.Message}", "Image Load Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                
+                // Still update the tag so the URL is preserved
+                linkedBorder.Tag = $"LinkedImage:{url}";
+                SetDirty(true);
+            }
         }
 
         private void InitializeZoomControls()
@@ -3002,6 +3512,14 @@ namespace EvoDesigner
                         labelElement.ImageData = tagString.Substring("ImageData:".Length);
                         labelElement.Content = ""; // Clear content since we have ImageData
                     }
+                    else if (tagString.StartsWith("LinkedImage:"))
+                    {
+                        // LinkedImage with URL - extract the URL and set as LinkedImage type
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.LinkedImage;
+                        labelElement.Content = tagString.Substring("LinkedImage:".Length); // Store the URL as content
+                        System.IO.File.AppendAllText("linkedimage-debug.log", 
+                            $"{DateTime.Now}: CreateLiveTemplate - Found LinkedImage with URL: {labelElement.Content}\n");
+                    }
                     else
                     {
                         // Regular image with other tag or path
@@ -3065,6 +3583,18 @@ namespace EvoDesigner
                     labelElement.Width = double.IsNaN(directRect.Width) ? labelElement.Width : directRect.Width;
                     labelElement.Height = double.IsNaN(directRect.Height) ? labelElement.Height : directRect.Height;
                 }
+                else if (child is System.Windows.Shapes.Ellipse directEllipse)
+                {
+                    var directEllipseMessage = $"[DEBUG] Found direct Ellipse: Width={directEllipse.Width}, Height={directEllipse.Height}\n";
+                    File.AppendAllText("debug.log", directEllipseMessage);
+                    Console.WriteLine($"[DEBUG] Found direct Ellipse: Width={directEllipse.Width}, Height={directEllipse.Height}");
+                    labelElement.Type = EvoDesigner.Models.LabelElementType.Ellipse;
+                    labelElement.BorderWidth = directEllipse.StrokeThickness;
+                    labelElement.BorderColor = directEllipse.Stroke?.ToString() ?? "#000000";
+                    labelElement.Content = "";
+                    labelElement.Width = double.IsNaN(directEllipse.Width) ? labelElement.Width : directEllipse.Width;
+                    labelElement.Height = double.IsNaN(directEllipse.Height) ? labelElement.Height : directEllipse.Height;
+                }
                 else if (child is Border border)
                 {
                     var borderMessage = $"[DEBUG] Found Border element\n";
@@ -3079,22 +3609,40 @@ namespace EvoDesigner
                     // Check if the border contains a TextBlock
                     if (border.Child is TextBlock borderText)
                     {
-                        var borderTextMessage = $"[DEBUG] Border contains TextBlock: '{borderText.Text}'\n";
-                        File.AppendAllText("debug.log", borderTextMessage);
-                        Console.WriteLine($"[DEBUG] Border contains TextBlock: '{borderText.Text}'");
-                        labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
-                        labelElement.Content = borderText.Text;
-                        labelElement.FontSize = borderText.FontSize;
-                        labelElement.FontFamily = borderText.FontFamily.ToString();
-                        labelElement.FontWeight = borderText.FontWeight.ToString();
-                        labelElement.FontStyle = borderText.FontStyle.ToString();
-                        labelElement.Foreground = borderText.Foreground.ToString();
-                        labelElement.TextDecorations = GetTextDecorationsString(borderText.TextDecorations);
-                        
-                        // Debug: Log what's being saved
-                        var saveDebugMsg = $"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}'\n";
-                        File.AppendAllText("debug.log", saveDebugMsg);
-                        Console.WriteLine($"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}'");
+                        // Check if this is a LinkedImage placeholder
+                        if (border.Tag?.ToString()?.StartsWith("LinkedImage:") == true)
+                        {
+                            var borderLinkedImageMessage = $"[DEBUG] Border is LinkedImage placeholder with tag: {border.Tag}\n";
+                            File.AppendAllText("debug.log", borderLinkedImageMessage);
+                            Console.WriteLine($"[DEBUG] Border is LinkedImage placeholder with tag: {border.Tag}");
+                            
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.LinkedImage;
+                            var tagString = border.Tag.ToString()!;
+                            labelElement.Content = tagString.Substring("LinkedImage:".Length); // Store URL as content
+                            
+                            System.IO.File.AppendAllText("linkedimage-debug.log", 
+                                $"{DateTime.Now}: CreateLiveTemplate - Found LinkedImage Border placeholder with URL: {labelElement.Content}\n");
+                        }
+                        else
+                        {
+                            // Regular text border
+                            var borderTextMessage = $"[DEBUG] Border contains TextBlock: '{borderText.Text}'\n";
+                            File.AppendAllText("debug.log", borderTextMessage);
+                            Console.WriteLine($"[DEBUG] Border contains TextBlock: '{borderText.Text}'");
+                            labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
+                            labelElement.Content = borderText.Text;
+                            labelElement.FontSize = borderText.FontSize;
+                            labelElement.FontFamily = borderText.FontFamily.ToString();
+                            labelElement.FontWeight = borderText.FontWeight.ToString();
+                            labelElement.FontStyle = borderText.FontStyle.ToString();
+                            labelElement.Foreground = borderText.Foreground.ToString();
+                            labelElement.TextDecorations = GetTextDecorationsString(borderText.TextDecorations);
+                            
+                            // Debug: Log what's being saved
+                            var saveDebugMsg = $"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}'\n";
+                            File.AppendAllText("debug.log", saveDebugMsg);
+                            Console.WriteLine($"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}'");
+                        }
                         
                         // CRITICAL FIX: Add missing continue statement to prevent falling through to "unrecognized element" logic
                         // Without this, the labelElement gets created but then skipped!
@@ -3348,6 +3896,42 @@ namespace EvoDesigner
                         };
                         result = rect;
                     }
+                    break;
+                    
+                case EvoDesigner.Models.LabelElementType.LinkedImage:
+                    // Create a placeholder border for LinkedImage with URL loading capability
+                    var linkedImageBorder = new Border
+                    {
+                        Width = element.Width,
+                        Height = element.Height,
+                        BorderBrush = Brushes.Blue,
+                        BorderThickness = new Thickness(2),
+                        Background = Brushes.LightBlue,
+                        Tag = $"LinkedImage:{element.Content ?? ""}" // Use proper tag format with URL
+                    };
+                    
+                    // Try to load image from URL if Content is provided
+                    if (!string.IsNullOrEmpty(element.Content))
+                    {
+                        LoadLinkedImageFromUrl(linkedImageBorder, element.Content);
+                    }
+                    else
+                    {
+                        // Set proper tag format even with empty URL
+                        linkedImageBorder.Tag = "LinkedImage:";
+                        
+                        // Show placeholder text
+                        linkedImageBorder.Child = new TextBlock
+                        {
+                            Text = "LinkedImage\n[URL]",
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            TextAlignment = TextAlignment.Center,
+                            FontSize = 10,
+                            Foreground = Brushes.DarkBlue
+                        };
+                    }
+                    result = linkedImageBorder;
                     break;
                     
                 case EvoDesigner.Models.LabelElementType.Line:
@@ -3959,6 +4543,199 @@ namespace EvoDesigner
                         ShowProperties(element);
                     }
                 }
+            }
+        }
+
+        private void ShowGrid_Click(object sender, RoutedEventArgs e)
+        {
+            // This method should handle grid visibility toggling
+            // Since ShowGridCheckBox doesn't exist, we'll implement a basic grid toggle
+            if (GridCanvas != null)
+            {
+                GridCanvas.Visibility = GridCanvas.Visibility == Visibility.Visible ? 
+                    Visibility.Hidden : Visibility.Visible;
+            }
+        }
+
+        private void MenuElement_Click(object sender, RoutedEventArgs e)
+        {
+            // Prevent menu clicks during drag operations
+            if (isDragInProgress)
+            {
+                System.IO.File.AppendAllText("linkedimage-debug.log", $"{DateTime.Now}: MenuElement_Click blocked during drag operation\n");
+                return;
+            }
+            
+            if (sender is MenuItem menuItem && menuItem.Tag is string elementType)
+            {
+                // Get mouse position relative to the canvas
+                var mousePos = Mouse.GetPosition(LabelCanvas);
+                
+                // Create the element at the mouse position
+                CreateElementByType(elementType, mousePos.X, mousePos.Y);
+            }
+        }
+
+        private void CreateElementByType(string elementType, double x, double y)
+        {
+            try
+            {
+                System.IO.File.AppendAllText("linkedimage-debug.log", $"CreateElementByType called with: '{elementType}'\n");
+                
+                // Check for potential duplicate creation (within 200ms and 10px of last creation)
+                // Reduced timing and distance to be less aggressive and allow double-clicks
+                var timeSinceLastCreation = DateTime.Now - lastElementCreationTime;
+                var distanceFromLast = Math.Sqrt(Math.Pow(x - lastElementPosition.X, 2) + 
+                                                 Math.Pow(y - lastElementPosition.Y, 2));
+                
+                if (timeSinceLastCreation.TotalMilliseconds < 200 && 
+                    distanceFromLast < 10 && 
+                    elementType == lastElementType)
+                {
+                    System.IO.File.AppendAllText("linkedimage-debug.log", 
+                        $"{DateTime.Now}: Duplicate element creation prevented in CreateElementByType - {elementType} at ({x}, {y})\n");
+                    return;
+                }
+                
+                // Record this creation to prevent duplicates
+                lastElementCreationTime = DateTime.Now;
+                lastElementType = elementType;
+                lastElementPosition = new Point(x, y);
+                
+                UIElement? newElement = null;
+                
+                switch (elementType)
+                {
+                    case "Text":
+                        var textBlock = new TextBlock
+                        {
+                            Text = "Sample Text",
+                            FontSize = 12,
+                            Width = 100,
+                            Height = 20
+                        };
+                        var textBorder = new Border
+                        {
+                            Child = textBlock,
+                            BorderBrush = Brushes.LightGray,
+                            BorderThickness = new Thickness(1),
+                            Background = Brushes.Transparent,
+                            Width = 100,
+                            Height = 20
+                        };
+                        newElement = textBorder;
+                        break;
+                        
+                    case "LinkedImage":
+                        System.IO.File.AppendAllText("linkedimage-debug.log", "LinkedImage case matched! Creating element...\n");
+                        
+                        var linkedImageBorder = new Border
+                        {
+                            Width = 100,
+                            Height = 75,
+                            BorderBrush = Brushes.Blue,
+                            BorderThickness = new Thickness(2),
+                            Background = Brushes.LightBlue,
+                            Child = new TextBlock
+                            {
+                                Text = "LinkedImage\n[URL]",
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center,
+                                TextAlignment = TextAlignment.Center,
+                                FontSize = 10,
+                                Foreground = Brushes.DarkBlue
+                            },
+                            Tag = "LinkedImage:" // Use proper tag format for properties detection - empty URL initially
+                        };
+                        newElement = linkedImageBorder;
+                        break;
+                        
+                    case "Line":
+                        var line = new System.Windows.Shapes.Line
+                        {
+                            X1 = 0, Y1 = 0, X2 = 100, Y2 = 0,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 2
+                        };
+                        var lineCanvas = new Canvas
+                        {
+                            Width = 100,
+                            Height = 2,
+                            Background = Brushes.Transparent
+                        };
+                        lineCanvas.Children.Add(line);
+                        newElement = lineCanvas;
+                        break;
+                        
+                    case "Rectangle":
+                        newElement = new System.Windows.Shapes.Rectangle
+                        {
+                            Width = 100,
+                            Height = 75,
+                            Fill = Brushes.LightGray,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 2
+                        };
+                        break;
+                        
+                    case "Ellipse":
+                        newElement = new System.Windows.Shapes.Ellipse
+                        {
+                            Width = 100,
+                            Height = 75,
+                            Fill = Brushes.LightGray,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 2
+                        };
+                        break;
+                        
+                    default:
+                        // For barcode types, create a placeholder rectangle
+                        newElement = new System.Windows.Shapes.Rectangle
+                        {
+                            Width = 150,
+                            Height = 50,
+                            Fill = Brushes.White,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 1
+                        };
+                        
+                        var barcodeText = new TextBlock
+                        {
+                            Text = elementType,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                        
+                        var barcodeGrid = new Grid
+                        {
+                            Width = 150,
+                            Height = 50,
+                            Children = { newElement, barcodeText }
+                        };
+                        newElement = barcodeGrid;
+                        break;
+                }
+                
+                if (newElement != null)
+                {
+                    // Add mouse event handler for selection and movement
+                    newElement.MouseLeftButtonDown += Element_MouseLeftButtonDown;
+                    
+                    Canvas.SetLeft(newElement, x);
+                    Canvas.SetTop(newElement, y);
+                    
+                    var addCommand = new AddElementCommand(LabelCanvas, newElement, x, y, $"Add {elementType}");
+                    commandHistory.ExecuteCommand(addCommand);
+                    
+                    System.IO.File.AppendAllText("linkedimage-debug.log", $"Successfully added {elementType} to canvas at {x},{y}\n");
+                    SetDirty(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.IO.File.AppendAllText("linkedimage-debug.log", $"Error in CreateElementByType: {ex.Message}\n");
+                MessageBox.Show($"Error creating {elementType}: {ex.Message}");
             }
         }
 

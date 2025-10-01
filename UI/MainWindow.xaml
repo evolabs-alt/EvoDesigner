@@ -8,6 +8,9 @@
         Title="TaggJack - Professional Label Designer" Height="800" Width="1400"
         WindowState="Maximized"
         Background="#f5f5f5"
+        Focusable="True"
+        KeyboardNavigation.TabNavigation="Local"
+        Loaded="MainWindow_Loaded"
         Closing="MainWindow_Closing">
     
     <Window.Resources>
@@ -52,7 +55,7 @@
         <Style x:Key="ToolboxButtonStyle" TargetType="Button" BasedOn="{StaticResource ModernButtonStyle}">
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="Margin" Value="0,1"/>
-            <Setter Property="Height" Value="28"/>
+            <Setter Property="Height" Value="26"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="Padding" Value="12,4"/>
@@ -67,7 +70,8 @@
         <Style x:Key="MenuItemStyle" TargetType="MenuItem">
             <Setter Property="Foreground" Value="#323130"/>
             <Setter Property="Background" Value="White"/>
-            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="5,5,5,0"/>
         </Style>
 
         <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
@@ -224,23 +228,89 @@
 
     <DockPanel>
         <!-- Modern Menu Bar -->
-        <Menu DockPanel.Dock="Top" Background="White" BorderBrush="#d1d2d3" BorderThickness="0,0,0,1">
+        <Menu DockPanel.Dock="Top" Background="White" BorderThickness="0">
             <MenuItem Header="_File" Style="{StaticResource MenuItemStyle}">
-                <MenuItem Header="🆕 _New Template" x:Name="NewMenuItem" Click="New_Click" />
+                <MenuItem Header="_New Template" x:Name="NewMenuItem" Click="New_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="🆕" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator Background="#d1d2d3"/>
-                <MenuItem Header="📁 _Load Template..." x:Name="LoadTemplateMenuItem" Click="LoadTemplate_Click" />
-                <MenuItem Header="💾 _Save Template" x:Name="SaveTemplateMenuItem" Click="SaveTemplate_Click" />
-                <MenuItem Header="💾 Save Template _As..." x:Name="SaveAsTemplateMenuItem" Click="SaveAsTemplate_Click" />
+                <MenuItem Header="_Load Template..." x:Name="LoadTemplateMenuItem" Click="LoadTemplate_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="📁" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="_Save Template" x:Name="SaveTemplateMenuItem" Click="SaveTemplate_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="💾" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Save Template _As..." x:Name="SaveAsTemplateMenuItem" Click="SaveAsTemplate_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="💾" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator Background="#d1d2d3"/>
-                <MenuItem Header="🔌 Setup _Data Source..." x:Name="SetupDataSourceMenuItem" Click="DataSource_Click" />
-                <MenuItem Header="🗺️ Setup _Map Fields..." x:Name="MapFieldsMenuItem" Click="MapFields_Click" />
+                <MenuItem Header="_Print..." x:Name="PrintPreviewMenuItem" Click="PrintPreview_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="🖨️" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <Separator Background="#d1d2d3"/>
-                <MenuItem Header="🖨️ _Print..." x:Name="PrintPreviewMenuItem" Click="PrintPreview_Click" />
+                <MenuItem Header="E_xit" x:Name="ExitMenuItem" Click="Exit_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="🚪" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_View" Style="{StaticResource MenuItemStyle}">
+                <MenuItem Header="Show Grid" x:Name="ViewGridMenuItem" IsCheckable="True" IsChecked="True" 
+                         Click="ShowGrid_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="📏" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Data" Style="{StaticResource MenuItemStyle}">
+                <MenuItem Header="Setup _Data Source..." x:Name="SetupDataSourceMenuItem" Click="DataSource_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="🔌" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Setup _Map Fields..." x:Name="MapFieldsMenuItem" Click="MapFields_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="🗺️" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Elements" Style="{StaticResource MenuItemStyle}">
+                <MenuItem Header="Text" Click="MenuElement_Click" Tag="Text" />
+                <MenuItem Header="Image" Click="MenuElement_Click" Tag="Image" />
+                <MenuItem Header="Linked Image" Click="MenuElement_Click" Tag="LinkedImage" />
                 <Separator Background="#d1d2d3"/>
-                <MenuItem Header="🚪 E_xit" x:Name="ExitMenuItem" Click="Exit_Click" />
+                <MenuItem Header="Line" Click="MenuElement_Click" Tag="Line" />
+                <MenuItem Header="Rectangle" Click="MenuElement_Click" Tag="Rectangle" />
+                <MenuItem Header="Ellipse" Click="MenuElement_Click" Tag="Ellipse" />
+                <Separator Background="#d1d2d3"/>
+                <MenuItem Header="EAN-13" Click="MenuElement_Click" Tag="EAN13" />
+                <MenuItem Header="EAN-8" Click="MenuElement_Click" Tag="EAN8" />
+                <MenuItem Header="UPC-A" Click="MenuElement_Click" Tag="UPC-A" />
+                <MenuItem Header="UPC-E" Click="MenuElement_Click" Tag="UPC-E" />
+                <MenuItem Header="Code 128" Click="MenuElement_Click" Tag="Code128" />
+                <MenuItem Header="Code 39" Click="MenuElement_Click" Tag="Code39" />
+                <MenuItem Header="DataMatrix" Click="MenuElement_Click" Tag="DataMatrix" />
+                <MenuItem Header="PDF417" Click="MenuElement_Click" Tag="PDF417" />
+                <MenuItem Header="Aztec" Click="MenuElement_Click" Tag="Aztec" />
+                <MenuItem Header="GS1 DataBar" Click="MenuElement_Click" Tag="GS1DataBar" />
+                <MenuItem Header="QR Code" Click="MenuElement_Click" Tag="QRCode" />
             </MenuItem>
             <MenuItem Header="_About" Style="{StaticResource MenuItemStyle}">
-                <MenuItem Header="ℹ️ _About TaggJack..." x:Name="AboutMenuItem" Click="About_Click" />
+                <MenuItem Header="_About TaggJack..." x:Name="AboutMenuItem" Click="About_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="ℹ️" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
         </Menu>
         
@@ -259,20 +329,6 @@
         <Border Grid.ColumnSpan="3" Grid.Row="0" Background="{StaticResource PanelGradient}" 
                 BorderBrush="#d1d2d3" BorderThickness="0,0,0,1" Padding="16,12">
             <StackPanel Orientation="Horizontal">
-                <!-- Grid Controls -->
-                <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
-                        Padding="12,8" Margin="0,0,16,0">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="⊞" VerticalAlignment="Center" Margin="0,0,8,0" 
-                                  FontSize="14" Foreground="#0078d4" FontWeight="Bold"/>
-                        <TextBlock Text="Grid" VerticalAlignment="Center" Margin="0,0,12,0" 
-                                  FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
-                        <CheckBox x:Name="ShowGridCheckBox" Content="Show 5mm Grid" IsChecked="True" 
-                                 VerticalAlignment="Center" Style="{StaticResource ModernCheckBoxStyle}"
-                                 ToolTip="Toggle 5mm gridlines for precise alignment"/>
-                    </StackPanel>
-                </Border>
-                
                 <!-- Layer Controls -->
                 <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
                         Padding="12,8" Margin="0,0,16,0">
@@ -347,7 +403,7 @@
                 
                 <!-- Data Controls -->
                 <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
-                        Padding="12,8">
+                        Padding="12,8" Margin="16,0,0,0">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="📊" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
                         <TextBlock Text="Data" VerticalAlignment="Center" Margin="0,0,12,0" 
@@ -377,6 +433,8 @@
                            ToolTip="Add text element with customizable fonts and styles"/>
                     <Button Content="Image" Style="{StaticResource ToolboxButtonStyle}"
                            ToolTip="Add image element (PNG, JPEG, BMP supported)"/>
+                    <Button Content="Linked Image" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Add linked image from URL (loads from web or database)"/>
                     
                     <!-- Drawing Tools -->
                     <TextBlock Text="Drawing" Style="{StaticResource SectionHeaderStyle}" 
@@ -385,6 +443,8 @@
                            ToolTip="Draw lines with customizable width and color"/>
                     <Button Content="Rectangle" Style="{StaticResource ToolboxButtonStyle}"
                            ToolTip="Draw rectangles with customizable border width and color"/>
+                    <Button Content="Ellipse" Style="{StaticResource ToolboxButtonStyle}"
+                           ToolTip="Draw ovals and circles with customizable border width and color"/>
                     
                     <!-- Barcodes -->
                     <TextBlock Text="Barcodes" Style="{StaticResource SectionHeaderStyle}" 
@@ -416,7 +476,7 @@
         </Border>
 
         <!-- Modern Canvas Area with Rulers -->
-        <Grid Grid.Column="1" Grid.Row="1" Background="#f5f5f5">
+        <Grid Grid.Column="1" Grid.Row="1" Background="#f5f5f5" x:Name="RulerCanvasGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30" />
                 <RowDefinition Height="*" />
@@ -449,6 +509,10 @@
             <!-- Modern Corner -->
             <Rectangle Grid.Column="0" Grid.Row="0" Fill="#d1d2d3" />
             
+            <!-- Guide Lines Overlay Canvas (spans entire grid) -->
+            <Canvas x:Name="GuideLineOverlay" Grid.ColumnSpan="2" Grid.RowSpan="2" 
+                   IsHitTestVisible="False" Panel.ZIndex="1000" />
+            
             <!-- Modern Canvas Container -->
             <Border Grid.Column="1" Grid.Row="1" Background="White" 
                    BorderBrush="#0078d4" BorderThickness="2" CornerRadius="6" Margin="4">
@@ -475,7 +539,7 @@
                         </Canvas>
                         
                         <!-- Main Label Canvas -->
-                        <Canvas x:Name="LabelCanvas" Background="Transparent" AllowDrop="True" ClipToBounds="True" />
+                        <Canvas x:Name="LabelCanvas" Background="Transparent" AllowDrop="True" ClipToBounds="False" />
                         
                         <!-- Margin Guidelines -->
                         <Canvas x:Name="MarginCanvas" Background="Transparent" IsHitTestVisible="False" />
@@ -510,40 +574,7 @@
                     <Button x:Name="ResizeButton" Content="📏 Resize Label" Style="{StaticResource ModernButtonStyle}"
                             HorizontalAlignment="Stretch" Margin="0,0,0,16" Click="ResizeButton_Click" 
                             ToolTip="Change label dimensions and adjust elements"/>
-                    
-                    <!-- Margins Section -->
-                    <TextBlock Text="Margins (mm)" Style="{StaticResource SubHeaderStyle}"/>
-                    <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="4" Padding="12,8" Margin="0,0,0,16">
-                        <StackPanel>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                
-                                <!-- Labels Row -->
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Left:" HorizontalAlignment="Center" Margin="0,0,0,4" Foreground="#605e5c" FontSize="11"/>
-                                <TextBlock Grid.Row="0" Grid.Column="1" Text="Right:" HorizontalAlignment="Center" Margin="0,0,0,4" Foreground="#605e5c" FontSize="11"/>
-                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Top:" HorizontalAlignment="Center" Margin="0,0,0,4" Foreground="#605e5c" FontSize="11"/>
-                                <TextBlock Grid.Row="0" Grid.Column="3" Text="Bottom:" HorizontalAlignment="Center" Margin="0,0,0,4" Foreground="#605e5c" FontSize="11"/>
-                                
-                                <!-- TextBoxes Row -->
-                                <TextBox Grid.Row="1" Grid.Column="0" x:Name="MarginLeftBox" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,4,0"/>
-                                <TextBox Grid.Row="1" Grid.Column="1" x:Name="MarginRightBox" Style="{StaticResource ModernTextBoxStyle}" Margin="4,0,4,0"/>
-                                <TextBox Grid.Row="1" Grid.Column="2" x:Name="MarginTopBox" Style="{StaticResource ModernTextBoxStyle}" Margin="4,0,4,0"/>
-                                <TextBox Grid.Row="1" Grid.Column="3" x:Name="MarginBottomBox" Style="{StaticResource ModernTextBoxStyle}" Margin="4,0,0,0"/>
-                            </Grid>
-                        </StackPanel>
-                    </Border>
-                    
-                    <!-- Separator -->
-                    <Rectangle Height="1" Fill="#d1d2d3" Margin="0,8,0,16"/>
+                   
                     
                     <!-- Element Properties Section -->
                     <TextBlock Text="🎨 Element Properties" Style="{StaticResource SectionHeaderStyle}" FontSize="16"/>

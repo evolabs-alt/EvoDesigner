@@ -88,7 +88,8 @@ namespace EvoDesigner.UI
             string elementType = "Unknown";
             string currentContent = "";
 
-            if (element is TextBlock tb)
+            // Handle Border elements (text elements are wrapped in borders)
+            if (element is Border border && border.Child is TextBlock tb)
             {
                 if (tb.Text.StartsWith("[") && tb.Text.EndsWith("]"))
                 {
@@ -100,13 +101,33 @@ namespace EvoDesigner.UI
                     currentContent = $" (Current: \"{tb.Text}\")";
                 }
             }
+            // Handle direct TextBlock elements (legacy support)
+            else if (element is TextBlock directTb)
+            {
+                if (directTb.Text.StartsWith("[") && directTb.Text.EndsWith("]"))
+                {
+                    elementType = directTb.Text; // [EAN-13], [QR Code], etc.
+                }
+                else
+                {
+                    elementType = "Text";
+                    currentContent = $" (Current: \"{directTb.Text}\")";
+                }
+            }
+            // Handle Canvas elements (lines are wrapped in canvas containers)
+            else if (element is Canvas canvas && canvas.Children.Count > 0 && canvas.Children[0] is System.Windows.Shapes.Line)
+            {
+                elementType = "Line";
+                currentContent = " (Drawing element)";
+            }
+            // Handle Image elements
             else if (element is Image imageElement)
             {
                 if (imageElement.Tag?.ToString() == "QRCode" || imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
                 {
                     elementType = "[QR Code]";
                     if (imageElement.Tag?.ToString()?.StartsWith("QRCodeData:") == true)
-                        currentContent = $" (Current: \"{imageElement.Tag.ToString().Substring("QRCodeData:".Length)}\")";
+                        currentContent = $" (Current: \"{imageElement.Tag.ToString()!.Substring("QRCodeData:".Length)}\")";
                 }
                 else
                 {
@@ -124,9 +145,19 @@ namespace EvoDesigner.UI
                     }
                 }
             }
-            else if (element is System.Windows.Shapes.Rectangle)
+            // Handle Rectangle elements (used for image placeholders or shapes)
+            else if (element is System.Windows.Shapes.Rectangle rect)
             {
-                elementType = "Image";
+                if (rect.Tag?.ToString() == "No Image Selected")
+                {
+                    elementType = "Image Placeholder";
+                    currentContent = " (No image selected)";
+                }
+                else
+                {
+                    elementType = "Rectangle";
+                    currentContent = " (Shape element)";
+                }
             }
 
             return $"Element {index + 1}: {elementType}{currentContent}";

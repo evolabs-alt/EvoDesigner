@@ -6,10 +6,12 @@ namespace EvoDesigner.Models
     { 
         Text, 
         Image, 
+        LinkedImage,  // URL-based image that loads from web/database
         QRCode,
         // Drawing Tools
         Line,
         Rectangle,
+        Ellipse,
         // Retail Checkout
         EAN13,
         EAN8, 
@@ -71,5 +73,9 @@ namespace EvoDesigner.Models
     public double BorderWidth { get; set; } = 1; // Border thickness for lines and rectangles
     [System.Xml.Serialization.XmlElement]
     public string? BorderColor { get; set; } = "Black"; // Border color for lines and rectangles
+    [System.Xml.Serialization.XmlElement]
+    public bool HasRoundedCorners { get; set; } = false; // Whether rectangle has rounded corners
+    [System.Xml.Serialization.XmlElement]
+    public double CornerRadius { get; set; } = 10; // Radius of rounded corners in pixels
     }
 }

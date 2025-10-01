@@ -48,6 +48,26 @@ namespace EvoDesigner.Commands
             Description = description;
         }
 
+        // Constructor that accepts explicit original and current positions (for drag operations)
+        public MoveElementsCommand(IEnumerable<(UIElement element, double originalLeft, double originalTop)> elementPositions, string description = "Move elements")
+        {
+            _elementPositions = elementPositions.Select(pos => 
+            {
+                var currentLeft = Canvas.GetLeft(pos.element);
+                var currentTop = Canvas.GetTop(pos.element);
+                
+                return new ElementPosition
+                {
+                    Element = pos.element,
+                    OriginalLeft = pos.originalLeft,
+                    OriginalTop = pos.originalTop,
+                    NewLeft = currentLeft,
+                    NewTop = currentTop
+                };
+            }).ToList();
+            Description = description;
+        }
+
         public void Execute()
         {
             foreach (var pos in _elementPositions)

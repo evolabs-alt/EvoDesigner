@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Text Formatting Demo</TemplateName>
+  <Width>120</Width>
+  <Height>80</Height>
+  <MarginLeft>5</MarginLeft>
+  <MarginRight>5</MarginRight>
+  <MarginTop>5</MarginTop>
+  <MarginBottom>5</MarginBottom>
+  <Elements>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>100</Width>
+      <Height>15</Height>
+      <Content>Regular Text</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>12</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+      <TextDecorations></TextDecorations>
+    </LabelElement>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>25</Y>
+      <Width>100</Width>
+      <Height>15</Height>
+      <Content>Bold Text</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>12</FontSize>
+      <FontWeight>Bold</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Blue</Foreground>
+      <TextDecorations></TextDecorations>
+    </LabelElement>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>40</Y>
+      <Width>100</Width>
+      <Height>15</Height>
+      <Content>Italic Text</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>12</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Italic</FontStyle>
+      <Foreground>Green</Foreground>
+      <TextDecorations></TextDecorations>
+    </LabelElement>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>55</Y>
+      <Width>100</Width>
+      <Height>15</Height>
+      <Content>Underlined Text</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>12</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Red</Foreground>
+      <TextDecorations>Underline</TextDecorations>
+    </LabelElement>
+  </Elements>
+  <FieldMappings />
+</LabelTemplate>

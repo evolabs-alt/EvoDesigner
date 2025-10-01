@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Drag Guide Test</TemplateName>
+  <LabelWidthMm>70</LabelWidthMm>
+  <LabelHeightMm>30</LabelHeightMm>
+  <Elements>
+    <LabelElement>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>80</Width>
+      <Height>25</Height>
+      <Type>Text</Type>
+      <Content>Drag me to see guides</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>12</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>#FF000000</Foreground>
+      <TextDecorations />
+      <Rotation>0</Rotation>
+    </LabelElement>
+    <LabelElement>
+      <X>150</X>
+      <Y>50</Y>
+      <Width>60</Width>
+      <Height>20</Height>
+      <Type>Text</Type>
+      <Content>Element 2</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>10</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>#FF000000</Foreground>
+      <TextDecorations />
+      <Rotation>0</Rotation>
+    </LabelElement>
+    <LabelElement>
+      <X>50</X>
+      <Y>80</Y>
+      <Width>100</Width>
+      <Height>30</Height>
+      <Type>Text</Type>
+      <Content>Multi-select test</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>11</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>#FF000000</Foreground>
+      <TextDecorations />
+      <Rotation>0</Rotation>
+    </LabelElement>
+  </Elements>
+  <FieldMappings />
+</LabelTemplate>

@@ -6,6 +6,23 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    
+    <!-- Application Metadata for Installer -->
+    <AssemblyTitle>EvoDesigner</AssemblyTitle>
+    <AssemblyDescription>Professional Label Design Application for Printable Labels</AssemblyDescription>
+    <AssemblyCompany>EvoDesigner</AssemblyCompany>
+    <AssemblyProduct>EvoDesigner</AssemblyProduct>
+    <AssemblyCopyright>Copyright © 2025</AssemblyCopyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <!-- <ApplicationIcon>app.ico</ApplicationIcon> -->
+    
+    <!-- Installer Properties -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>

@@ -20,7 +20,7 @@ namespace EvoDesigner.UI
         {
             try
             {
-                Process.Start(new ProcessStartInfo("https://www.evolabs.com") { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo("https://www.evolabs.co") { UseShellExecute = true });
             }
             catch
             {
@@ -33,7 +33,7 @@ namespace EvoDesigner.UI
         {
             try
             {
-                Process.Start(new ProcessStartInfo("mailto:support@evolabs.com") { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo("mailto:support@evolabs.co") { UseShellExecute = true });
             }
             catch
             {

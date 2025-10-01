@@ -9,5 +9,12 @@ namespace EvoDesigner;
 /// </summary>
 public partial class App : Application
 {
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+        
+        // Test LinkedImage functionality
+        TestLinkedImage.TestCreateLinkedImageElement();
+    }
 }
 

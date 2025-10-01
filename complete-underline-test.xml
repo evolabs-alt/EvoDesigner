@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Complete Underline Test</TemplateName>
+  <Width>180</Width>
+  <Height>120</Height>
+  <MarginLeft>5</MarginLeft>
+  <MarginRight>5</MarginRight>
+  <MarginTop>5</MarginTop>
+  <MarginBottom>5</MarginBottom>
+  <Elements>
+    <!-- Text without underline initially -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>160</Width>
+      <Height>25</Height>
+      <Content>Text without underline - use properties to add underline</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>10</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+      <TextDecorations></TextDecorations>
+    </LabelElement>
+    
+    <!-- Pre-underlined text -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>40</Y>
+      <Width>160</Width>
+      <Height>25</Height>
+      <Content>Pre-underlined text - use properties to remove underline</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>10</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Blue</Foreground>
+      <TextDecorations>Underline</TextDecorations>
+    </LabelElement>
+    
+    <!-- Multi-line without underline -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>70</Y>
+      <Width>160</Width>
+      <Height>45</Height>
+      <Content>Multi-line text that should wrap automatically to multiple lines for testing underline toggle functionality</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>9</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Green</Foreground>
+      <TextDecorations></TextDecorations>
+    </LabelElement>
+  </Elements>
+  <FieldMappings />
+</LabelTemplate>

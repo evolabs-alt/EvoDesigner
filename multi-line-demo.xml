@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Multi-Line Text Demo</TemplateName>
+  <Width>120</Width>
+  <Height>100</Height>
+  <MarginLeft>5</MarginLeft>
+  <MarginRight>5</MarginRight>
+  <MarginTop>5</MarginTop>
+  <MarginBottom>5</MarginBottom>
+  <Elements>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>100</Width>
+      <Height>40</Height>
+      <Content>This is a long text that should wrap to multiple lines automatically when displayed in the text element.</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>12</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+      <TextDecorations></TextDecorations>
+    </LabelElement>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>55</Y>
+      <Width>100</Width>
+      <Height>40</Height>
+      <Content>Line 1: Product Name
+Line 2: Product Code
+Line 3: Price: $19.99</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>10</FontSize>
+      <FontWeight>Bold</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Blue</Foreground>
+      <TextDecorations></TextDecorations>
+    </LabelElement>
+  </Elements>
+  <FieldMappings />
+</LabelTemplate>

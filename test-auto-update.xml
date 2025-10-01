@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Test Auto Update Template with QR</TemplateName>
+  <Width>100</Width>
+  <Height>70</Height>
+  <MarginLeft>5</MarginLeft>
+  <MarginRight>5</MarginRight>
+  <MarginTop>5</MarginTop>
+  <MarginBottom>5</MarginBottom>
+  <Elements>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>80</Width>
+      <Height>15</Height>
+      <Content>Name Field</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>12</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+    </LabelElement>
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>30</Y>
+      <Width>40</Width>
+      <Height>15</Height>
+      <Content>ID Field</Content>
+      <FontFamily>Arial</FontFamily>
+      <FontSize>10</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+    </LabelElement>
+    <LabelElement>
+      <Type>QRCode</Type>
+      <X>55</X>
+      <Y>25</Y>
+      <Width>35</Width>
+      <Height>35</Height>
+      <Content>Sample QR Data</Content>
+      <BarcodeType>QRCODE</BarcodeType>
+      <FontSize>12</FontSize>
+      <FontWeight>Normal</FontWeight>
+      <FontStyle>Normal</FontStyle>
+      <Foreground>Black</Foreground>
+    </LabelElement>
+  </Elements>
+  <FieldMappings>
+    <FieldMapping>
+      <ElementIndex>0</ElementIndex>
+      <FieldName>name</FieldName>
+    </FieldMapping>
+    <FieldMapping>
+      <ElementIndex>1</ElementIndex>
+      <FieldName>id</FieldName>
+    </FieldMapping>
+    <FieldMapping>
+      <ElementIndex>2</ElementIndex>
+      <FieldName>id</FieldName>
+    </FieldMapping>
+  </FieldMappings>
+</LabelTemplate>

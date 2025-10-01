@@ -16,10 +16,16 @@ namespace EvoDesigner.UI
         public double NewHeight { get; private set; }
         public LabelResizeMode SelectedResizeMode { get; private set; }
         
+        // Margin properties
+        public double NewMarginLeft { get; private set; }
+        public double NewMarginRight { get; private set; }
+        public double NewMarginTop { get; private set; }
+        public double NewMarginBottom { get; private set; }
+        
         private double _currentWidth;
         private double _currentHeight;
         
-        public LabelResizeWindow(double currentWidth, double currentHeight)
+        public LabelResizeWindow(double currentWidth, double currentHeight, double marginLeft = 2, double marginRight = 2, double marginTop = 2, double marginBottom = 2)
         {
             InitializeComponent();
             
@@ -29,6 +35,12 @@ namespace EvoDesigner.UI
             // Pre-populate with current dimensions
             WidthTextBox.Text = currentWidth.ToString("F1");
             HeightTextBox.Text = currentHeight.ToString("F1");
+            
+            // Pre-populate with current margins
+            MarginLeftBox.Text = marginLeft.ToString("F1");
+            MarginRightBox.Text = marginRight.ToString("F1");
+            MarginTopBox.Text = marginTop.ToString("F1");
+            MarginBottomBox.Text = marginBottom.ToString("F1");
             
             // Set preset combo to "Custom Size" initially
             PresetSizeComboBox.SelectedIndex = 0;
@@ -90,7 +102,11 @@ namespace EvoDesigner.UI
         {
             // Parse the input values
             if (double.TryParse(WidthTextBox.Text, out double width) && 
-                double.TryParse(HeightTextBox.Text, out double height))
+                double.TryParse(HeightTextBox.Text, out double height) &&
+                double.TryParse(MarginLeftBox.Text, out double marginLeft) &&
+                double.TryParse(MarginRightBox.Text, out double marginRight) &&
+                double.TryParse(MarginTopBox.Text, out double marginTop) &&
+                double.TryParse(MarginBottomBox.Text, out double marginBottom))
             {
                 if (width <= 0 || height <= 0)
                 {
@@ -99,8 +115,19 @@ namespace EvoDesigner.UI
                     return;
                 }
                 
+                if (marginLeft < 0 || marginRight < 0 || marginTop < 0 || marginBottom < 0)
+                {
+                    MessageBox.Show("Margins cannot be negative.", 
+                        "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                
                 NewWidth = width;
                 NewHeight = height;
+                NewMarginLeft = marginLeft;
+                NewMarginRight = marginRight;
+                NewMarginTop = marginTop;
+                NewMarginBottom = marginBottom;
                 
                 // Determine the selected resize mode
                 if (ResizeElementsRadio.IsChecked == true)
@@ -115,7 +142,7 @@ namespace EvoDesigner.UI
             }
             else
             {
-                MessageBox.Show("Please enter valid numeric values for width and height.", 
+                MessageBox.Show("Please enter valid numeric values for all fields.", 
                     "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }

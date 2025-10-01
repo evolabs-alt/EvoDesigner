@@ -267,102 +267,148 @@
             
             <!-- Dimensions Input -->
             <Border Grid.Row="1" Background="White" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,16">
-                <StackPanel>
-                    <TextBlock Text="New Dimensions" FontWeight="SemiBold" FontSize="12" Foreground="#0078d4" Margin="0,0,0,12"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="24"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
                     
-                    <!-- Preset Sizes Dropdown -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Preset:" Style="{StaticResource LabelStyle}"/>
-                        <ComboBox Grid.Column="1" x:Name="PresetSizeComboBox" Style="{StaticResource ModernComboBoxStyle}" 
-                                  SelectionChanged="PresetSizeComboBox_SelectionChanged">
-                            <ComboBoxItem Content="Custom Size" Tag=""/>
-                            <Separator/>
-                            <!-- ISO Paper Sizes (A-Series) -->
-                            <ComboBoxItem Content="ISO Paper Sizes" IsEnabled="False" FontWeight="SemiBold"/>
-                            <ComboBoxItem Content="  A4 (210 x 297 mm)" Tag="210,297"/>
-                            <ComboBoxItem Content="  A5 (148 x 210 mm)" Tag="148,210"/>
-                            <ComboBoxItem Content="  A6 (105 x 148 mm)" Tag="105,148"/>
-                            <ComboBoxItem Content="  A7 (74 x 105 mm)" Tag="74,105"/>
-                            <ComboBoxItem Content="  A8 (52 x 74 mm)" Tag="52,74"/>
-                            <Separator/>
-                            <!-- Address &amp; Shipping Labels -->
-                            <ComboBoxItem Content="Address &amp; Shipping" IsEnabled="False" FontWeight="SemiBold"/>
-                            <ComboBoxItem Content="  Standard Address (89 x 36 mm)" Tag="89,36"/>
-                            <ComboBoxItem Content="  Large Address (99 x 57 mm)" Tag="99,57"/>
-                            <ComboBoxItem Content="  Shipping Label (101.6 x 152.4 mm)" Tag="101.6,152.4"/>
-                            <ComboBoxItem Content="  Return Address (63.5 x 38.1 mm)" Tag="63.5,38.1"/>
-                            <Separator/>
-                            <!-- Product &amp; Barcode Labels -->
-                            <ComboBoxItem Content="Product &amp; Barcode" IsEnabled="False" FontWeight="SemiBold"/>
-                            <ComboBoxItem Content="  Standard Product (70 x 42.3 mm)" Tag="70,42.3"/>
-                            <ComboBoxItem Content="  Small Product (50 x 25 mm)" Tag="50,25"/>
-                            <ComboBoxItem Content="  Barcode Label (50.8 x 25.4 mm)" Tag="50.8,25.4"/>
-                            <ComboBoxItem Content="  Price Tag (38 x 25 mm)" Tag="38,25"/>
-                            <Separator/>
-                            <!-- Business &amp; Name Tags -->
-                            <ComboBoxItem Content="Business &amp; Name Tags" IsEnabled="False" FontWeight="SemiBold"/>
-                            <ComboBoxItem Content="  Business Card (89 x 51 mm)" Tag="89,51"/>
-                            <ComboBoxItem Content="  Name Badge (76 x 51 mm)" Tag="76,51"/>
-                            <ComboBoxItem Content="  ID Badge (86 x 54 mm)" Tag="86,54"/>
-                            <Separator/>
-                            <!-- Specialty Labels -->
-                            <ComboBoxItem Content="Specialty Labels" IsEnabled="False" FontWeight="SemiBold"/>
-                            <ComboBoxItem Content="  Round Small (19 x 19 mm)" Tag="19,19"/>
-                            <ComboBoxItem Content="  Round Medium (32 x 32 mm)" Tag="32,32"/>
-                            <ComboBoxItem Content="  Round Large (51 x 51 mm)" Tag="51,51"/>
-                            <ComboBoxItem Content="  CD/DVD Label (118 x 118 mm)" Tag="118,118"/>
-                            <ComboBoxItem Content="  Bottle Label (100 x 80 mm)" Tag="100,80"/>
-                            <Separator/>
-                            <!-- Mailing Labels -->
-                            <ComboBoxItem Content="Mailing Labels" IsEnabled="False" FontWeight="SemiBold"/>
-                            <ComboBoxItem Content="  Standard (83.8 x 25.4 mm)" Tag="83.8,25.4"/>
-                            <ComboBoxItem Content="  Large (101.6 x 33.9 mm)" Tag="101.6,33.9"/>
-                            <ComboBoxItem Content="  Return (63.5 x 16.9 mm)" Tag="63.5,16.9"/>
-                            <Separator/>
-                            <!-- Industrial Labels -->
-                            <ComboBoxItem Content="Industrial Labels" IsEnabled="False" FontWeight="SemiBold"/>
-                            <ComboBoxItem Content="  Asset Tag (50 x 20 mm)" Tag="50,20"/>
-                            <ComboBoxItem Content="  Warning Label (100 x 50 mm)" Tag="100,50"/>
-                            <ComboBoxItem Content="  Equipment Label (76 x 25 mm)" Tag="76,25"/>
-                            <Separator/>
-                            <!-- Laboratory Labels -->
-                            <ComboBoxItem Content="Laboratory Labels" IsEnabled="False" FontWeight="SemiBold"/>
-                            <ComboBoxItem Content="  Tube Label (25 x 13 mm)" Tag="25,13"/>
-                            <ComboBoxItem Content="  Slide Label (76 x 26 mm)" Tag="76,26"/>
-                            <ComboBoxItem Content="  Vial Label (38 x 13 mm)" Tag="38,13"/>
-                            <Separator/>
-                            <!-- Retail Labels -->
-                            <ComboBoxItem Content="Retail Labels" IsEnabled="False" FontWeight="SemiBold"/>
-                            <ComboBoxItem Content="  Price Sticker (25 x 16 mm)" Tag="25,16"/>
-                            <ComboBoxItem Content="  Sale Tag (50 x 32 mm)" Tag="50,32"/>
-                            <ComboBoxItem Content="  Clearance (76 x 51 mm)" Tag="76,51"/>
-                        </ComboBox>
-                    </Grid>
+                    <!-- Dimensions Section -->
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="New Dimensions" FontWeight="SemiBold" FontSize="12" Foreground="#0078d4" Margin="0,0,0,12"/>
+                        
+                        <!-- Preset Sizes Dropdown -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Preset:" Style="{StaticResource LabelStyle}"/>
+                            <ComboBox Grid.Column="1" x:Name="PresetSizeComboBox" Style="{StaticResource ModernComboBoxStyle}" 
+                                      SelectionChanged="PresetSizeComboBox_SelectionChanged">
+                                <ComboBoxItem Content="Custom Size" Tag=""/>
+                                <Separator/>
+                                <!-- ISO Paper Sizes (A-Series) -->
+                                <ComboBoxItem Content="ISO Paper Sizes" IsEnabled="False" FontWeight="SemiBold"/>
+                                <ComboBoxItem Content="  A4 (210 x 297 mm)" Tag="210,297"/>
+                                <ComboBoxItem Content="  A5 (148 x 210 mm)" Tag="148,210"/>
+                                <ComboBoxItem Content="  A6 (105 x 148 mm)" Tag="105,148"/>
+                                <ComboBoxItem Content="  A7 (74 x 105 mm)" Tag="74,105"/>
+                                <ComboBoxItem Content="  A8 (52 x 74 mm)" Tag="52,74"/>
+                                <Separator/>
+                                <!-- Address &amp; Shipping Labels -->
+                                <ComboBoxItem Content="Address &amp; Shipping" IsEnabled="False" FontWeight="SemiBold"/>
+                                <ComboBoxItem Content="  Standard Address (89 x 36 mm)" Tag="89,36"/>
+                                <ComboBoxItem Content="  Large Address (99 x 57 mm)" Tag="99,57"/>
+                                <ComboBoxItem Content="  Shipping Label (101.6 x 152.4 mm)" Tag="101.6,152.4"/>
+                                <ComboBoxItem Content="  Return Address (63.5 x 38.1 mm)" Tag="63.5,38.1"/>
+                                <Separator/>
+                                <!-- Product &amp; Barcode Labels -->
+                                <ComboBoxItem Content="Product &amp; Barcode" IsEnabled="False" FontWeight="SemiBold"/>
+                                <ComboBoxItem Content="  Standard Product (70 x 42.3 mm)" Tag="70,42.3"/>
+                                <ComboBoxItem Content="  Small Product (50 x 25 mm)" Tag="50,25"/>
+                                <ComboBoxItem Content="  Barcode Label (50.8 x 25.4 mm)" Tag="50.8,25.4"/>
+                                <ComboBoxItem Content="  Price Tag (38 x 25 mm)" Tag="38,25"/>
+                                <Separator/>
+                                <!-- Business &amp; Name Tags -->
+                                <ComboBoxItem Content="Business &amp; Name Tags" IsEnabled="False" FontWeight="SemiBold"/>
+                                <ComboBoxItem Content="  Business Card (89 x 51 mm)" Tag="89,51"/>
+                                <ComboBoxItem Content="  Name Badge (76 x 51 mm)" Tag="76,51"/>
+                                <ComboBoxItem Content="  ID Badge (86 x 54 mm)" Tag="86,54"/>
+                                <Separator/>
+                                <!-- Specialty Labels -->
+                                <ComboBoxItem Content="Specialty Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                                <ComboBoxItem Content="  Round Small (19 x 19 mm)" Tag="19,19"/>
+                                <ComboBoxItem Content="  Round Medium (32 x 32 mm)" Tag="32,32"/>
+                                <ComboBoxItem Content="  Round Large (51 x 51 mm)" Tag="51,51"/>
+                                <ComboBoxItem Content="  CD/DVD Label (118 x 118 mm)" Tag="118,118"/>
+                                <ComboBoxItem Content="  Bottle Label (100 x 80 mm)" Tag="100,80"/>
+                                <Separator/>
+                                <!-- Mailing Labels -->
+                                <ComboBoxItem Content="Mailing Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                                <ComboBoxItem Content="  Standard (83.8 x 25.4 mm)" Tag="83.8,25.4"/>
+                                <ComboBoxItem Content="  Large (101.6 x 33.9 mm)" Tag="101.6,33.9"/>
+                                <ComboBoxItem Content="  Return (63.5 x 16.9 mm)" Tag="63.5,16.9"/>
+                                <Separator/>
+                                <!-- Industrial Labels -->
+                                <ComboBoxItem Content="Industrial Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                                <ComboBoxItem Content="  Asset Tag (50 x 20 mm)" Tag="50,20"/>
+                                <ComboBoxItem Content="  Warning Label (100 x 50 mm)" Tag="100,50"/>
+                                <ComboBoxItem Content="  Equipment Label (76 x 25 mm)" Tag="76,25"/>
+                                <Separator/>
+                                <!-- Laboratory Labels -->
+                                <ComboBoxItem Content="Laboratory Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                                <ComboBoxItem Content="  Tube Label (25 x 13 mm)" Tag="25,13"/>
+                                <ComboBoxItem Content="  Slide Label (76 x 26 mm)" Tag="76,26"/>
+                                <ComboBoxItem Content="  Vial Label (38 x 13 mm)" Tag="38,13"/>
+                                <Separator/>
+                                <!-- Retail Labels -->
+                                <ComboBoxItem Content="Retail Labels" IsEnabled="False" FontWeight="SemiBold"/>
+                                <ComboBoxItem Content="  Price Sticker (25 x 16 mm)" Tag="25,16"/>
+                                <ComboBoxItem Content="  Sale Tag (50 x 32 mm)" Tag="50,32"/>
+                                <ComboBoxItem Content="  Clearance (76 x 51 mm)" Tag="76,51"/>
+                            </ComboBox>
+                        </Grid>
+                        
+                        <!-- Manual Input - Width and Height -->
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Width:" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" x:Name="WidthTextBox" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,8,0"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="mm" Style="{StaticResource LabelStyle}" Margin="0,0,0,0"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Height:" Style="{StaticResource LabelStyle}" Margin="0,8,12,0"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" x:Name="HeightTextBox" Style="{StaticResource ModernTextBoxStyle}" Margin="0,8,8,0"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="mm" Style="{StaticResource LabelStyle}" Margin="0,8,0,0"/>
+                        </Grid>
+                    </StackPanel>
                     
-                    <!-- Manual Input - Width and Height on Same Line -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="80"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <TextBlock Grid.Column="0" Text="Width:" Style="{StaticResource LabelStyle}"/>
-                        <TextBox Grid.Column="1" x:Name="WidthTextBox" Style="{StaticResource ModernTextBoxStyle}"/>
-                        <TextBlock Grid.Column="2" Text="mm" Style="{StaticResource LabelStyle}" Margin="8,0,0,0"/>
-                        
-                        <TextBlock Grid.Column="3" Text="Height:" Style="{StaticResource LabelStyle}" Margin="12,0,12,0"/>
-                        <TextBox Grid.Column="4" x:Name="HeightTextBox" Style="{StaticResource ModernTextBoxStyle}"/>
-                        <TextBlock Grid.Column="5" Text="mm" Style="{StaticResource LabelStyle}" Margin="8,0,0,0"/>
-                    </Grid>
-                </StackPanel>
+                    <!-- Separator -->
+                    <Border Grid.Column="1" Width="1" Background="#d1d2d3" Margin="12,0"/>
+                    
+                    <!-- Margins Section -->
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Margins (mm)" FontWeight="SemiBold" FontSize="12" Foreground="#0078d4" Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Left Margin -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Left:" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" x:Name="MarginLeftBox" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,4"/>
+                            
+                            <!-- Right Margin -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Right:" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" x:Name="MarginRightBox" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,4"/>
+                            
+                            <!-- Top Margin -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Top:" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" x:Name="MarginTopBox" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,4"/>
+                            
+                            <!-- Bottom Margin -->
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Bottom:" Style="{StaticResource LabelStyle}"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" x:Name="MarginBottomBox" Style="{StaticResource ModernTextBoxStyle}"/>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
             </Border>
             
             <!-- Preview Area -->

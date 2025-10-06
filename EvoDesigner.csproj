@@ -15,7 +15,7 @@
     <AssemblyCopyright>Copyright © 2025</AssemblyCopyright>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
-    <!-- <ApplicationIcon>app.ico</ApplicationIcon> -->
+    <ApplicationIcon>icon.ico</ApplicationIcon>
     
     <!-- Installer Properties -->
     <PublishSingleFile>true</PublishSingleFile>
@@ -26,10 +26,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+  <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
   <PackageReference Include="MySql.Data" Version="9.4.0" />
   <PackageReference Include="QRCoder" Version="1.6.0" />
   <PackageReference Include="System.Drawing.Common" Version="9.0.8" />
   <PackageReference Include="ZXing.Net" Version="0.16.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Logo.png" />
+    <Resource Include="icon.png" />
+    <Content Include="Logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

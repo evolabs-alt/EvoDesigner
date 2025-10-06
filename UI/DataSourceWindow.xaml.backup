@@ -1,0 +1,314 @@
+<Window x:Class="EvoDesigner.UI.DataSourceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Setup Data Source" Height="700" Width="1140" 
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize">
+    
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#f3f2f1"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#0078d4"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="BorderBrush" Value="#106ebe"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#005a9e"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern TextBox Style -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Modern PasswordBox Style -->
+        <Style x:Key="ModernPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#0078d4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Section Header Style -->
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#0078d4"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <!-- Sub Header Style -->
+        <Style x:Key="SubHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#605e5c"/>
+            <Setter Property="Margin" Value="0,12,0,6"/>
+        </Style>
+
+        <!-- Label Style -->
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,12,0"/>
+        </Style>
+
+        <!-- Modern ComboBox Style -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Panel Background -->
+        <LinearGradientBrush x:Key="PanelGradient" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#ffffff" Offset="0"/>
+            <GradientStop Color="#f8f9fa" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Resources>
+
+    <Border Background="{StaticResource PanelGradient}" BorderBrush="#d1d2d3" BorderThickness="1">
+        <Grid Margin="24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="24"/>
+                <ColumnDefinition Width="300"/>
+            </Grid.ColumnDefinitions>
+            
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Header spans both columns -->
+            <TextBlock Text="📊 Database Connection Setup" Grid.Row="0" Grid.ColumnSpan="3" Style="{StaticResource SectionHeaderStyle}"/>
+            
+            <!-- Left Column: Connection and Query -->
+            <Grid Grid.Row="1" Grid.RowSpan="4" Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- MySQL Connection Fields -->
+                <TextBlock Text="MySQL Connection Details" Grid.Row="0" Style="{StaticResource SubHeaderStyle}"/>
+                
+                <Border Grid.Row="1" Background="White" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- Host and Port -->
+                        <Grid Grid.Row="0" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Host:" Style="{StaticResource LabelStyle}"/>
+                            <TextBox x:Name="HostBox" Grid.Column="1" Text="localhost" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,12,0"/>
+                            <TextBlock Text="Port:" Grid.Column="2" Style="{StaticResource LabelStyle}"/>
+                            <TextBox x:Name="PortBox" Grid.Column="3" Text="3306" Style="{StaticResource ModernTextBoxStyle}"/>
+                        </Grid>
+                        
+                        <!-- Database -->
+                        <Grid Grid.Row="1" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Database:" Style="{StaticResource LabelStyle}"/>
+                            <TextBox x:Name="DatabaseBox" Grid.Column="1" Text="" Style="{StaticResource ModernTextBoxStyle}"/>
+                        </Grid>
+                        
+                        <!-- Username -->
+                        <Grid Grid.Row="2" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Username:" Style="{StaticResource LabelStyle}"/>
+                            <TextBox x:Name="UsernameBox" Grid.Column="1" Text="" Style="{StaticResource ModernTextBoxStyle}"/>
+                        </Grid>
+                        
+                        <!-- Password -->
+                        <Grid Grid.Row="3" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Password:" Style="{StaticResource LabelStyle}"/>
+                            <PasswordBox x:Name="PasswordBox" Grid.Column="1" Style="{StaticResource ModernPasswordBoxStyle}"/>
+                        </Grid>
+                        
+                        <!-- Test Connection Button -->
+                        <Button Content="🔌 Test Connection" Grid.Row="4" Style="{StaticResource ModernButtonStyle}" 
+                                Width="140" HorizontalAlignment="Left" Click="TestConnection_Click"/>
+                    </Grid>
+                </Border>
+                
+                <!-- Printer Section (Flow Mode Only) -->
+                <Grid x:Name="PrinterSection" Grid.Row="2" Margin="0,0,0,12" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="Printer Selection" Grid.Row="0" Style="{StaticResource SubHeaderStyle}"/>
+                    <Border Grid.Row="1" Background="White" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" Padding="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Printer:" Style="{StaticResource LabelStyle}"/>
+                            <ComboBox x:Name="PrinterComboBox" Grid.Column="1" Style="{StaticResource ModernComboBoxStyle}" Margin="0,0,8,0"/>
+                            <Button Content="🔄" Grid.Column="2" Style="{StaticResource ModernButtonStyle}" Width="32" Height="32" 
+                                    ToolTip="Refresh Printers" Click="RefreshPrinters_Click"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+                
+                <!-- Query Section -->
+                <TextBlock Text="SQL Query" Grid.Row="3" Style="{StaticResource SubHeaderStyle}"/>
+                <Border Grid.Row="4" Background="White" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBox x:Name="QueryBox" Grid.Row="0" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" 
+                                 Text="SELECT * FROM your_table LIMIT 10" TextWrapping="Wrap" Style="{StaticResource ModernTextBoxStyle}"
+                                 VerticalContentAlignment="Top" Padding="6" Height="180"/>
+                        
+                        <Button Content="▶️ Execute Query" Grid.Row="1" Style="{StaticResource ModernButtonStyle}" 
+                                Width="140" HorizontalAlignment="Left" Margin="0,12,0,0" Click="ExecuteQuery_Click"/>
+                    </Grid>
+                </Border>
+            </Grid>
+            
+            <!-- Right Column: Query Results -->
+            <Grid Grid.Row="1" Grid.RowSpan="4" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Text="Query Results" Grid.Row="0" Style="{StaticResource SubHeaderStyle}"/>
+                <Border Grid.Row="1" Background="White" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Text="Available Fields:" Grid.Row="0" Style="{StaticResource LabelStyle}" Margin="0,0,0,8"/>
+                        <ListBox x:Name="FieldsList" Grid.Row="1" Background="White" BorderBrush="#d1d2d3" BorderThickness="1"/>
+                    </Grid>
+                </Border>
+            </Grid>
+            
+            <!-- Dialog Buttons span both columns -->
+            <StackPanel Grid.Row="5" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+                <Button Content="✅ OK" Width="100" Margin="0,0,12,0" Style="{StaticResource ModernButtonStyle}" Click="OK_Click"/>
+                <Button Content="❌ Cancel" Width="100" Style="{StaticResource ModernButtonStyle}" Click="Cancel_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

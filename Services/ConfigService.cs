@@ -8,8 +8,7 @@ namespace EvoDesigner.Services
     public static class ConfigService
     {
         private static readonly string ConfigFilePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "EvoDesigner",
+            AppDomain.CurrentDomain.BaseDirectory,
             "config.json"
         );
 

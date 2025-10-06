@@ -8,6 +8,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WpfButton = System.Windows.Controls.Button;
+using WpfImage = System.Windows.Controls.Image;
+using WpfPoint = System.Windows.Point;
+using DrawingPoint = System.Drawing.Point;
+using WpfSize = System.Windows.Size;
+using DrawingSize = System.Drawing.Size;
+using WpfRectangle = System.Windows.Shapes.Rectangle;
+using DrawingRectangle = System.Drawing.Rectangle;
 using System.Data;
 using System.Windows.Controls.Primitives;
 using System.Collections.Generic;
@@ -40,6 +48,7 @@ namespace EvoDesigner
         private Thumb? resizeThumb = null;
         private AppConfig _appConfig;
         private EvoDesigner.Models.DataSourceConfig? _currentDataSource = null;
+        private bool _isExplicitExit = false; // Flag to track if user explicitly chose to exit
         
         // Track unsaved changes
         private bool _isDirty = false;
@@ -126,6 +135,12 @@ namespace EvoDesigner
             
             // Initialize layer control buttons in the LayerControlsContainer
             InitializeLayerControls();
+            
+            // Set up flow mode behavior
+            if (_appConfig.Mode == "flow")
+            {
+                InitializeFlowModeBehavior();
+            }
         }
         
         private void InitializeLayerControls()
@@ -3229,16 +3244,8 @@ namespace EvoDesigner
             {
                 lastResultTable = win.ResultTable;
                 
-                // Store the data source configuration
-                _currentDataSource = new EvoDesigner.Models.DataSourceConfig
-                {
-                    Host = win.Host,
-                    Port = win.Port,
-                    Database = win.Database,
-                    Username = win.Username,
-                    Password = win.Password,
-                    Query = win.Query
-                };
+                // Store the data source configuration using the helper method
+                _currentDataSource = win.CreateDataSourceConfig();
                 
                 SetDirty(true);
             }
@@ -4062,11 +4069,56 @@ namespace EvoDesigner
             return result;
         }
 
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
+            // Handle flow mode behavior - hide to tray instead of closing
+            if (_appConfig.Mode == "flow" && !_isExplicitExit)
+            {
+                e.Cancel = true; // Prevent closing
+                this.Hide(); // Hide to system tray
+                return;
+            }
+
+            // Normal designer mode behavior or explicit exit in flow mode
             if (!PromptSaveChanges())
             {
                 e.Cancel = true;
+            }
+        }
+
+        private void InitializeFlowModeBehavior()
+        {
+            // Set up closing event for flow mode
+            this.Closing += MainWindow_Closing;
+            
+            // Update window title to indicate flow mode
+            this.Title = "EvoDesigner - Flow Mode";
+        }
+
+        /// <summary>
+        /// Explicitly exit the application with proper save prompts
+        /// </summary>
+        public void ExplicitExit()
+        {
+            _isExplicitExit = true;
+            
+            // First check if user wants to save changes
+            if (!PromptSaveChanges())
+            {
+                _isExplicitExit = false; // Reset flag if user cancels
+                return;
+            }
+            
+            // User confirmed exit, now force shutdown
+            try
+            {
+                // Force application shutdown
+                System.Windows.Application.Current.Shutdown();
+            }
+            catch
+            {
+                // If normal shutdown fails, force exit
+                Environment.Exit(0);
             }
         }
 

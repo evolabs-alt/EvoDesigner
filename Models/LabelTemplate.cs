@@ -4,7 +4,7 @@ namespace EvoDesigner.Models
 {
     public class LabelTemplate
     {
-        public string TemplateName { get; set; }
+        public string TemplateName { get; set; } = "";
         public double LabelWidth { get; set; }
         public double LabelHeight { get; set; }
         public double MarginLeft { get; set; }
@@ -24,5 +24,6 @@ namespace EvoDesigner.Models
         public string Username { get; set; } = "";
         public string Password { get; set; } = ""; // Note: Consider encryption in production
         public string Query { get; set; } = "";
+        public string DefaultPrinter { get; set; } = ""; // Flow mode: default printer name
     }
 }

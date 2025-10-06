@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LabelTemplate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <TemplateName>Product Label with Data Binding</TemplateName>
+  <LabelWidth>100</LabelWidth>
+  <LabelHeight>60</LabelHeight>
+  <MarginLeft>2</MarginLeft>
+  <MarginRight>2</MarginRight>
+  <MarginTop>2</MarginTop>
+  <MarginBottom>2</MarginBottom>
+  <Elements>
+    <!-- Product Name -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>10</Y>
+      <Width>340</Width>
+      <Height>40</Height>
+      <Content>Product: {{product_name}}</Content>
+      <FontSize>16</FontSize>
+      <FontWeight>Bold</FontWeight>
+      <Rotation>0</Rotation>
+      <TextAlignment>Left</TextAlignment>
+      <VerticalAlignment>Top</VerticalAlignment>
+      <Foreground>Black</Foreground>
+    </LabelElement>
+    
+    <!-- Price -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>60</Y>
+      <Width>150</Width>
+      <Height>30</Height>
+      <Content>Price: ${{price}}</Content>
+      <FontSize>14</FontSize>
+      <Rotation>0</Rotation>
+      <TextAlignment>Left</TextAlignment>
+      <VerticalAlignment>Top</VerticalAlignment>
+      <Foreground>Black</Foreground>
+    </LabelElement>
+    
+    <!-- SKU/Barcode as QR Code -->
+    <LabelElement>
+      <Type>QRCode</Type>
+      <X>200</X>
+      <Y>100</Y>
+      <Width>120</Width>
+      <Height>120</Height>
+      <Content>{{sku}}</Content>
+    </LabelElement>
+    
+    <!-- Category -->
+    <LabelElement>
+      <Type>Text</Type>
+      <X>10</X>
+      <Y>100</Y>
+      <Width>180</Width>
+      <Height>25</Height>
+      <Content>Category: {{category}}</Content>
+      <FontSize>11</FontSize>
+      <Rotation>0</Rotation>
+      <TextAlignment>Left</TextAlignment>
+      <VerticalAlignment>Top</VerticalAlignment>
+      <Foreground>#666666</Foreground>
+    </LabelElement>
+  </Elements>
+  <FieldMappings />
+  <DataSource>
+    <Host>localhost</Host>
+    <Port>3306</Port>
+    <Database>your_database</Database>
+    <Username>your_username</Username>
+    <Password>your_password</Password>
+    <Query>SELECT product_name, price, sku, category FROM products WHERE active = 1 LIMIT 10</Query>
+    <DefaultPrinter>Microsoft Print to PDF</DefaultPrinter>
+  </DataSource>
+</LabelTemplate>

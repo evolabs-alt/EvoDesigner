@@ -1,27 +1,30 @@
 [DEBUG] ==> Starting CreateLiveTemplate
 [DEBUG] CreateLiveTemplate called
-[DEBUG] Found 8 label elements on canvas
+[DEBUG] Found 3 label elements on canvas
 [DEBUG] Processing canvas child: Border
 [DEBUG] Found Border element
 [DEBUG] Border.Child type: TextBlock
-[DEBUG] Border contains TextBlock: 'Texti'
-[DEBUG] SAVING: Text='Texti', FontSize=26, FontFamily='Vivaldi', Color='#FF31FF22'
-[DEBUG] Created label element: Type=Text, Size=211.42857142857156x257.99999999999994
-[DEBUG] Processing canvas child: Canvas
-[DEBUG] Found Canvas with 1 children
-[DEBUG] Found Line in Canvas: X1=0, Y1=23.80000000000001, X2=248.80000000000007, Y2=23.80000000000001
-[DEBUG] Created label element: Type=Line, Size=248.80000000000007x47.60000000000002
+[DEBUG] Border contains TextBlock: 'Text'
+[DEBUG] SAVING: Text='Text', FontSize=10, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] Created label element: Type=Text, Size=133.60000000000002x26
 [DEBUG] Processing canvas child: Image
 [DEBUG] Created label element: Type=Image, Size=100x100
 [DEBUG] Processing canvas child: Image
 [DEBUG] Created label element: Type=QRCode, Size=80x80
-[DEBUG] Processing canvas child: Image
-[DEBUG] Created label element: Type=DataMatrix, Size=80x80
-[DEBUG] Processing canvas child: Image
-[DEBUG] Created label element: Type=EAN13, Size=120x60
-[DEBUG] Processing canvas child: Rectangle
-[DEBUG] Found direct Rectangle: Width=574.3999999999999, Height=592.8
-[DEBUG] Created label element: Type=Rectangle, Size=574.3999999999999x592.8
-[DEBUG] Processing canvas child: Image
-[DEBUG] Created label element: Type=Aztec, Size=80x80
-[DEBUG] Final live template has 8 elements
+[DEBUG] Final live template has 3 elements
+10/6/2025 11:06:01 AM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/6/2025 11:06:01 AM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/6/2025 11:06:01 AM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/6/2025 11:06:01 AM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/6/2025 11:06:03 AM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/6/2025 11:06:03 AM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/6/2025 11:06:03 AM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/6/2025 11:06:03 AM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/6/2025 11:06:03 AM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/6/2025 11:06:03 AM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/6/2025 11:06:03 AM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/6/2025 11:06:03 AM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/6/2025 11:06:03 AM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/6/2025 11:06:03 AM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/6/2025 11:06:03 AM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/6/2025 11:06:03 AM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')

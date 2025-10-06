@@ -1,0 +1,11 @@
+{
+  "Mode": "flow",
+  "FlowMode": {
+    "SystemTrayEnabled": true,
+    "ScheduledPrintingEnabled": true,
+    "PrintingIntervalSeconds": 60,
+    "LoadedTemplatePaths": [],
+    "StartMinimizedToTray": false,
+    "ShowTrayNotifications": true
+  }
+}

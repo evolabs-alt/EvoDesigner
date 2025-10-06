@@ -129,6 +129,18 @@
             <Setter Property="Margin" Value="0,0,12,0"/>
         </Style>
 
+        <!-- Modern ComboBox Style -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#323130"/>
+            <Setter Property="BorderBrush" Value="#d1d2d3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
         <!-- Panel Background -->
         <LinearGradientBrush x:Key="PanelGradient" StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#ffffff" Offset="0"/>
@@ -159,6 +171,8 @@
             <!-- Left Column: Connection and Query -->
             <Grid Grid.Row="1" Grid.RowSpan="4" Grid.Column="0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -227,6 +241,29 @@
                                 Width="140" HorizontalAlignment="Left" Click="TestConnection_Click"/>
                     </Grid>
                 </Border>
+                
+                <!-- Printer Section (Flow Mode Only) -->
+                <Grid x:Name="PrinterSection" Grid.Row="5" Margin="0,0,0,12" Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="Printer Selection" Grid.Row="0" Style="{StaticResource SubHeaderStyle}"/>
+                    <Border Grid.Row="1" Background="White" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" Padding="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Printer:" Style="{StaticResource LabelStyle}"/>
+                            <ComboBox x:Name="PrinterComboBox" Grid.Column="1" Style="{StaticResource ModernComboBoxStyle}" Margin="0,0,8,0"/>
+                            <Button Content="🔄" Grid.Column="2" Style="{StaticResource ModernButtonStyle}" Width="32" Height="32" 
+                                    ToolTip="Refresh Printers" Click="RefreshPrinters_Click"/>
+                        </Grid>
+                    </Border>
+                </Grid>
                 
                 <!-- Query Section -->
                 <TextBlock Text="SQL Query" Grid.Row="2" Style="{StaticResource SubHeaderStyle}"/>

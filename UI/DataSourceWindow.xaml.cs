@@ -2,6 +2,8 @@ using System.Data;
 using System.Windows;
 using EvoDesigner.Services;
 using EvoDesigner.Models;
+using System.Linq;
+using System;
 
 namespace EvoDesigner.UI
 {
@@ -11,6 +13,7 @@ namespace EvoDesigner.UI
 
         public string ConnectionString { get; private set; } = "";
         public string Query => QueryBox.Text;
+        public string SelectedPrinter => PrinterComboBox.SelectedItem?.ToString() ?? "";
         public DataTable? ResultTable { get; private set; }
         
         // Expose individual connection properties
@@ -24,6 +27,7 @@ namespace EvoDesigner.UI
         {
             InitializeComponent();
             _config = ConfigService.LoadConfig();
+            InitializeFlowModeUI();
             LoadSavedSettings();
         }
 
@@ -53,13 +57,13 @@ namespace EvoDesigner.UI
 
         private void LoadSavedSettings()
         {
-            // Restore previously entered values from config
-            HostBox.Text = _config.MySqlConnection.Host;
-            PortBox.Text = _config.MySqlConnection.Port;
-            DatabaseBox.Text = _config.MySqlConnection.Database;
-            UsernameBox.Text = _config.MySqlConnection.Username;
-            PasswordBox.Password = _config.MySqlConnection.Password;
-            QueryBox.Text = _config.MySqlConnection.LastQuery;
+            // For new templates, start with default values
+            HostBox.Text = "localhost";
+            PortBox.Text = "3306";
+            DatabaseBox.Text = "";
+            UsernameBox.Text = "";
+            PasswordBox.Password = "";
+            QueryBox.Text = "SELECT * FROM your_table LIMIT 10";
         }
 
         private void LoadFromDataSource(EvoDesigner.Models.DataSourceConfig dataSource)
@@ -75,17 +79,9 @@ namespace EvoDesigner.UI
 
         private void SaveCurrentSettings()
         {
-            _config.MySqlConnection.Host = HostBox.Text;
-            _config.MySqlConnection.Port = PortBox.Text;
-            _config.MySqlConnection.Database = DatabaseBox.Text;
-            _config.MySqlConnection.Username = UsernameBox.Text;
-            _config.MySqlConnection.Password = PasswordBox.Password;
-            _config.MySqlConnection.LastQuery = QueryBox.Text;
-            
-            ConfigService.SaveConfig(_config);
-        }
-
-        private void DisplayFieldsFromResultTable()
+            // Note: Connection settings are now saved per-template, not globally
+            // This method is kept for backward compatibility but does nothing
+        }        private void DisplayFieldsFromResultTable()
         {
             if (ResultTable != null)
             {
@@ -174,6 +170,86 @@ namespace EvoDesigner.UI
         {
             DialogResult = false;
             Close();
+        }
+
+        // Helper method to create DataSourceConfig - used by MainWindow
+        public DataSourceConfig CreateDataSourceConfig()
+        {
+            return new DataSourceConfig
+            {
+                Host = Host,
+                Port = Port,
+                Database = Database,
+                Username = Username,
+                Password = Password,
+                Query = Query,
+                DefaultPrinter = SelectedPrinter
+            };
+        }
+
+        private void InitializeFlowModeUI()
+        {
+            // Show/hide printer section based on mode
+            System.Diagnostics.Debug.WriteLine($"DataSourceWindow: Config mode is '{_config.Mode}'");
+            Console.WriteLine($"DEBUG: DataSourceWindow config mode is '{_config.Mode}'");
+            
+            // FORCE VISIBLE FOR DEBUGGING
+            Console.WriteLine("DEBUG: FORCING PrinterSection to Visible");
+            PrinterSection.Visibility = Visibility.Visible;
+            LoadPrinters();
+            
+            /*
+            if (_config.Mode == "flow")
+            {
+                System.Diagnostics.Debug.WriteLine("DataSourceWindow: Showing printer section for flow mode");
+                Console.WriteLine("DEBUG: Setting PrinterSection to Visible");
+                PrinterSection.Visibility = Visibility.Visible;
+                LoadPrinters();
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("DataSourceWindow: Hiding printer section for designer mode");
+                Console.WriteLine("DEBUG: Setting PrinterSection to Collapsed");
+                PrinterSection.Visibility = Visibility.Collapsed;
+            }
+            */
+        }
+
+        private void LoadPrinters()
+        {
+            try
+            {
+                var printers = PrinterService.GetInstalledPrinters();
+                PrinterComboBox.Items.Clear();
+                
+                foreach (var printer in printers)
+                {
+                    PrinterComboBox.Items.Add(printer);
+                }
+
+                // Select default printer if available
+                if (printers.Count > 0)
+                {
+                    var defaultPrinter = PrinterService.GetDefaultPrinter();
+                    if (!string.IsNullOrEmpty(defaultPrinter) && printers.Contains(defaultPrinter))
+                    {
+                        PrinterComboBox.SelectedItem = defaultPrinter;
+                    }
+                    else
+                    {
+                        PrinterComboBox.SelectedIndex = 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading printers: {ex.Message}", "Printer Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void RefreshPrinters_Click(object sender, RoutedEventArgs e)
+        {
+            LoadPrinters();
         }
     }
 }

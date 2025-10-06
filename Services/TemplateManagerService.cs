@@ -10,7 +10,7 @@ namespace EvoDesigner.Services
     public class TemplateManagerService
     {
         private static readonly string ConfigFileName = "flow-templates.json";
-        private static readonly string ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EvoDesigner");
+        private static readonly string ConfigDirectory = AppDomain.CurrentDomain.BaseDirectory;
         private static readonly string ConfigFilePath = Path.Combine(ConfigDirectory, ConfigFileName);
 
         private List<LoadedTemplate> _loadedTemplates = new();
@@ -21,6 +21,18 @@ namespace EvoDesigner.Services
 
         public TemplateManagerService()
         {
+            // Log the config file path for debugging
+            try
+            {
+                File.AppendAllText("template-manager-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] TemplateManagerService initialized{Environment.NewLine}");
+                File.AppendAllText("template-manager-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ConfigDirectory: {ConfigDirectory}{Environment.NewLine}");
+                File.AppendAllText("template-manager-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ConfigFilePath: {ConfigFilePath}{Environment.NewLine}");
+            }
+            catch { }
+            
             LoadTemplatesFromStorage();
         }
 
@@ -225,6 +237,10 @@ namespace EvoDesigner.Services
         {
             try
             {
+                // Log save attempt
+                File.AppendAllText("template-manager-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Saving templates to: {ConfigFilePath}{Environment.NewLine}");
+                
                 // Ensure directory exists
                 Directory.CreateDirectory(ConfigDirectory);
 
@@ -234,9 +250,14 @@ namespace EvoDesigner.Services
                 });
 
                 File.WriteAllText(ConfigFilePath, json);
+                
+                File.AppendAllText("template-manager-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Successfully saved {_loadedTemplates.Count} template(s){Environment.NewLine}");
             }
             catch (Exception ex)
             {
+                File.AppendAllText("template-manager-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR saving: {ex.Message}{Environment.NewLine}");
                 ErrorOccurred?.Invoke(this, $"Error saving templates to storage: {ex.Message}");
             }
         }

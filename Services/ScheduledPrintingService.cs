@@ -7,6 +7,8 @@ using System.Xml.Linq;
 using EvoDesigner.Models;
 using EvoDesigner.Services;
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EvoDesigner.Services
 {
@@ -17,6 +19,8 @@ namespace EvoDesigner.Services
         private readonly object _lockObject = new object();
         private readonly TemplateManagerService _templateManager;
         private readonly int _intervalSeconds;
+        private readonly List<ScheduledPrintLogEntry> _executionLogs;
+        private const int MaxLogEntries = 50;
 
         public event EventHandler<string>? LogMessage;
         public event EventHandler<string>? ErrorOccurred;
@@ -29,6 +33,7 @@ namespace EvoDesigner.Services
         {
             _templateManager = templateManager;
             _intervalSeconds = intervalSeconds;
+            _executionLogs = new List<ScheduledPrintLogEntry>();
         }
 
         /// <summary>
@@ -307,12 +312,18 @@ namespace EvoDesigner.Services
                             File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] No 'printer' column - using default printer for all records" + Environment.NewLine);
                             // Print ALL records in ONE print job with multiple pages to default printer
                             printService.PrintAllRecords(template, printerName, dataTable);
+                            
+                            // Log the execution
+                            AddLog(templateName, dataTable.Rows.Count, printerName);
                         }
                     }
                     else
                     {
                         // No data - print one label with static content
                         printService.Print(template, printerName, dataTable: null, recordIndex: 0, copies: 1);
+                        
+                        // Log the execution
+                        AddLog(templateName, 1, printerName);
                     }
                 });
                 
@@ -323,6 +334,9 @@ namespace EvoDesigner.Services
             {
                 ErrorOccurred?.Invoke(this, $"Error sending print job for {templateName}: {ex.Message}");
                 File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR sending print job: {ex.Message}" + Environment.NewLine);
+                
+                // Log the failed execution
+                AddLog(templateName, 0, printerName, $"Error: {ex.Message}");
             }
         }
 
@@ -379,18 +393,61 @@ namespace EvoDesigner.Services
                     
                     // Print all records in this group as one job
                     printService.PrintAllRecords(template, groupPrinter, groupData);
+                    
+                    // Log each printer group execution
+                    AddLog(templateName, groupData.Rows.Count, groupPrinter);
                 }
             }
             catch (Exception ex)
             {
                 ErrorOccurred?.Invoke(this, $"Error in grouped printing: {ex.Message}");
                 File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR in PrintRecordsGroupedByPrinter: {ex.Message}" + Environment.NewLine);
+                
+                // Log the failed execution
+                AddLog(templateName, 0, defaultPrinter, $"Error: {ex.Message}");
             }
         }
 
         public void Dispose()
         {
             Stop();
+        }
+
+        /// <summary>
+        /// Add a log entry for a print execution
+        /// </summary>
+        private void AddLog(string templateName, int recordCount, string printerName, string status = "Success")
+        {
+            lock (_lockObject)
+            {
+                var logEntry = new ScheduledPrintLogEntry
+                {
+                    ExecutionTime = DateTime.Now,
+                    TemplateName = templateName,
+                    RecordCount = recordCount,
+                    PrinterName = printerName,
+                    Status = status
+                };
+
+                _executionLogs.Insert(0, logEntry); // Add to beginning for newest-first order
+
+                // Keep only the last 50 entries
+                if (_executionLogs.Count > MaxLogEntries)
+                {
+                    _executionLogs.RemoveRange(MaxLogEntries, _executionLogs.Count - MaxLogEntries);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the last 50 execution logs
+        /// </summary>
+        public List<ScheduledPrintLogEntry> GetLogs()
+        {
+            lock (_lockObject)
+            {
+                return new List<ScheduledPrintLogEntry>(_executionLogs);
+            }
         }
     }
 }

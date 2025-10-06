@@ -8,11 +8,11 @@
     <UseWPF>true</UseWPF>
     
     <!-- Application Metadata for Installer -->
-    <AssemblyTitle>EvoDesigner</AssemblyTitle>
+    <AssemblyTitle>TaggJack</AssemblyTitle>
     <AssemblyDescription>Professional Label Design Application for Printable Labels</AssemblyDescription>
-    <AssemblyCompany>EvoDesigner</AssemblyCompany>
-    <AssemblyProduct>EvoDesigner</AssemblyProduct>
-    <AssemblyCopyright>Copyright © 2025</AssemblyCopyright>
+    <AssemblyCompany>Evolabs IT Solutions Ltd</AssemblyCompany>
+    <AssemblyProduct>TaggJack</AssemblyProduct>
+    <AssemblyCopyright>Copyright © 2025 Evolabs IT Solutions Ltd</AssemblyCopyright>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <ApplicationIcon>icon.ico</ApplicationIcon>

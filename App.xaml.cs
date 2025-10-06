@@ -57,8 +57,9 @@ public partial class App : System.Windows.Application
         }
         
         // Test LinkedImage functionality
-        _splashScreen.UpdateStatus("Running tests...");
-        TestLinkedImage.TestCreateLinkedImageElement();
+        // NOTE: Commented out to prevent creating duplicate MainWindow instances during startup
+        // _splashScreen.UpdateStatus("Running tests...");
+        // TestLinkedImage.TestCreateLinkedImageElement();
         
         // Close splash screen
         _splashScreen.UpdateStatus("Starting application...");

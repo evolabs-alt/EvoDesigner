@@ -18,6 +18,7 @@ using WpfRectangle = System.Windows.Shapes.Rectangle;
 using DrawingRectangle = System.Drawing.Rectangle;
 using System.Data;
 using System.Windows.Controls.Primitives;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -81,7 +82,17 @@ namespace EvoDesigner
 
         public MainWindow()
         {
-            Console.WriteLine("[DEBUG] MainWindow constructor called");
+            var instanceId = Guid.NewGuid().ToString().Substring(0, 8);
+            Console.WriteLine($"[DEBUG] MainWindow constructor called - Instance: {instanceId}");
+            try
+            {
+                File.AppendAllText("mainwindow-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] MainWindow constructor - Instance: {instanceId}{Environment.NewLine}");
+                File.AppendAllText("mainwindow-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stack trace:{Environment.NewLine}{Environment.StackTrace}{Environment.NewLine}");
+            }
+            catch { }
+            
             InitializeComponent();
             
             // Load configuration on startup
@@ -145,6 +156,12 @@ namespace EvoDesigner
         
         private void InitializeLayerControls()
         {
+            // Check if buttons already exist to prevent duplicates
+            if (LayerControlsContainer.Children.Count > 0)
+            {
+                return; // Already initialized
+            }
+            
             // Add layer control buttons to the LayerControlsContainer
             var bringForwardBtn = new Button 
             { 
@@ -1232,6 +1249,18 @@ namespace EvoDesigner
                         newElement = rectangle;
                         break;
                     
+                    case "Ellipse":
+                        var ellipseDrop = new System.Windows.Shapes.Ellipse
+                        {
+                            Width = 100,
+                            Height = 75,
+                            Fill = Brushes.Transparent,
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 2
+                        };
+                        newElement = ellipseDrop;
+                        break;
+                    
                     // Retail Checkout
                     case "EAN13":
                         newElement = CreateBarcodeImage("EAN13", "4000000000004", 120, 60);
@@ -1482,7 +1511,7 @@ namespace EvoDesigner
                         {
                             Width = 100,
                             Height = 75,
-                            Fill = Brushes.LightGray,
+                            Fill = Brushes.Transparent,
                             Stroke = Brushes.Black,
                             StrokeThickness = 2
                         };
@@ -2613,6 +2642,70 @@ namespace EvoDesigner
                         SetDirty(true);
                     });
                     ElementPropertiesPanel.Children.Add(borderColorPicker);
+                }
+                else if (element is System.Windows.Shapes.Ellipse ellipse)
+                {
+                    // Ellipse properties
+                    var ellipseLabel = new Label { Content = "Ellipse Properties" };
+                    ellipseLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(ellipseLabel);
+                    
+                    // Width property
+                    var widthLabel = new Label { Content = "Width:" };
+                    widthLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(widthLabel);
+                    
+                    var widthBox = new TextBox { Text = ellipse.Width.ToString() };
+                    widthBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    widthBox.TextChanged += (s, e) => {
+                        if (double.TryParse(widthBox.Text, out double w)) {
+                            ellipse.Width = w;
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(widthBox);
+
+                    // Height property
+                    var heightLabel = new Label { Content = "Height:" };
+                    heightLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(heightLabel);
+                    
+                    var heightBox = new TextBox { Text = ellipse.Height.ToString() };
+                    heightBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    heightBox.TextChanged += (s, e) => {
+                        if (double.TryParse(heightBox.Text, out double h)) {
+                            ellipse.Height = h;
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(heightBox);
+                    
+                    // Border Width property
+                    var borderWidthLabel = new Label { Content = "Border Width:" };
+                    borderWidthLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(borderWidthLabel);
+                    
+                    var borderWidthBox = new TextBox { Text = ellipse.StrokeThickness.ToString() };
+                    borderWidthBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                    borderWidthBox.TextChanged += (s, e) => {
+                        if (double.TryParse(borderWidthBox.Text, out double thickness)) {
+                            ellipse.StrokeThickness = thickness;
+                            SetDirty(true);
+                        }
+                    };
+                    ElementPropertiesPanel.Children.Add(borderWidthBox);
+                    
+                    // Border Color property
+                    var borderColorLabel = new System.Windows.Controls.Label { Content = "Border Color:" };
+                    borderColorLabel.Style = (Style)FindResource("ModernLabelStyle");
+                    ElementPropertiesPanel.Children.Add(borderColorLabel);
+                    
+                    var currentEllipseBorderColor = ((ellipse.Stroke as SolidColorBrush)?.Color) ?? Colors.Black;
+                    var ellipseBorderColorPicker = CreateColorPicker(currentEllipseBorderColor, (newColor) => {
+                        ellipse.Stroke = new SolidColorBrush(newColor);
+                        SetDirty(true);
+                    });
+                    ElementPropertiesPanel.Children.Add(ellipseBorderColorPicker);
                 }
                 else if (element is Canvas canvas && canvas.Children.Count > 0 && canvas.Children[0] is System.Windows.Shapes.Line line)
                 {
@@ -4079,7 +4172,14 @@ namespace EvoDesigner
                 return;
             }
 
-            // Normal designer mode behavior or explicit exit in flow mode
+            // If this is an explicit exit, the save prompt was already shown in ExplicitExit()
+            // So we should just allow the close to proceed
+            if (_isExplicitExit)
+            {
+                return; // Allow close without prompting again
+            }
+
+            // Normal designer mode behavior or user clicking X button
             if (!PromptSaveChanges())
             {
                 e.Cancel = true;
@@ -4088,11 +4188,25 @@ namespace EvoDesigner
 
         private void InitializeFlowModeBehavior()
         {
+            try
+            {
+                File.AppendAllText("mainwindow-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] InitializeFlowModeBehavior called for window: {this.Title}{Environment.NewLine}");
+            }
+            catch { }
+            
             // Set up closing event for flow mode
             this.Closing += MainWindow_Closing;
             
             // Update window title to indicate flow mode
-            this.Title = "EvoDesigner - Flow Mode";
+            this.Title = "TaggJack - Flow Mode";
+            
+            try
+            {
+                File.AppendAllText("mainwindow-debug.log", 
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Title changed to: {this.Title}{Environment.NewLine}");
+            }
+            catch { }
         }
 
         /// <summary>
@@ -4878,7 +4992,8 @@ namespace EvoDesigner
 
                 // Current color state - initialize from element's current color
                 var currentHsv = RgbToHsv(initialColor);
-                var currentColor = initialColor; // Start with the actual current color
+                currentHsv.V = 1.0; // Always start at max brightness
+                var currentColor = HsvToRgb(currentHsv.H, currentHsv.S, currentHsv.V); // Recalculate with max brightness
 
                 // Update wheel selector position
                 Action updateWheelSelector = () =>
@@ -4910,7 +5025,7 @@ namespace EvoDesigner
                 };
                 rightPanel.Children.Add(previewRect);
 
-                // Brightness slider - initialize with current element brightness
+                // Brightness slider - initialize with max brightness
                 var brightnessLabel = new System.Windows.Controls.Label { Content = "Brightness:" };
                 rightPanel.Children.Add(brightnessLabel);
 
@@ -4918,7 +5033,7 @@ namespace EvoDesigner
                 {
                     Minimum = 0,
                     Maximum = 1,
-                    Value = currentHsv.V, // Use actual current brightness
+                    Value = 1.0, // Always start at max brightness
                     Width = 120,
                     Margin = new Thickness(0, 0, 0, 10)
                 };

@@ -17,5 +17,13 @@ namespace EvoDesigner.Services
             dt.Load(reader);
             return dt;
         }
+
+        public int ExecuteNonQuery(string query)
+        {
+            using var conn = new MySqlConnection(ConnectionString);
+            using var cmd = new MySqlCommand(query, conn);
+            conn.Open();
+            return cmd.ExecuteNonQuery();
+        }
     }
 }

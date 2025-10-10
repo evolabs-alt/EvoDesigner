@@ -33,8 +33,25 @@ namespace EvoDesigner.Models
         public string Status { get; set; } = "Success";
 
         /// <summary>
+        /// List of update errors that occurred during record marking
+        /// </summary>
+        public string UpdateErrors { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Count of how many times "No records" timestamp was updated (starts at 1)
+        /// </summary>
+        public int NoRecordsCheckCount { get; set; } = 1;
+
+        /// <summary>
         /// Formatted display string for execution time
         /// </summary>
         public string FormattedTime => ExecutionTime.ToString("yyyy-MM-dd HH:mm:ss");
+
+        /// <summary>
+        /// Formatted status with check count for "No records" entries
+        /// </summary>
+        public string FormattedStatus => Status == "No records to print" && NoRecordsCheckCount > 1
+            ? $"No records to print ({NoRecordsCheckCount})"
+            : Status;
     }
 }

@@ -1,7 +1,142 @@
 [DEBUG] ==> Starting CreateLiveTemplate
 [DEBUG] CreateLiveTemplate called
 [DEBUG] Found 1 label elements on canvas
-[DEBUG] Processing canvas child: Ellipse
-[DEBUG] Found direct Ellipse: Width=100, Height=75
-[DEBUG] Created label element: Type=Ellipse, Size=100x75
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'Text'
+[DEBUG] SAVING: Text='Text', FontSize=10, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=235.20000000000005x26.80000000000001
 [DEBUG] Final live template has 1 elements
+10/10/2025 7:28:11 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:11 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:11 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:11 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:13 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:13 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:13 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:13 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:13 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:13 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:13 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:13 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:13 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:13 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:13 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:13 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:14 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:14 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:14 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:14 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:14 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:14 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:14 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:14 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:14 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:14 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:14 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:14 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:14 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:14 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:14 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:14 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:15 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:15 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:15 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:15 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:15 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:15 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:15 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:15 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:16 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:16 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:16 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:16 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:17 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:17 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:17 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:17 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:17 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:17 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:17 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:17 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:17 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:17 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:17 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:17 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:20 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:20 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:20 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:20 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 7:28:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 7:28:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 7:28:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 7:28:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+[DEBUG] LOADING: Text='Text', FontSize=10, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='Sample QR Data', FontSize=12, FontFamily='', Color=''
+[DEBUG] LOADING: Text='SHIFT:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='01234567890123456', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='OPERATOR NAME:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='INJECTION BATCH:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='PRINTING BATCH:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='SUPERVISOR SIGN:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='QUALITY SIGN:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='', FontSize=12, FontFamily='', Color=''
+[DEBUG] LOADING: Text='', FontSize=12, FontFamily='', Color=''
+[DEBUG] LOADING: Text='DATETIME', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='USERNAME', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='ITEM CODE', FontSize=20, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='DESCRIPTION', FontSize=30, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='SHIFT DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='OPERATOR DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='INJECTION DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='PRINTING DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='Text', FontSize=10, FontFamily='Segoe UI', Color='#FF000000'

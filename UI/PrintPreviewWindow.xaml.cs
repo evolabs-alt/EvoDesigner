@@ -218,7 +218,8 @@ namespace EvoDesigner.UI
                                 Text = elementContent, 
                                 FontSize = el.FontSize > 0 ? el.FontSize : 12, // Use 12 as default if 0 or negative
                                 TextWrapping = TextWrapping.Wrap,
-                                Width = el.Width  // Keep width for horizontal text alignment, but remove height for vertical alignment
+                                Width = el.Width,  // Explicitly set width to match container
+                                Height = el.Height // Set height to match container for vertical alignment
                             };
                             
                             Console.WriteLine($"[DEBUG] TextBlock created with text: '{tb.Text}', FontSize: {tb.FontSize}");

@@ -68,5 +68,35 @@ namespace EvoDesigner.UI
         {
             this.Close();
         }
+
+        /// <summary>
+        /// DataGrid double-click handler to show error details
+        /// </summary>
+        private void LogsDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            // Get the selected log entry
+            if (LogsDataGrid.SelectedItem is ScheduledPrintLogEntry logEntry)
+            {
+                // Check if there are update errors
+                if (!string.IsNullOrWhiteSpace(logEntry.UpdateErrors))
+                {
+                    // Show error details in a message box
+                    MessageBox.Show(
+                        logEntry.UpdateErrors,
+                        "Update Errors - " + logEntry.TemplateName,
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                }
+                else
+                {
+                    // No errors to show
+                    MessageBox.Show(
+                        "No update errors recorded for this print job.",
+                        "No Errors",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+            }
+        }
     }
 }

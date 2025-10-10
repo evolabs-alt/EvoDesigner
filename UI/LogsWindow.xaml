@@ -118,13 +118,14 @@
                       Style="{StaticResource ModernDataGridStyle}"
                       ScrollViewer.CanContentScroll="True"
                       ScrollViewer.VerticalScrollBarVisibility="Auto"
-                      ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      MouseDoubleClick="LogsDataGrid_MouseDoubleClick">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Execution Time" Binding="{Binding FormattedTime}" Width="160"/>
                     <DataGridTextColumn Header="Template Name" Binding="{Binding TemplateName}" Width="*" MinWidth="200"/>
                     <DataGridTextColumn Header="Records" Binding="{Binding RecordCount}" Width="100"/>
                     <DataGridTextColumn Header="Printer" Binding="{Binding PrinterName}" Width="200"/>
-                    <DataGridTextColumn Header="Status" Binding="{Binding Status}" Width="120"/>
+                    <DataGridTextColumn Header="Status" Binding="{Binding FormattedStatus}" Width="200"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

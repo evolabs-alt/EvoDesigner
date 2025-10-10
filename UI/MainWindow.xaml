@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EvoDesigner"
+        xmlns:materialIcons="clr-namespace:Material.Icons.WPF;assembly=Material.Icons.WPF"
         mc:Ignorable="d"
         Title="TaggJack - Professional Label Designer" Height="800" Width="1400"
         WindowState="Maximized"
@@ -283,6 +284,12 @@
                         <TextBlock Text="🗺️" FontSize="14" />
                     </MenuItem.Icon>
                 </MenuItem>
+                <Separator />
+                <MenuItem Header="_Sample Data..." x:Name="SampleDataMenuItem" Click="SampleData_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="📊" FontSize="14" />
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_Elements" Style="{StaticResource MenuItemStyle}">
                 <MenuItem Header="Text" Click="MenuElement_Click" Tag="Text" />
@@ -333,7 +340,8 @@
                 <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
                         Padding="12,8" Margin="0,0,16,0">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="📊" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                        <materialIcons:MaterialIcon Kind="Layers" Width="18" Height="18" 
+                                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBlock Text="Layers" VerticalAlignment="Center" Margin="0,0,12,0" 
                                   FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
                         <StackPanel x:Name="LayerControlsContainer" Orientation="Horizontal">
@@ -346,7 +354,8 @@
                 <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
                         Padding="12,8" Margin="0,0,16,0">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="🔍" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                        <materialIcons:MaterialIcon Kind="Magnify" Width="18" Height="18" 
+                                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBlock Text="Zoom" VerticalAlignment="Center" Margin="0,0,12,0" 
                                   FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
                         <Button x:Name="ZoomOutButton" Content="−" Width="36" Height="28" Margin="0,0,4,0" 
@@ -373,31 +382,44 @@
                 <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
                         Padding="12,8" x:Name="AlignmentToolbar">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="🔤" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                        <materialIcons:MaterialIcon Kind="FormatAlignJustify" Width="18" Height="18" 
+                                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBlock Text="Align" VerticalAlignment="Center" Margin="0,0,12,0" 
                                   FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
                         
                         <!-- Horizontal Alignment -->
-                        <Button x:Name="AlignLeftButton" Content="L" Width="32" Height="28" Margin="0,0,2,0"
-                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Left" FontSize="12" FontWeight="Bold"
-                               Click="AlignLeft_Click"/>
-                        <Button x:Name="AlignCenterButton" Content="C" Width="32" Height="28" Margin="0,0,2,0"
-                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Center" FontSize="12" FontWeight="Bold"
-                               Click="AlignCenter_Click"/>
-                        <Button x:Name="AlignRightButton" Content="R" Width="32" Height="28" Margin="0,0,8,0"
-                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Right" FontSize="12" FontWeight="Bold"
-                               Click="AlignRight_Click"/>
+                        <Button x:Name="AlignLeftButton" Width="40" Height="28" Margin="0,0,2,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Left"
+                               Click="AlignLeft_Click">
+                            <materialIcons:MaterialIcon Kind="FormatAlignLeft" Width="16" Height="16"/>
+                        </Button>
+                        <Button x:Name="AlignCenterButton" Width="40" Height="28" Margin="0,0,2,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Center"
+                               Click="AlignCenter_Click">
+                            <materialIcons:MaterialIcon Kind="FormatAlignCenter" Width="16" Height="16"/>
+                        </Button>
+                        <Button x:Name="AlignRightButton" Width="40" Height="28" Margin="0,0,8,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Right"
+                               Click="AlignRight_Click">
+                            <materialIcons:MaterialIcon Kind="FormatAlignRight" Width="16" Height="16"/>
+                        </Button>
                         
                         <!-- Vertical Alignment -->
-                        <Button x:Name="AlignTopButton" Content="T" Width="32" Height="28" Margin="0,0,2,0"
-                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Top" FontSize="12" FontWeight="Bold"
-                               Click="AlignTop_Click"/>
-                        <Button x:Name="AlignMiddleButton" Content="M" Width="32" Height="28" Margin="0,0,2,0"
-                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Middle" FontSize="12" FontWeight="Bold"
-                               Click="AlignMiddle_Click"/>
-                        <Button x:Name="AlignBottomButton" Content="B" Width="32" Height="28"
-                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Bottom" FontSize="12" FontWeight="Bold"
-                               Click="AlignBottom_Click"/>
+                        <Button x:Name="AlignTopButton" Width="40" Height="28" Margin="0,0,2,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Top"
+                               Click="AlignTop_Click">
+                            <materialIcons:MaterialIcon Kind="FormatAlignTop" Width="16" Height="16"/>
+                        </Button>
+                        <Button x:Name="AlignMiddleButton" Width="40" Height="28" Margin="0,0,2,0"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Middle"
+                               Click="AlignMiddle_Click">
+                            <materialIcons:MaterialIcon Kind="FormatAlignMiddle" Width="16" Height="16"/>
+                        </Button>
+                        <Button x:Name="AlignBottomButton" Width="40" Height="28"
+                               Style="{StaticResource ModernButtonStyle}" ToolTip="Align Bottom"
+                               Click="AlignBottom_Click">
+                            <materialIcons:MaterialIcon Kind="FormatAlignBottom" Width="16" Height="16"/>
+                        </Button>
                     </StackPanel>
                 </Border>
                 
@@ -405,7 +427,8 @@
                 <Border Background="#f8f9fa" BorderBrush="#d1d2d3" BorderThickness="1" CornerRadius="6" 
                         Padding="12,8" Margin="16,0,0,0">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="📊" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="14"/>
+                        <materialIcons:MaterialIcon Kind="Database" Width="18" Height="18" 
+                                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBlock Text="Data" VerticalAlignment="Center" Margin="0,0,12,0" 
                                   FontWeight="SemiBold" Foreground="#323130" FontSize="12"/>
                         <Button x:Name="RefreshDataButton" Content="⟳ Refresh" Height="28" 
@@ -539,7 +562,8 @@
                         </Canvas>
                         
                         <!-- Main Label Canvas -->
-                        <Canvas x:Name="LabelCanvas" Background="Transparent" AllowDrop="True" ClipToBounds="False" />
+                        <Canvas x:Name="LabelCanvas" Background="Transparent" AllowDrop="True" ClipToBounds="False" 
+                                Focusable="True" />
                         
                         <!-- Margin Guidelines -->
                         <Canvas x:Name="MarginCanvas" Background="Transparent" IsHitTestVisible="False" />

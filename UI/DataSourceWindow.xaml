@@ -272,6 +272,9 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         
                         <TextBox x:Name="QueryBox" Grid.Row="0" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" 
@@ -280,6 +283,18 @@
                         
                         <Button Content="▶️ Execute Query" Grid.Row="1" Style="{StaticResource ModernButtonStyle}" 
                                 Width="120" HorizontalAlignment="Left" Margin="0,6,0,0" Click="ExecuteQuery_Click"/>
+                        
+                        <!-- Update Query Section -->
+                        <TextBlock Text="Update Query (Mark as Printed)" Grid.Row="2" Style="{StaticResource LabelStyle}" 
+                                   Margin="0,12,0,4" FontWeight="SemiBold"/>
+                        <TextBlock Grid.Row="3" FontSize="9" Foreground="#605e5c" TextWrapping="Wrap" Margin="0,0,0,4">
+                            <Run Text="Use placeholders like {field_name} to reference query result columns. Example:"/>
+                            <LineBreak/>
+                            <Run Text="UPDATE labels SET printed = 1 WHERE id = {label_id}" FontFamily="Consolas"/>
+                        </TextBlock>
+                        <TextBox x:Name="UpdateQueryBox" Grid.Row="4" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" 
+                                 TextWrapping="Wrap" Style="{StaticResource ModernTextBoxStyle}"
+                                 VerticalContentAlignment="Top" Padding="4" Height="60"/>
                     </Grid>
                 </Border>
             </Grid>

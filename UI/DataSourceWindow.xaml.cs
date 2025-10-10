@@ -13,6 +13,7 @@ namespace EvoDesigner.UI
 
         public string ConnectionString { get; private set; } = "";
         public string Query => QueryBox.Text;
+        public string UpdateQuery => UpdateQueryBox.Text; // New property for update query
         public string SelectedPrinter => PrinterComboBox.SelectedItem?.ToString() ?? "";
         public DataTable? ResultTable { get; private set; }
         
@@ -75,6 +76,7 @@ namespace EvoDesigner.UI
             UsernameBox.Text = dataSource.Username;
             PasswordBox.Password = dataSource.Password;
             QueryBox.Text = dataSource.Query;
+            UpdateQueryBox.Text = dataSource.UpdateQuery ?? ""; // Load update query
         }
 
         private void SaveCurrentSettings()
@@ -183,7 +185,8 @@ namespace EvoDesigner.UI
                 Username = Username,
                 Password = Password,
                 Query = Query,
-                DefaultPrinter = SelectedPrinter
+                DefaultPrinter = SelectedPrinter,
+                UpdateQuery = UpdateQuery // Include update query for marking records as printed
             };
         }
 

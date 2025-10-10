@@ -107,8 +107,8 @@ namespace EvoDesigner
             // Initialize selection functionality
             LabelCanvas.MouseLeftButtonDown += LabelCanvas_MouseLeftButtonDown;
             
-            // Add keyboard event handling
-            this.KeyDown += MainWindow_KeyDown;
+            // Add keyboard event handling - use PreviewKeyDown to capture before child controls
+            this.PreviewKeyDown += MainWindow_KeyDown;
 
             // Initialize zoom functionality
             InitializeZoomControls();
@@ -165,23 +165,51 @@ namespace EvoDesigner
             // Add layer control buttons to the LayerControlsContainer
             var bringForwardBtn = new Button 
             { 
-                Content = "Bring Forward", 
                 Margin = new Thickness(0, 0, 5, 0), 
                 Height = 28,
                 ToolTip = "Bring selected element forward"
             };
             bringForwardBtn.Style = (Style)FindResource("CompactButtonStyle");
+            
+            // Create StackPanel with icon and text for Bring Forward
+            var bringForwardStack = new StackPanel { Orientation = Orientation.Horizontal };
+            var bringForwardIcon = new Material.Icons.WPF.MaterialIcon 
+            { 
+                Kind = Material.Icons.MaterialIconKind.ArrangeBringForward,
+                Width = 16,
+                Height = 16,
+                Margin = new Thickness(0, 0, 5, 0)
+            };
+            var bringForwardText = new TextBlock { Text = "Bring Forward", VerticalAlignment = VerticalAlignment.Center };
+            bringForwardStack.Children.Add(bringForwardIcon);
+            bringForwardStack.Children.Add(bringForwardText);
+            bringForwardBtn.Content = bringForwardStack;
+            
             LayerControlsContainer.Children.Add(bringForwardBtn);
             bringForwardBtn.Click += BringForward_Click;
 
             var sendBackwardBtn = new Button 
             { 
-                Content = "Send Backward", 
                 Margin = new Thickness(0, 0, 0, 0), 
                 Height = 28,
                 ToolTip = "Send selected element backward"
             };
             sendBackwardBtn.Style = (Style)FindResource("CompactButtonStyle");
+            
+            // Create StackPanel with icon and text for Send Backward
+            var sendBackwardStack = new StackPanel { Orientation = Orientation.Horizontal };
+            var sendBackwardIcon = new Material.Icons.WPF.MaterialIcon 
+            { 
+                Kind = Material.Icons.MaterialIconKind.ArrangeSendBackward,
+                Width = 16,
+                Height = 16,
+                Margin = new Thickness(0, 0, 5, 0)
+            };
+            var sendBackwardText = new TextBlock { Text = "Send Backward", VerticalAlignment = VerticalAlignment.Center };
+            sendBackwardStack.Children.Add(sendBackwardIcon);
+            sendBackwardStack.Children.Add(sendBackwardText);
+            sendBackwardBtn.Content = sendBackwardStack;
+            
             LayerControlsContainer.Children.Add(sendBackwardBtn);
             sendBackwardBtn.Click += SendBackward_Click;
         }
@@ -1589,6 +1617,9 @@ namespace EvoDesigner
         {
             UIElement clickedElement = sender as UIElement;
             
+            // Set focus to the canvas so keyboard shortcuts work
+            LabelCanvas.Focus();
+            
             // Check if Ctrl is held for multi-selection
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
@@ -1689,6 +1720,9 @@ namespace EvoDesigner
 
         private void LabelCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            // Set focus to the canvas so keyboard shortcuts work
+            LabelCanvas.Focus();
+            
             // Check if clicking on the canvas (not on an element)
             if (e.Source == LabelCanvas)
             {
@@ -1953,6 +1987,47 @@ namespace EvoDesigner
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            var logMsg = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] MainWindow_KeyDown: Key={e.Key}, Ctrl={Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)}, OriginalSource={e.OriginalSource?.GetType().Name}";
+            File.AppendAllText("keyboard-debug.log", logMsg + Environment.NewLine);
+            System.Diagnostics.Debug.WriteLine($"=== MainWindow_KeyDown: Key={e.Key}, Ctrl={Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)} ===");
+            System.Diagnostics.Debug.WriteLine($"OriginalSource: {e.OriginalSource?.GetType().Name}");
+            
+            // Allow TextBox controls in the properties panel to handle their own copy/paste
+            // but NOT when we want to copy/paste canvas elements
+            if (e.OriginalSource is TextBox textBox && textBox.IsFocused)
+            {
+                var tbMsg = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] TextBox has focus: {textBox.Name}";
+                File.AppendAllText("keyboard-debug.log", tbMsg + Environment.NewLine);
+                System.Diagnostics.Debug.WriteLine($"TextBox has focus: {textBox.Name}");
+                
+                // Check if this TextBox is inside the ElementPropertiesPanel
+                // If so, let it handle copy/paste naturally for text editing
+                DependencyObject parent = textBox;
+                bool isPropertyPanelTextBox = false;
+                
+                while (parent != null)
+                {
+                    if (parent is StackPanel panel && panel.Name == "ElementPropertiesPanel")
+                    {
+                        isPropertyPanelTextBox = true;
+                        break;
+                    }
+                    parent = System.Windows.Media.VisualTreeHelper.GetParent(parent);
+                }
+                
+                var propMsg = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Is property panel TextBox: {isPropertyPanelTextBox}";
+                File.AppendAllText("keyboard-debug.log", propMsg + Environment.NewLine);
+                System.Diagnostics.Debug.WriteLine($"Is property panel TextBox: {isPropertyPanelTextBox}");
+                
+                // Only let the TextBox handle it if it's in the properties panel
+                if (isPropertyPanelTextBox)
+                {
+                    File.AppendAllText("keyboard-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Letting TextBox handle the key{Environment.NewLine}");
+                    System.Diagnostics.Debug.WriteLine("Letting TextBox handle the key");
+                    return;
+                }
+            }
+
             switch (e.Key)
             {
                 case Key.Delete:
@@ -1976,10 +2051,14 @@ namespace EvoDesigner
                     e.Handled = true;
                     break;
                 case Key.C when (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)):
+                    File.AppendAllText("keyboard-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Ctrl+C detected - calling CopySelectedElements{Environment.NewLine}");
+                    System.Diagnostics.Debug.WriteLine("Ctrl+C detected - calling CopySelectedElements");
                     CopySelectedElements();
                     e.Handled = true;
                     break;
                 case Key.V when (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)):
+                    File.AppendAllText("keyboard-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Ctrl+V detected - calling PasteElements{Environment.NewLine}");
+                    System.Diagnostics.Debug.WriteLine("Ctrl+V detected - calling PasteElements");
                     PasteElements();
                     e.Handled = true;
                     break;
@@ -2090,8 +2169,19 @@ namespace EvoDesigner
 
         private void CopySelectedElements()
         {
+            var logMsg = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] CopySelectedElements: selectedElement={selectedElement}, selectedElements.Count={selectedElements.Count}";
+            File.AppendAllText("keyboard-debug.log", logMsg + Environment.NewLine);
+            
+            System.Diagnostics.Debug.WriteLine("=== CopySelectedElements called ===");
+            System.Diagnostics.Debug.WriteLine($"selectedElement: {selectedElement}");
+            System.Diagnostics.Debug.WriteLine($"selectedElements.Count: {selectedElements.Count}");
+            
             if (selectedElements.Count == 0 && selectedElement == null)
+            {
+                File.AppendAllText("keyboard-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Nothing selected - returning{Environment.NewLine}");
+                System.Diagnostics.Debug.WriteLine("Nothing selected - returning");
                 return;
+            }
 
             clipboardElements.Clear();
             
@@ -2100,6 +2190,9 @@ namespace EvoDesigner
             if (selectedElement != null)
                 elementsToCopy.Add(selectedElement);
             elementsToCopy.AddRange(selectedElements);
+            
+            File.AppendAllText("keyboard-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Elements to copy: {elementsToCopy.Count}{Environment.NewLine}");
+            System.Diagnostics.Debug.WriteLine($"Elements to copy: {elementsToCopy.Count}");
 
             // Convert each UI element to LabelElement model for clipboard storage
             foreach (UIElement element in elementsToCopy)
@@ -2108,6 +2201,10 @@ namespace EvoDesigner
                 if (labelElement != null)
                     clipboardElements.Add(labelElement);
             }
+            
+            var finalMsg = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Copied {clipboardElements.Count} elements to clipboard";
+            File.AppendAllText("keyboard-debug.log", finalMsg + Environment.NewLine);
+            System.Diagnostics.Debug.WriteLine($"Copied {clipboardElements.Count} elements to clipboard");
         }
 
         private void CutSelectedElements()
@@ -2277,6 +2374,52 @@ namespace EvoDesigner
                     }
                 }
             }
+            else if (element is Border border)
+            {
+                // Text elements are wrapped in a Border - extract the TextBlock inside
+                if (border.Child is TextBlock textBlock)
+                {
+                    if (textBlock.Text == "[EAN-13]")
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode13;
+                    else if (textBlock.Text == "[EAN-8]")
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Barcode8;
+                    else if (textBlock.Text == "[QR Code]")
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.QRCode;
+                    else
+                        labelElement.Type = EvoDesigner.Models.LabelElementType.Text;
+                        
+                    labelElement.Content = textBlock.Text;
+                    labelElement.FontSize = textBlock.FontSize;
+                    labelElement.FontFamily = textBlock.FontFamily.ToString();
+                    labelElement.FontWeight = textBlock.FontWeight.ToString();
+                    labelElement.FontStyle = textBlock.FontStyle.ToString();
+                    labelElement.Foreground = textBlock.Foreground.ToString();
+                    labelElement.TextDecorations = GetTextDecorationsString(textBlock.TextDecorations);
+                    
+                    // Capture text alignment (horizontal)
+                    labelElement.TextAlignment = textBlock.TextAlignment switch
+                    {
+                        TextAlignment.Center => "Center",
+                        TextAlignment.Right => "Right",
+                        TextAlignment.Left => "Left",
+                        _ => "Left"
+                    };
+                    
+                    // Capture vertical alignment
+                    labelElement.VerticalAlignment = textBlock.VerticalAlignment switch
+                    {
+                        VerticalAlignment.Center => "Center",
+                        VerticalAlignment.Bottom => "Bottom",
+                        VerticalAlignment.Top => "Top",
+                        _ => "Top"
+                    };
+                }
+                else
+                {
+                    // Unsupported border content
+                    return null;
+                }
+            }
             else
             {
                 // Unsupported element type
@@ -2426,7 +2569,14 @@ namespace EvoDesigner
                     textLabel.Style = (Style)FindResource("ModernLabelStyle");
                     ElementPropertiesPanel.Children.Add(textLabel);
                     
-                    var textBox = new TextBox { Text = tb.Text };
+                    var textBox = new TextBox 
+                    { 
+                        Text = tb.Text,
+                        AcceptsReturn = true,  // Allow Enter key to create new lines
+                        TextWrapping = TextWrapping.Wrap,  // Wrap text in the box
+                        MinHeight = 60,  // Make it taller for multiple lines
+                        VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                    };
                     textBox.Style = (Style)FindResource("ModernTextBoxStyle");
                     textBox.TextChanged += (s, e) => { 
                         tb.Text = textBox.Text; 
@@ -2497,6 +2647,12 @@ namespace EvoDesigner
                     fontSizeColorGrid.Children.Add(colorPicker);
                     
                     ElementPropertiesPanel.Children.Add(fontSizeColorGrid);
+                    
+                    // Add text formatting controls (Bold, Italic, Underline, Multiline)
+                    AddTextFormattingControls(tb, border);
+                    
+                    // Add data field mapping selector
+                    AddDataFieldMappingSelector(element);
                 }
                 // Handle legacy TextBlock elements (for backward compatibility)
                 else if (element is TextBlock directTb)
@@ -2506,7 +2662,14 @@ namespace EvoDesigner
                     textLabel.Style = (Style)FindResource("ModernLabelStyle");
                     ElementPropertiesPanel.Children.Add(textLabel);
                     
-                    var textBox = new TextBox { Text = directTb.Text };
+                    var textBox = new TextBox 
+                    { 
+                        Text = directTb.Text,
+                        AcceptsReturn = true,  // Allow Enter key to create new lines
+                        TextWrapping = TextWrapping.Wrap,  // Wrap text in the box
+                        MinHeight = 60,  // Make it taller for multiple lines
+                        VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                    };
                     textBox.Style = (Style)FindResource("ModernTextBoxStyle");
                     textBox.TextChanged += (s, e) => { 
                         directTb.Text = textBox.Text; 
@@ -2925,6 +3088,227 @@ namespace EvoDesigner
             }
         }
 
+        private void AddTextFormattingControls(TextBlock textBlock, Border border)
+        {
+            // Add separator
+            ElementPropertiesPanel.Children.Add(new Separator { Margin = new Thickness(0, 10, 0, 5) });
+            
+            // Add formatting label
+            var formattingLabel = new Label 
+            { 
+                Content = "Text Formatting:", 
+                FontWeight = FontWeights.SemiBold,
+                Style = (Style)FindResource("ModernLabelStyle")
+            };
+            ElementPropertiesPanel.Children.Add(formattingLabel);
+            
+            // Create a grid for checkboxes (2 columns x 2 rows)
+            var formattingGrid = new Grid();
+            formattingGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            formattingGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            formattingGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            formattingGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            
+            // Bold checkbox
+            var boldCheckBox = new CheckBox 
+            { 
+                Content = "Bold",
+                IsChecked = textBlock.FontWeight == FontWeights.Bold,
+                Margin = new Thickness(0, 5, 5, 5)
+            };
+            boldCheckBox.Checked += (s, e) => { 
+                textBlock.FontWeight = FontWeights.Bold; 
+                SetDirty(true); 
+            };
+            boldCheckBox.Unchecked += (s, e) => { 
+                textBlock.FontWeight = FontWeights.Normal; 
+                SetDirty(true); 
+            };
+            Grid.SetRow(boldCheckBox, 0);
+            Grid.SetColumn(boldCheckBox, 0);
+            formattingGrid.Children.Add(boldCheckBox);
+            
+            // Italic checkbox
+            var italicCheckBox = new CheckBox 
+            { 
+                Content = "Italic",
+                IsChecked = textBlock.FontStyle == FontStyles.Italic,
+                Margin = new Thickness(5, 5, 0, 5)
+            };
+            italicCheckBox.Checked += (s, e) => { 
+                textBlock.FontStyle = FontStyles.Italic; 
+                SetDirty(true); 
+            };
+            italicCheckBox.Unchecked += (s, e) => { 
+                textBlock.FontStyle = FontStyles.Normal; 
+                SetDirty(true); 
+            };
+            Grid.SetRow(italicCheckBox, 0);
+            Grid.SetColumn(italicCheckBox, 1);
+            formattingGrid.Children.Add(italicCheckBox);
+            
+            // Underline checkbox
+            var underlineCheckBox = new CheckBox 
+            { 
+                Content = "Underline",
+                IsChecked = textBlock.TextDecorations.Contains(TextDecorations.Underline[0]),
+                Margin = new Thickness(0, 5, 5, 5)
+            };
+            underlineCheckBox.Checked += (s, e) => { 
+                if (!textBlock.TextDecorations.Contains(TextDecorations.Underline[0]))
+                {
+                    textBlock.TextDecorations.Add(TextDecorations.Underline[0]);
+                }
+                SetDirty(true); 
+            };
+            underlineCheckBox.Unchecked += (s, e) => { 
+                textBlock.TextDecorations.Remove(TextDecorations.Underline[0]);
+                SetDirty(true); 
+            };
+            Grid.SetRow(underlineCheckBox, 1);
+            Grid.SetColumn(underlineCheckBox, 0);
+            formattingGrid.Children.Add(underlineCheckBox);
+            
+            // Multiline checkbox
+            var multilineCheckBox = new CheckBox 
+            { 
+                Content = "Multiline",
+                IsChecked = textBlock.TextWrapping == TextWrapping.Wrap,
+                Margin = new Thickness(5, 5, 0, 5)
+            };
+            multilineCheckBox.Checked += (s, e) => { 
+                textBlock.TextWrapping = TextWrapping.Wrap; 
+                SetDirty(true); 
+            };
+            multilineCheckBox.Unchecked += (s, e) => { 
+                textBlock.TextWrapping = TextWrapping.NoWrap; 
+                SetDirty(true); 
+            };
+            Grid.SetRow(multilineCheckBox, 1);
+            Grid.SetColumn(multilineCheckBox, 1);
+            formattingGrid.Children.Add(multilineCheckBox);
+            
+            ElementPropertiesPanel.Children.Add(formattingGrid);
+        }
+
+        private void AddDataFieldMappingSelector(UIElement element)
+        {
+            // Only show field mapping if we have data from a query
+            if (lastResultTable == null || lastResultTable.Columns.Count == 0)
+                return;
+                
+            // Add separator
+            ElementPropertiesPanel.Children.Add(new Separator { Margin = new Thickness(0, 10, 0, 10) });
+            
+            // Add mapping label
+            var mappingLabel = new Label 
+            { 
+                Content = "Data Field Mapping:", 
+                FontWeight = FontWeights.Bold,
+                Style = (Style)FindResource("ModernLabelStyle")
+            };
+            ElementPropertiesPanel.Children.Add(mappingLabel);
+            
+            // Get element index
+            int elementIndex = GetElementIndex(element);
+            
+            // Get current mapping for this element
+            var currentMapping = CurrentTemplate?.FieldMappings?.FirstOrDefault(fm => fm.ElementIndex == elementIndex);
+            
+            // Create field selector combo box
+            var fieldCombo = new ComboBox
+            {
+                Style = (Style)FindResource("ModernComboBoxStyle"),
+                Margin = new Thickness(0, 5, 0, 5)
+            };
+            
+            // Add "None" option
+            fieldCombo.Items.Add("(None)");
+            
+            // Add all column names from the last query result
+            foreach (DataColumn column in lastResultTable.Columns)
+            {
+                fieldCombo.Items.Add(column.ColumnName);
+            }
+            
+            // Set selected item
+            if (currentMapping != null && !string.IsNullOrEmpty(currentMapping.FieldName))
+            {
+                fieldCombo.SelectedItem = currentMapping.FieldName;
+            }
+            else
+            {
+                fieldCombo.SelectedIndex = 0; // Select "(None)"
+            }
+            
+            // Handle selection change
+            fieldCombo.SelectionChanged += (s, e) =>
+            {
+                if (fieldCombo.SelectedItem == null) return;
+                
+                string selectedField = fieldCombo.SelectedItem.ToString();
+                
+                if (selectedField == "(None)")
+                {
+                    // Remove mapping for this element
+                    var mappingToRemove = CurrentTemplate.FieldMappings?.FirstOrDefault(fm => fm.ElementIndex == elementIndex);
+                    if (mappingToRemove != null)
+                    {
+                        CurrentTemplate.FieldMappings.Remove(mappingToRemove);
+                        SetDirty(true);
+                    }
+                }
+                else
+                {
+                    // Update or create mapping
+                    if (CurrentTemplate.FieldMappings == null)
+                        CurrentTemplate.FieldMappings = new List<EvoDesigner.Models.FieldMapping>();
+                    
+                    var existingMapping = CurrentTemplate.FieldMappings.FirstOrDefault(fm => fm.ElementIndex == elementIndex);
+                    if (existingMapping != null)
+                    {
+                        existingMapping.FieldName = selectedField;
+                    }
+                    else
+                    {
+                        CurrentTemplate.FieldMappings.Add(new EvoDesigner.Models.FieldMapping
+                        {
+                            ElementIndex = elementIndex,
+                            FieldName = selectedField
+                        });
+                    }
+                    
+                    SetDirty(true);
+                }
+            };
+            
+            ElementPropertiesPanel.Children.Add(fieldCombo);
+            
+            // Add help text
+            var helpText = new TextBlock
+            {
+                Text = "Maps this element to a database field. Data will be replaced when printing from a query.",
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 10,
+                Foreground = new SolidColorBrush(Color.FromRgb(128, 128, 128)),
+                Margin = new Thickness(0, 5, 0, 0)
+            };
+            ElementPropertiesPanel.Children.Add(helpText);
+        }
+        
+        private int GetElementIndex(UIElement element)
+        {
+            // Get index of element in canvas (excluding resize thumbs)
+            int index = 0;
+            foreach (UIElement child in LabelCanvas.Children)
+            {
+                if (child is System.Windows.Controls.Primitives.Thumb) continue;
+                if (child == element) return index;
+                index++;
+            }
+            return -1;
+        }
+
         private void AddRotationControls(UIElement element)
         {
             // Add a separator before rotation controls
@@ -3066,6 +3450,24 @@ namespace EvoDesigner
                         labelElement.FontStyle = tb.FontStyle.ToString();
                         labelElement.Foreground = tb.Foreground.ToString();
                         labelElement.TextDecorations = GetTextDecorationsString(tb.TextDecorations);
+                        
+                        // Save text alignment (horizontal)
+                        labelElement.TextAlignment = tb.TextAlignment switch
+                        {
+                            TextAlignment.Center => "Center",
+                            TextAlignment.Right => "Right",
+                            TextAlignment.Left => "Left",
+                            _ => "Left"
+                        };
+                        
+                        // Save vertical alignment
+                        labelElement.VerticalAlignment = tb.VerticalAlignment switch
+                        {
+                            VerticalAlignment.Center => "Center",
+                            VerticalAlignment.Bottom => "Bottom",
+                            VerticalAlignment.Top => "Top",
+                            _ => "Top"
+                        };
                     }
                     else if (child is Border border && border.Child is TextBlock borderText)
                     {
@@ -3086,6 +3488,24 @@ namespace EvoDesigner
                         labelElement.FontStyle = borderText.FontStyle.ToString();
                         labelElement.Foreground = borderText.Foreground.ToString();
                         labelElement.TextDecorations = GetTextDecorationsString(borderText.TextDecorations);
+                        
+                        // Save text alignment (horizontal)
+                        labelElement.TextAlignment = borderText.TextAlignment switch
+                        {
+                            TextAlignment.Center => "Center",
+                            TextAlignment.Right => "Right",
+                            TextAlignment.Left => "Left",
+                            _ => "Left"
+                        };
+                        
+                        // Save vertical alignment
+                        labelElement.VerticalAlignment = borderText.VerticalAlignment switch
+                        {
+                            VerticalAlignment.Center => "Center",
+                            VerticalAlignment.Bottom => "Bottom",
+                            VerticalAlignment.Top => "Top",
+                            _ => "Top"
+                        };
                     }
                     else if (child is System.Windows.Shapes.Rectangle rect)
                     {
@@ -3738,10 +4158,28 @@ namespace EvoDesigner
                             labelElement.Foreground = borderText.Foreground.ToString();
                             labelElement.TextDecorations = GetTextDecorationsString(borderText.TextDecorations);
                             
+                            // Capture text alignment (horizontal)
+                            labelElement.TextAlignment = borderText.TextAlignment switch
+                            {
+                                TextAlignment.Center => "Center",
+                                TextAlignment.Right => "Right",
+                                TextAlignment.Left => "Left",
+                                _ => "Left"
+                            };
+                            
+                            // Capture vertical alignment
+                            labelElement.VerticalAlignment = borderText.VerticalAlignment switch
+                            {
+                                VerticalAlignment.Center => "Center",
+                                VerticalAlignment.Bottom => "Bottom",
+                                VerticalAlignment.Top => "Top",
+                                _ => "Top"
+                            };
+                            
                             // Debug: Log what's being saved
-                            var saveDebugMsg = $"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}'\n";
+                            var saveDebugMsg = $"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}', TextAlign='{labelElement.TextAlignment}', VerticalAlign='{labelElement.VerticalAlignment}'\n";
                             File.AppendAllText("debug.log", saveDebugMsg);
-                            Console.WriteLine($"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}'");
+                            Console.WriteLine($"[DEBUG] SAVING: Text='{borderText.Text}', FontSize={borderText.FontSize}, FontFamily='{borderText.FontFamily}', Color='{borderText.Foreground}', TextAlign='{labelElement.TextAlignment}', VerticalAlign='{labelElement.VerticalAlignment}'");
                         }
                         
                         // CRITICAL FIX: Add missing continue statement to prevent falling through to "unrecognized element" logic
@@ -4394,6 +4832,25 @@ namespace EvoDesigner
             }
         }
 
+        private void SampleData_Click(object sender, RoutedEventArgs e)
+        {
+            // Check if data source is configured
+            if (CurrentTemplate?.DataSource == null || string.IsNullOrWhiteSpace(CurrentTemplate.DataSource.Query))
+            {
+                MessageBox.Show(
+                    "No data source configured.\n\nPlease setup a data source first via Data → Setup Data Source.",
+                    "No Data Source",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            // Open sample data window
+            var sampleDataWindow = new UI.SampleDataWindow(CurrentTemplate);
+            sampleDataWindow.Owner = this;
+            sampleDataWindow.ShowDialog();
+        }
+
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
             if (PromptSaveChanges())
@@ -4580,36 +5037,51 @@ namespace EvoDesigner
 
         private void AlignLeft_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[DEBUG ALIGN BUTTON] AlignLeft_Click called");
+            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN BUTTON] AlignLeft_Click called\n");
             SetTextAlignment("Left", null);
         }
 
         private void AlignCenter_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[DEBUG ALIGN BUTTON] AlignCenter_Click called");
+            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN BUTTON] AlignCenter_Click called\n");
             SetTextAlignment("Center", null);
         }
 
         private void AlignRight_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[DEBUG ALIGN BUTTON] AlignRight_Click called");
+            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN BUTTON] AlignRight_Click called\n");
             SetTextAlignment("Right", null);
         }
 
         private void AlignTop_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[DEBUG ALIGN BUTTON] AlignTop_Click called");
+            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN BUTTON] AlignTop_Click called\n");
             SetTextAlignment(null, "Top");
         }
 
         private void AlignMiddle_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[DEBUG ALIGN BUTTON] AlignMiddle_Click called");
+            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN BUTTON] AlignMiddle_Click called\n");
             SetTextAlignment(null, "Center");
         }
 
         private void AlignBottom_Click(object sender, RoutedEventArgs e)
         {
+            Console.WriteLine("[DEBUG ALIGN BUTTON] AlignBottom_Click called");
+            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN BUTTON] AlignBottom_Click called\n");
             SetTextAlignment(null, "Bottom");
         }
 
         private void SetTextAlignment(string? horizontalAlign, string? verticalAlign)
         {
+            Console.WriteLine($"[DEBUG ALIGN] SetTextAlignment called: H={horizontalAlign}, V={verticalAlign}");
+            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN] SetTextAlignment called: H={horizontalAlign}, V={verticalAlign}\n");
+            
             // Get all currently selected elements (both single and multi-selection)
             var elementsToAlign = new List<UIElement>();
             
@@ -4622,6 +5094,9 @@ namespace EvoDesigner
                 elementsToAlign.Add(selectedElement);
             }
             
+            Console.WriteLine($"[DEBUG ALIGN] Elements to align: {elementsToAlign.Count}");
+            File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN] Elements to align: {elementsToAlign.Count}\n");
+            
             if (elementsToAlign.Count == 0) return;
 
             foreach (var element in elementsToAlign)
@@ -4629,6 +5104,9 @@ namespace EvoDesigner
                 // Check if this is a text element (Border containing TextBlock)
                 if (element is Border border && border.Child is TextBlock textBlock)
                 {
+                    Console.WriteLine($"[DEBUG ALIGN] Found Border with TextBlock, current text: '{textBlock.Text}'");
+                    File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN] Found Border with TextBlock, current text: '{textBlock.Text}'\n");
+                    
                     // Update horizontal alignment
                     if (horizontalAlign != null)
                     {
@@ -4636,12 +5114,18 @@ namespace EvoDesigner
                         {
                             case "center": 
                                 textBlock.TextAlignment = TextAlignment.Center; 
+                                Console.WriteLine($"[DEBUG ALIGN] Set TextAlignment.Center");
+                                File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN] Set TextAlignment.Center\n");
                                 break;
                             case "right": 
                                 textBlock.TextAlignment = TextAlignment.Right; 
+                                Console.WriteLine($"[DEBUG ALIGN] Set TextAlignment.Right");
+                                File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN] Set TextAlignment.Right\n");
                                 break;
                             default: 
                                 textBlock.TextAlignment = TextAlignment.Left; 
+                                Console.WriteLine($"[DEBUG ALIGN] Set TextAlignment.Left");
+                                File.AppendAllText("debug.log", $"{DateTime.Now}: [DEBUG ALIGN] Set TextAlignment.Left\n");
                                 break;
                         }
                         

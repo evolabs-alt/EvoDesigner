@@ -25,5 +25,6 @@ namespace EvoDesigner.Models
         public string Password { get; set; } = ""; // Note: Consider encryption in production
         public string Query { get; set; } = "";
         public string DefaultPrinter { get; set; } = ""; // Flow mode: default printer name
+        public string UpdateQuery { get; set; } = ""; // UPDATE statement to mark records as printed, e.g., "UPDATE labels SET printed = 1 WHERE id = {label_id}"
     }
 }

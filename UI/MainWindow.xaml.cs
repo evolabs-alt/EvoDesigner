@@ -2972,40 +2972,109 @@ namespace EvoDesigner
                 }
                 else if (element is Image img)
                 {
-                    // Basic image properties
-                    var imageLabel = new Label { Content = "Image Properties" };
-                    imageLabel.Style = (Style)FindResource("ModernLabelStyle");
-                    ElementPropertiesPanel.Children.Add(imageLabel);
+                    var tagStr = img.Tag?.ToString() ?? "";
                     
-                    // Width property
-                    var widthLabel = new Label { Content = "Width:" };
-                    widthLabel.Style = (Style)FindResource("ModernLabelStyle");
-                    ElementPropertiesPanel.Children.Add(widthLabel);
-                    
-                    var widthBox = new TextBox { Text = img.Width.ToString() };
-                    widthBox.Style = (Style)FindResource("ModernTextBoxStyle");
-                    widthBox.TextChanged += (s, e) => {
-                        if (double.TryParse(widthBox.Text, out double w)) {
-                            img.Width = w;
-                            SetDirty(true);
-                        }
-                    };
-                    ElementPropertiesPanel.Children.Add(widthBox);
-
-                    // Height property
-                    var heightLabel = new Label { Content = "Height:" };
-                    heightLabel.Style = (Style)FindResource("ModernLabelStyle");
-                    ElementPropertiesPanel.Children.Add(heightLabel);
-                    
-                    var heightBox = new TextBox { Text = img.Height.ToString() };
-                    heightBox.Style = (Style)FindResource("ModernTextBoxStyle");
-                    heightBox.TextChanged += (s, e) => {
-                        if (double.TryParse(heightBox.Text, out double h)) {
-                            img.Height = h;
-                            SetDirty(true);
-                        }
-                    };
-                    ElementPropertiesPanel.Children.Add(heightBox);
+                    // Check if this is a QR Code
+                    if (tagStr == "QRCode" || tagStr.StartsWith("QRCodeData:"))
+                    {
+                        // QR Code properties
+                        var qrLabel = new Label { Content = "QR Code Properties" };
+                        qrLabel.Style = (Style)FindResource("ModernLabelStyle");
+                        ElementPropertiesPanel.Children.Add(qrLabel);
+                        
+                        // Data property
+                        var dataLabel = new Label { Content = "Data:" };
+                        dataLabel.Style = (Style)FindResource("ModernLabelStyle");
+                        ElementPropertiesPanel.Children.Add(dataLabel);
+                        
+                        var currentData = tagStr.StartsWith("QRCodeData:") ? tagStr.Substring("QRCodeData:".Length) : "Sample QR Data";
+                        var dataBox = new TextBox { Text = currentData };
+                        dataBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                        dataBox.TextChanged += (s, e) => {
+                            img.Tag = $"QRCodeData:{dataBox.Text}";
+                            // Regenerate QR code
+                            try {
+                                var qrWriter = new ZXing.BarcodeWriterPixelData {
+                                    Format = ZXing.BarcodeFormat.QR_CODE,
+                                    Options = new ZXing.Common.EncodingOptions { Height = (int)img.Height, Width = (int)img.Width }
+                                };
+                                var pixelData = qrWriter.Write(dataBox.Text);
+                                var bitmap = new WriteableBitmap(pixelData.Width, pixelData.Height, 96, 96, PixelFormats.Bgra32, null);
+                                bitmap.WritePixels(new Int32Rect(0, 0, pixelData.Width, pixelData.Height), pixelData.Pixels, pixelData.Width * 4, 0);
+                                img.Source = bitmap;
+                                SetDirty(true);
+                            } catch { }
+                        };
+                        ElementPropertiesPanel.Children.Add(dataBox);
+                        
+                        // Width and Height properties
+                        AddImageSizeProperties(img);
+                        
+                        // Add data field mapping for QR Code
+                        AddDataFieldMappingSelector(element);
+                    }
+                    // Check if this is a Barcode (including DataMatrix)
+                    else if (tagStr.StartsWith("BarcodeData:"))
+                    {
+                        var parts = tagStr.Split(':');
+                        var barcodeType = parts.Length >= 2 ? parts[1] : "CODE128";
+                        var barcodeData = parts.Length >= 3 ? string.Join(":", parts.Skip(2)) : "";
+                        
+                        // Barcode properties
+                        var barcodeLabel = new Label { Content = $"{barcodeType} Barcode Properties" };
+                        barcodeLabel.Style = (Style)FindResource("ModernLabelStyle");
+                        ElementPropertiesPanel.Children.Add(barcodeLabel);
+                        
+                        // Symbology label (read-only)
+                        var symbologyLabel = new Label { Content = "Symbology:" };
+                        symbologyLabel.Style = (Style)FindResource("ModernLabelStyle");
+                        ElementPropertiesPanel.Children.Add(symbologyLabel);
+                        
+                        var symbologyValue = new TextBlock { 
+                            Text = barcodeType, 
+                            FontWeight = FontWeights.Bold,
+                            Foreground = new SolidColorBrush(Color.FromRgb(96, 94, 92)),
+                            Margin = new Thickness(0, 5, 0, 10)
+                        };
+                        ElementPropertiesPanel.Children.Add(symbologyValue);
+                        
+                        // Data property
+                        var dataLabel = new Label { Content = "Data:" };
+                        dataLabel.Style = (Style)FindResource("ModernLabelStyle");
+                        ElementPropertiesPanel.Children.Add(dataLabel);
+                        
+                        var dataBox = new TextBox { Text = barcodeData };
+                        dataBox.Style = (Style)FindResource("ModernTextBoxStyle");
+                        dataBox.TextChanged += (s, e) => {
+                            img.Tag = $"BarcodeData:{barcodeType}:{dataBox.Text}";
+                            // Regenerate barcode
+                            try {
+                                var newBarcodeImg = CreateBarcodeImage(barcodeType, dataBox.Text, img.Width, img.Height);
+                                if (newBarcodeImg?.Source != null) {
+                                    img.Source = newBarcodeImg.Source;
+                                    SetDirty(true);
+                                }
+                            } catch { }
+                        };
+                        ElementPropertiesPanel.Children.Add(dataBox);
+                        
+                        // Width and Height properties
+                        AddImageSizeProperties(img);
+                        
+                        // Add data field mapping for Barcode
+                        AddDataFieldMappingSelector(element);
+                    }
+                    // Regular image (no data binding needed)
+                    else
+                    {
+                        // Basic image properties
+                        var imageLabel = new Label { Content = "Image Properties" };
+                        imageLabel.Style = (Style)FindResource("ModernLabelStyle");
+                        ElementPropertiesPanel.Children.Add(imageLabel);
+                        
+                        // Width and Height properties
+                        AddImageSizeProperties(img);
+                    }
                 }
                 
                 // Add rotation controls for all elements
@@ -3053,6 +3122,39 @@ namespace EvoDesigner
             heightBox.TextChanged += (s, e) => {
                 if (double.TryParse(heightBox.Text, out double newHeight)) {
                     element.Height = newHeight;
+                    SetDirty(true);
+                }
+            };
+            ElementPropertiesPanel.Children.Add(heightBox);
+        }
+
+        private void AddImageSizeProperties(Image img)
+        {
+            // Width property
+            var widthLabel = new Label { Content = "Width:" };
+            widthLabel.Style = (Style)FindResource("ModernLabelStyle");
+            ElementPropertiesPanel.Children.Add(widthLabel);
+            
+            var widthBox = new TextBox { Text = img.Width.ToString() };
+            widthBox.Style = (Style)FindResource("ModernTextBoxStyle");
+            widthBox.TextChanged += (s, e) => {
+                if (double.TryParse(widthBox.Text, out double w)) {
+                    img.Width = w;
+                    SetDirty(true);
+                }
+            };
+            ElementPropertiesPanel.Children.Add(widthBox);
+
+            // Height property
+            var heightLabel = new Label { Content = "Height:" };
+            heightLabel.Style = (Style)FindResource("ModernLabelStyle");
+            ElementPropertiesPanel.Children.Add(heightLabel);
+            
+            var heightBox = new TextBox { Text = img.Height.ToString() };
+            heightBox.Style = (Style)FindResource("ModernTextBoxStyle");
+            heightBox.TextChanged += (s, e) => {
+                if (double.TryParse(heightBox.Text, out double h)) {
+                    img.Height = h;
                     SetDirty(true);
                 }
             };

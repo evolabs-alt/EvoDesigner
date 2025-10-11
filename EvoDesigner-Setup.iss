@@ -1,6 +1,6 @@
 [Setup]
 AppName=EvoDesigner
-AppVersion=1.0.0
+AppVersion=1.1.0
 AppPublisher=EvoDesigner
 AppPublisherURL=https://github.com/ehtearena/EvoDesigner
 AppSupportURL=https://github.com/ehtearena/EvoDesigner/issues
@@ -10,7 +10,7 @@ DefaultGroupName=EvoDesigner
 AllowNoIcons=yes
 LicenseFile=
 OutputDir=installer
-OutputBaseFilename=EvoDesigner-Setup-v1.0.0
+OutputBaseFilename=EvoDesigner-Setup-v1.1.0
 SetupIconFile=
 Compression=lzma
 SolidCompression=yes

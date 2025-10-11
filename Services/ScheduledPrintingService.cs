@@ -356,6 +356,8 @@ namespace EvoDesigner.Services
             {
                 // Group records by printer name
                 var printerGroups = new Dictionary<string, DataTable>();
+                // Track printer fallbacks: actual printer -> original requested printer
+                var printerFallbacks = new Dictionary<string, HashSet<string>>();
                 
                 foreach (DataRow row in dataTable.Rows)
                 {
@@ -365,19 +367,38 @@ namespace EvoDesigner.Services
                         ? defaultPrinter 
                         : printerValue.ToString()!.Trim();
                     
+                    string originalPrinter = targetPrinter; // Save original for fallback tracking
+                    
                     // Validate printer exists
                     var printerValidation = PrinterService.ValidatePrinter(targetPrinter);
+                    if (!printerValidation.IsValid)
+                    {
+                        // Printer validation failed - skip this record and log
+                        var recordId = row.ItemArray.Length > 0 ? row.ItemArray[0]?.ToString() : "unknown";
+                        ErrorOccurred?.Invoke(this, $"Skipping record {recordId}: {printerValidation.Warning}");
+                        File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] SKIPPED record {recordId}: {printerValidation.Warning}" + Environment.NewLine);
+                        continue;
+                    }
+                    
+                    // Log warning if printer fallback occurred
                     if (!string.IsNullOrWhiteSpace(printerValidation.Warning))
                     {
-                        // Printer invalid - skip this record and log
                         var recordId = row.ItemArray.Length > 0 ? row.ItemArray[0]?.ToString() : "unknown";
-                        ErrorOccurred?.Invoke(this, $"Skipping record {recordId}: Invalid printer '{targetPrinter}' - {printerValidation.Warning}");
-                        File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] SKIPPED record {recordId}: Invalid printer '{targetPrinter}' - {printerValidation.Warning}" + Environment.NewLine);
-                        continue;
+                        File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Record {recordId}: {printerValidation.Warning}" + Environment.NewLine);
                     }
                     
                     // Use validated printer name
                     targetPrinter = printerValidation.SelectedPrinter;
+                    
+                    // Track fallback if printer changed
+                    if (targetPrinter != originalPrinter)
+                    {
+                        if (!printerFallbacks.ContainsKey(targetPrinter))
+                        {
+                            printerFallbacks[targetPrinter] = new HashSet<string>();
+                        }
+                        printerFallbacks[targetPrinter].Add(originalPrinter);
+                    }
                     
                     // Create group if doesn't exist
                     if (!printerGroups.ContainsKey(targetPrinter))
@@ -404,8 +425,16 @@ namespace EvoDesigner.Services
                     // Print all records in this group as one job
                     printService.PrintAllRecords(template, groupPrinter, groupData);
                     
+                    // Build printer name with fallback info if applicable
+                    string printerDisplayName = groupPrinter;
+                    if (printerFallbacks.ContainsKey(groupPrinter))
+                    {
+                        var originalPrinters = string.Join(", ", printerFallbacks[groupPrinter]);
+                        printerDisplayName = $"{groupPrinter} ({originalPrinters} not found)";
+                    }
+                    
                     // Log each printer group execution
-                    AddLog(templateName, groupData.Rows.Count, groupPrinter);
+                    AddLog(templateName, groupData.Rows.Count, printerDisplayName);
                 }
             }
             catch (Exception ex)

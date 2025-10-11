@@ -1,132 +1,1764 @@
 [DEBUG] ==> Starting CreateLiveTemplate
 [DEBUG] CreateLiveTemplate called
-[DEBUG] Found 1 label elements on canvas
+[DEBUG] Found 16 label elements on canvas
+[DEBUG] Processing canvas child: Image
+[DEBUG] Created label element: Type=QRCode, Size=192.7999999999999x196.7999999999999
 [DEBUG] Processing canvas child: Border
 [DEBUG] Found Border element
 [DEBUG] Border.Child type: TextBlock
-[DEBUG] Border contains TextBlock: 'Text'
-[DEBUG] SAVING: Text='Text', FontSize=10, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Border contains TextBlock: 'SHIFT:'
+[DEBUG] SAVING: Text='SHIFT:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=143.20000000000005x29.199999999999932
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: '01234567890123456'
+[DEBUG] SAVING: Text='01234567890123456', FontSize=20, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Center', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=168.79999999999995x26
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'OPERATOR NAME:'
+[DEBUG] SAVING: Text='OPERATOR NAME:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=141.60000000000002x23.599999999999966
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'INJECTION BATCH:'
+[DEBUG] SAVING: Text='INJECTION BATCH:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=141.60000000000002x28.39999999999992
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'SUPERVISOR SIGN:'
+[DEBUG] SAVING: Text='SUPERVISOR SIGN:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=142.39999999999998x29.999999999999943
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'QUALITY SIGN:'
+[DEBUG] SAVING: Text='QUALITY SIGN:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=142.39999999999998x28.399999999999977
+[DEBUG] Processing canvas child: Canvas
+[DEBUG] Found Canvas with 1 children
+[DEBUG] Found Line in Canvas: X1=0, Y1=16.19999999999999, X2=244, Y2=16.19999999999999
+[DEBUG] Created label element: Type=Line, Size=244x32.39999999999998
+[DEBUG] Processing canvas child: Canvas
+[DEBUG] Found Canvas with 1 children
+[DEBUG] Found Line in Canvas: X1=0, Y1=14.599999999999994, X2=271.20000000000005, Y2=14.599999999999994
+[DEBUG] Created label element: Type=Line, Size=271.20000000000005x29.19999999999999
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'DATETIME'
+[DEBUG] SAVING: Text='DATETIME', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=283.20000000000005x24.399999999999977
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'USERNAME'
+[DEBUG] SAVING: Text='USERNAME', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Right', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=276.0000000000001x24.399999999999977
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'ITEM CODE'
+[DEBUG] SAVING: Text='ITEM CODE', FontSize=20, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=561.6x28.400000000000034
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'DESCRIPTION'
+[DEBUG] SAVING: Text='DESCRIPTION', FontSize=30, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=562.4000000000001x103.59999999999997
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'SHIFT DATA'
+[DEBUG] SAVING: Text='SHIFT DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
 [DEBUG] Created label element: Type=Text, Size=235.20000000000005x26.80000000000001
-[DEBUG] Final live template has 1 elements
-10/10/2025 7:28:11 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:11 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:11 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:11 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:13 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:13 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:13 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:13 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:13 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:13 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:13 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:13 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:13 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:13 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:13 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:13 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:14 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:14 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:14 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:14 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:14 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:14 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:14 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:14 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:14 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:14 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:14 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:14 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:14 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:14 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:14 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:14 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:15 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:15 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:15 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:15 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:15 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:15 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:15 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:15 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:16 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:16 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:16 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:16 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:17 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:17 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:17 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:17 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:17 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:17 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:17 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:17 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:17 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:17 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:17 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:17 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:20 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:20 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:20 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:20 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-10/10/2025 7:28:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
-10/10/2025 7:28:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
-10/10/2025 7:28:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
-10/10/2025 7:28:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
-[DEBUG] LOADING: Text='Text', FontSize=10, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'OPERATOR DATA'
+[DEBUG] SAVING: Text='OPERATOR DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=236x27.599999999999966
+[DEBUG] Processing canvas child: Border
+[DEBUG] Found Border element
+[DEBUG] Border.Child type: TextBlock
+[DEBUG] Border contains TextBlock: 'INJECTION DATA'
+[DEBUG] SAVING: Text='INJECTION DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000', TextAlign='Left', VerticalAlign='Top'
+[DEBUG] Created label element: Type=Text, Size=237.60000000000002x27.600000000000023
+[DEBUG] Final live template has 16 elements
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:18 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:18 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:21 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:21 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:22 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:22 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:23 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:23 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:24 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:24 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:25 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:25 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:26 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:26 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:27 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:27 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:29 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:29 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:30 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:30 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:31 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:31 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:32 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:32 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:33 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:33 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:34 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:34 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:36 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:36 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:37 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:37 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:39 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:39 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:42 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:42 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:43 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:43 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:44 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:44 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Center'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Center
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Right'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Right
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.TextAlignment = 'Left'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set TextAlignment.Left (default, was: 'Left')
+10/10/2025 8:57:45 PM: [DEBUG PRINT] el.VerticalAlignment = 'Top'
+10/10/2025 8:57:45 PM: [DEBUG PRINT] Set VerticalAlignment.Top (default, was: 'Top')
 [DEBUG] LOADING: Text='Sample QR Data', FontSize=12, FontFamily='', Color=''
 [DEBUG] LOADING: Text='SHIFT:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
-[DEBUG] LOADING: Text='01234567890123456', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
+[DEBUG] LOADING: Text='01234567890123456', FontSize=20, FontFamily='Segoe UI', Color='#FF000000'
 [DEBUG] LOADING: Text='OPERATOR NAME:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
 [DEBUG] LOADING: Text='INJECTION BATCH:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
-[DEBUG] LOADING: Text='PRINTING BATCH:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
 [DEBUG] LOADING: Text='SUPERVISOR SIGN:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
 [DEBUG] LOADING: Text='QUALITY SIGN:', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
 [DEBUG] LOADING: Text='', FontSize=12, FontFamily='', Color=''
@@ -138,5 +1770,3 @@
 [DEBUG] LOADING: Text='SHIFT DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
 [DEBUG] LOADING: Text='OPERATOR DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
 [DEBUG] LOADING: Text='INJECTION DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
-[DEBUG] LOADING: Text='PRINTING DATA', FontSize=16, FontFamily='Segoe UI', Color='#FF000000'
-[DEBUG] LOADING: Text='Text', FontSize=10, FontFamily='Segoe UI', Color='#FF000000'

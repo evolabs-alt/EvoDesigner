@@ -1,11 +1,20 @@
 {
   "Mode": "flow",
+  "Gs1Enabled": true,
+  "ErpImportEnabled": true,
   "FlowMode": {
     "SystemTrayEnabled": true,
     "ScheduledPrintingEnabled": true,
     "PrintingIntervalSeconds": 60,
     "LoadedTemplatePaths": [],
     "StartMinimizedToTray": false,
-    "ShowTrayNotifications": true
+    "ShowTrayNotifications": true,
+    "UseWindowsServiceControl": false,
+    "WindowsServiceName": "TaggJackPrintService",
+    "TrayAutoStartAtLogon": true
+  },
+  "Gs1": {},
+  "ErpImport": {
+    "DatabaseType": "MySQL"
   }
 }

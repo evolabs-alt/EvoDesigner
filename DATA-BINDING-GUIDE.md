@@ -1,7 +1,7 @@
-# Data Binding Guide for EvoDesigner
+# Data Binding Guide for TaggJack
 
 ## Overview
-EvoDesigner supports dynamic data binding from MySQL databases. When configured, the system will:
+TaggJack supports dynamic data binding from MySQL databases. When configured, the system will:
 - Execute your SQL query
 - Print one label per database record
 - Replace `{{FieldName}}` placeholders with actual data from each record
@@ -10,7 +10,7 @@ EvoDesigner supports dynamic data binding from MySQL databases. When configured,
 ## How to Use Data Binding
 
 ### Step 1: Configure Data Source
-1. Open your template in EvoDesigner
+1. Open your template in TaggJack
 2. Click **Data Source** in the menu
 3. Fill in MySQL connection details:
    - **Host**: Your MySQL server (e.g., `localhost`)

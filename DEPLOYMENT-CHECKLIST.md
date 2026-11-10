@@ -1,4 +1,4 @@
-# 🚀 Quick Deployment Checklist for EvoDesigner v1.1.0
+# 🚀 Quick Deployment Checklist for TaggJack v1.1.0
 
 ## ✅ Pre-Deployment Checklist
 
@@ -21,18 +21,18 @@
 Get-ChildItem -Path "./publish" -File | Measure-Object -Property Length -Sum
 
 # 2. Create ZIP for distribution
-Compress-Archive -Path "./publish/*" -DestinationPath "./EvoDesigner-v1.1.0-Portable.zip" -Force
+Compress-Archive -Path "./publish/*" -DestinationPath "./TaggJack-v1.1.0-Portable.zip" -Force
 
 # 3. Share the ZIP file
-# Users extract and run EvoDesigner.exe directly
+# Users extract and run TaggJack.exe directly
 ```
 
 **What to Share:**
-- `EvoDesigner-v1.1.0-Portable.zip` (~210 MB)
+- `TaggJack-v1.1.0-Portable.zip` (~210 MB)
 
 **User Instructions:**
 1. Extract ZIP to any folder
-2. Run `EvoDesigner.exe`
+2. Run `TaggJack.exe`
 3. No installation needed!
 
 ---
@@ -48,18 +48,18 @@ Compress-Archive -Path "./publish/*" -DestinationPath "./EvoDesigner-v1.1.0-Port
 
 ```powershell
 # 1. Build installer using Inno Setup GUI
-# Open: EvoDesigner-Setup.iss in Inno Setup Compiler
+# Open: TaggJack-Setup.iss in Inno Setup Compiler
 # Click: Build → Compile
 
 # OR use command line (if iscc.exe is in PATH):
-& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "EvoDesigner-Setup.iss"
+& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "TaggJack-Setup.iss"
 ```
 
 **What to Share:**
-- `./installer/EvoDesigner-Setup-v1.1.0.exe` (~210 MB)
+- `./installer/TaggJack-Setup-v1.1.0.exe` (~210 MB)
 
 **User Instructions:**
-1. Run `EvoDesigner-Setup-v1.1.0.exe`
+1. Run `TaggJack-Setup-v1.1.0.exe`
 2. Follow installation wizard
 3. Launch from Start Menu
 
@@ -106,19 +106,19 @@ Before distributing, test the published application:
 ### For Portable Version:
 ```powershell
 # Create portable ZIP
-Compress-Archive -Path "./publish/*" -DestinationPath "./EvoDesigner-v1.1.0-Portable.zip" -Force
+Compress-Archive -Path "./publish/*" -DestinationPath "./TaggJack-v1.1.0-Portable.zip" -Force
 
 # Verify ZIP created
-Get-Item "./EvoDesigner-v1.1.0-Portable.zip"
+Get-Item "./TaggJack-v1.1.0-Portable.zip"
 ```
 
 ### For Installer Version:
 ```powershell
 # Verify installer exists
-Get-Item "./installer/EvoDesigner-Setup-v1.1.0.exe"
+Get-Item "./installer/TaggJack-Setup-v1.1.0.exe"
 
 # Optional: Create checksum for verification
-Get-FileHash "./installer/EvoDesigner-Setup-v1.1.0.exe" -Algorithm SHA256 | Select-Object Hash
+Get-FileHash "./installer/TaggJack-Setup-v1.1.0.exe" -Algorithm SHA256 | Select-Object Hash
 ```
 
 ---
@@ -126,22 +126,22 @@ Get-FileHash "./installer/EvoDesigner-Setup-v1.1.0.exe" -Algorithm SHA256 | Sele
 ## 🌐 Publishing Locations
 
 ### GitHub Release:
-1. Go to: https://github.com/evolabs-alt/EvoDesigner/releases
+1. Go to: https://github.com/evolabs-alt/TaggJack/releases
 2. Click: "Draft a new release"
 3. Tag: `v1.1.0`
-4. Title: `EvoDesigner v1.1.0`
+4. Title: `TaggJack v1.1.0`
 5. Description: Copy from RELEASE-v1.1.0.md
 6. Attach files:
-   - `EvoDesigner-Setup-v1.1.0.exe` (Installer)
-   - `EvoDesigner-v1.1.0-Portable.zip` (Portable)
+   - `TaggJack-Setup-v1.1.0.exe` (Installer)
+   - `TaggJack-v1.1.0-Portable.zip` (Portable)
    - `RELEASE-v1.1.0.md` (Release notes)
 7. Click: "Publish release"
 
 ### Internal Network Share:
 ```powershell
 # Copy to network share
-Copy-Item "./installer/EvoDesigner-Setup-v1.1.0.exe" "\\server\software\EvoDesigner\"
-Copy-Item "./EvoDesigner-v1.1.0-Portable.zip" "\\server\software\EvoDesigner\"
+Copy-Item "./installer/TaggJack-Setup-v1.1.0.exe" "\\server\software\TaggJack\"
+Copy-Item "./TaggJack-v1.1.0-Portable.zip" "\\server\software\TaggJack\"
 ```
 
 ### Company Website:
@@ -154,11 +154,11 @@ Copy-Item "./EvoDesigner-v1.1.0-Portable.zip" "\\server\software\EvoDesigner\"
 ## 📧 Distribution Email Template
 
 ```
-Subject: EvoDesigner v1.1.0 - Label Design Software Now Available
+Subject: TaggJack v1.1.0 - Label Design Software Now Available
 
 Dear Team,
 
-We're excited to announce the release of EvoDesigner v1.1.0, our professional label design application!
+We're excited to announce the release of TaggJack v1.1.0, our professional label design application!
 
 🆕 What's New in v1.1.0:
 • Data field mapping for all barcode and QR code elements
@@ -170,16 +170,16 @@ We're excited to announce the release of EvoDesigner v1.1.0, our professional la
 📥 Download Options:
 
 Option 1: Windows Installer (Recommended)
-- File: EvoDesigner-Setup-v1.1.0.exe
+- File: TaggJack-Setup-v1.1.0.exe
 - Size: ~210 MB
 - Link: [Insert download link]
 - Double-click to install, then launch from Start Menu
 
 Option 2: Portable Version (No Installation)
-- File: EvoDesigner-v1.1.0-Portable.zip
+- File: TaggJack-v1.1.0-Portable.zip
 - Size: ~210 MB
 - Link: [Insert download link]
-- Extract and run EvoDesigner.exe directly
+- Extract and run TaggJack.exe directly
 
 💻 System Requirements:
 - Windows 10/11 (64-bit)

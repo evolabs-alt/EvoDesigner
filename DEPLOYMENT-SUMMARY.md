@@ -1,4 +1,4 @@
-# 🎉 EvoDesigner v1.1.0 - Deployment Complete!
+# 🎉 TaggJack v1.1.0 - Deployment Complete!
 
 ## ✅ What's Been Done
 
@@ -16,14 +16,14 @@
 ## 📦 Distribution Packages Ready
 
 ### 1. Portable Version (Recommended for Quick Distribution)
-**File:** `EvoDesigner-v1.1.0-Portable.zip`  
+**File:** `TaggJack-v1.1.0-Portable.zip`  
 **Size:** 86 MB (compressed from ~250 MB)  
-**Location:** `E:\Repos\EvoDesigner\EvoDesigner-v1.1.0-Portable.zip`
+**Location:** `E:\Repos\TaggJack\TaggJack-v1.1.0-Portable.zip`
 
 **How to Use:**
 1. Send the ZIP file to users
 2. Users extract to any folder
-3. Run `EvoDesigner.exe` - no installation needed!
+3. Run `TaggJack.exe` - no installation needed!
 
 **Pros:**
 - No installation required
@@ -32,13 +32,13 @@
 - Quick testing and deployment
 
 ### 2. Installer Version (Optional - For Professional Distribution)
-**File:** `EvoDesigner-Setup-v1.1.0.exe` (not yet built)  
+**File:** `TaggJack-Setup-v1.1.0.exe` (not yet built)  
 **Size:** ~210 MB  
-**Location:** `E:\Repos\EvoDesigner\installer\` (after building)
+**Location:** `E:\Repos\TaggJack\installer\` (after building)
 
 **To Create Installer:**
 1. Install Inno Setup: https://jrsoftware.org/isinfo.php
-2. Open `EvoDesigner-Setup.iss` with Inno Setup
+2. Open `TaggJack-Setup.iss` with Inno Setup
 3. Click Build → Compile
 4. Installer will be in `./installer/` folder
 
@@ -52,7 +52,7 @@
 ## 📂 What's Included in Distribution
 
 Both distribution methods include:
-- **EvoDesigner.exe** - Main application (212 MB with embedded .NET 9 runtime)
+- **TaggJack.exe** - Main application (212 MB with embedded .NET 9 runtime)
 - **config.json** - Configuration file
 - **Logo.png** - Application logo
 - **icon.png** - Application icon
@@ -65,7 +65,7 @@ Both distribution methods include:
 ### Option A: Quick Internal Testing
 ```powershell
 # Copy portable ZIP to network share
-Copy-Item "./EvoDesigner-v1.1.0-Portable.zip" "\\server\shared\software\"
+Copy-Item "./TaggJack-v1.1.0-Portable.zip" "\\server\shared\software\"
 
 # Or email the ZIP to test users
 ```
@@ -104,7 +104,7 @@ Before wide distribution, test on a clean machine:
 
 1. **Portable Version Test:**
    - Extract ZIP to Desktop
-   - Run EvoDesigner.exe
+   - Run TaggJack.exe
    - Create a simple template
    - Save and reload template
    - Test print preview
@@ -153,7 +153,7 @@ Highlight these when distributing:
 ### Internal Network:
 ```powershell
 # Copy to network share
-Copy-Item "./EvoDesigner-v1.1.0-Portable.zip" "\\fileserver\software\EvoDesigner\"
+Copy-Item "./TaggJack-v1.1.0-Portable.zip" "\\fileserver\software\TaggJack\"
 ```
 
 ### Email Distribution:
@@ -187,16 +187,16 @@ Before distributing to end users:
 ## 📊 File Inventory
 
 ```
-E:\Repos\EvoDesigner\
+E:\Repos\TaggJack\
 ├── publish\                              (Published application files)
-│   ├── EvoDesigner.exe                   (212 MB - Main executable)
+│   ├── TaggJack.exe                   (212 MB - Main executable)
 │   ├── config.json
 │   ├── Logo.png
 │   ├── icon.png
 │   └── [DLL files]
 │
-├── EvoDesigner-v1.1.0-Portable.zip      (86 MB - Compressed package)
-├── EvoDesigner-Setup.iss                 (Installer script)
+├── TaggJack-v1.1.0-Portable.zip      (86 MB - Compressed package)
+├── TaggJack-Setup.iss                 (Installer script)
 ├── RELEASE-v1.1.0.md                     (Release notes)
 ├── DEPLOYMENT-CHECKLIST.md               (Deployment guide)
 └── DEPLOYMENT-SUMMARY.md                 (This file)
@@ -206,17 +206,17 @@ E:\Repos\EvoDesigner\
 
 **For Portable Version Users:**
 ```
-1. Extract EvoDesigner-v1.1.0-Portable.zip
+1. Extract TaggJack-v1.1.0-Portable.zip
 2. Open the extracted folder
-3. Double-click EvoDesigner.exe
+3. Double-click TaggJack.exe
 4. Start creating labels!
 ```
 
 **For Installer Version Users:**
 ```
-1. Run EvoDesigner-Setup-v1.1.0.exe
+1. Run TaggJack-Setup-v1.1.0.exe
 2. Follow installation wizard
-3. Find "EvoDesigner" in Start Menu
+3. Find "TaggJack" in Start Menu
 4. Launch and start creating labels!
 ```
 
@@ -238,7 +238,7 @@ For next releases:
 **Build:** Successful  
 **Packages:** Created  
 
-You can now distribute EvoDesigner v1.1.0 to your users! 🚀
+You can now distribute TaggJack v1.1.0 to your users! 🚀
 
 Choose your preferred distribution method and share the application.
 

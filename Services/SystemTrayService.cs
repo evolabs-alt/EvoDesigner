@@ -1,680 +1,771 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.ServiceProcess;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using TaggJack.Models;
+using TaggJack.UI;
 using Hardcodet.Wpf.TaskbarNotification;
-using EvoDesigner.Services;
 using Microsoft.Win32;
 
-namespace EvoDesigner.Services
+namespace TaggJack.Services;
+
+public class SystemTrayService : IDisposable
 {
-    public class SystemTrayService : IDisposable
-    {
-        private TaskbarIcon? _notifyIcon;
-        private readonly TemplateManagerService _templateManager;
-        private readonly ScheduledPrintingService _scheduledPrinting;
-        private Window? _mainWindow;
+	private TaskbarIcon? _notifyIcon;
 
-        public SystemTrayService(TemplateManagerService templateManager, ScheduledPrintingService scheduledPrinting)
-        {
-            _templateManager = templateManager;
-            _scheduledPrinting = scheduledPrinting;
-            
-            // Subscribe to template manager events
-            _templateManager.TemplateAdded += OnTemplateAdded;
-            _templateManager.TemplateRemoved += OnTemplateRemoved;
-        }
+	private readonly TemplateManagerService _templateManager;
 
-        /// <summary>
-        /// Initialize the system tray icon and context menu
-        /// </summary>
-        public void Initialize(Window? mainWindow)
-        {
-            try
-            {
-                var logMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] SystemTrayService initialization starting...";
-                File.AppendAllText("tray-debug.log", logMessage + Environment.NewLine);
-                
-                System.Diagnostics.Debug.WriteLine("SystemTrayService: Starting initialization");
-                Console.WriteLine("DEBUG: SystemTrayService initialization starting...");
-                
-                // Check if system tray is available
-                if (!SystemParameters.IsTabletPC)
-                {
-                    Console.WriteLine("DEBUG: System tray should be available (not tablet PC)");
-                    File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] System tray should be available" + Environment.NewLine);
-                }
-                else
-                {
-                    Console.WriteLine("DEBUG: WARNING: Running on tablet PC - system tray may not be available");
-                    File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] WARNING: Tablet PC detected" + Environment.NewLine);
-                }
-                
-                _mainWindow = mainWindow;
-                
-                _notifyIcon = new TaskbarIcon
-                {
-                    ToolTipText = "TaggJack - Flow Mode"
-                };
-                
-                File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] TaskbarIcon created without icon first" + Environment.NewLine);
-                
-                // Try to load icon from file path
-                try
-                {
-                    var iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon.png");
-                    File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Looking for icon at: {iconPath}" + Environment.NewLine);
-                    
-                    if (File.Exists(iconPath))
-                    {
-                        _notifyIcon.IconSource = new BitmapImage(new Uri(iconPath, UriKind.Absolute));
-                        Console.WriteLine($"DEBUG: Icon loaded from path: {iconPath}");
-                        File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Icon loaded from: {iconPath}" + Environment.NewLine);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"DEBUG: Icon file not found at: {iconPath}");
-                        File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Icon file not found at: {iconPath}" + Environment.NewLine);
-                        // Try pack URI as fallback
-                        _notifyIcon.IconSource = new BitmapImage(new Uri("pack://application:,,,/icon.png"));
-                        Console.WriteLine("DEBUG: Using pack URI for icon");
-                        File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Using pack URI for icon" + Environment.NewLine);
-                    }
-                }
-                catch (Exception iconEx)
-                {
-                    Console.WriteLine($"DEBUG: Icon loading error: {iconEx.Message}");
-                    File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Icon error: {iconEx.Message}" + Environment.NewLine);
-                }
-                System.Diagnostics.Debug.WriteLine("SystemTrayService: TaskbarIcon created");
-                Console.WriteLine("DEBUG: TaskbarIcon created with logo");
+	private readonly ScheduledPrintingService _scheduledPrinting;
 
-                // Create an initial empty context menu (required for TrayContextMenuOpen to fire)
-                _notifyIcon.ContextMenu = new ContextMenu();
-                
-                // Refresh menu before it opens to update scheduler status
-                // This will replace the empty menu with the actual menu
-                _notifyIcon.TrayContextMenuOpen += (s, e) => RefreshContextMenu();
+	private readonly bool _useWindowsServiceControl;
 
-                // Handle double-click to show main window
-                _notifyIcon.TrayMouseDoubleClick += OnTrayIconDoubleClick;
+	private readonly string _serviceName;
 
-                _notifyIcon.Visibility = Visibility.Visible;
-                System.Diagnostics.Debug.WriteLine("SystemTrayService: Initialization completed successfully");
-                Console.WriteLine("DEBUG: SystemTrayService initialization completed - tray icon should be visible");
-                File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] SystemTrayService initialization completed - tray icon should be visible" + Environment.NewLine);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"SystemTrayService: Error during initialization: {ex.Message}");
-                Console.WriteLine($"DEBUG: SystemTrayService error: {ex.Message}");
-                File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR: {ex.Message}" + Environment.NewLine);
-                System.Diagnostics.Debug.WriteLine($"SystemTrayService: Stack trace: {ex.StackTrace}");
-                throw; // Re-throw to see the full error
-            }
-        }
+	private Window? _mainWindow;
 
-        private ContextMenu CreateContextMenu()
-        {
-            var contextMenu = new ContextMenu();
+	private Action? _pendingTrayAction;
 
-            // Open Designer
-            var openDesigner = new MenuItem 
-            { 
-                Header = "Open Designer",
-                FontWeight = FontWeights.Bold
-            };
-            openDesigner.Click += (s, e) => ShowMainWindow();
-            contextMenu.Items.Add(openDesigner);
+	public SystemTrayService(TemplateManagerService templateManager, ScheduledPrintingService scheduledPrinting, bool useWindowsServiceControl = false, string serviceName = "TaggJackPrintService")
+	{
+		_templateManager = templateManager;
+		_scheduledPrinting = scheduledPrinting;
+		_useWindowsServiceControl = useWindowsServiceControl;
+		_serviceName = serviceName;
+		_templateManager.TemplateAdded += OnTemplateAdded;
+		_templateManager.TemplateRemoved += OnTemplateRemoved;
+		_scheduledPrinting.PrintingStateChanged += OnPrintingStateChanged;
+	}
 
-            contextMenu.Items.Add(new Separator());
+	public void Initialize(Window? mainWindow)
+	{
+		try
+		{
+			string text = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] SystemTrayService initialization starting...";
+			File.AppendAllText("tray-debug.log", text + Environment.NewLine);
+			Console.WriteLine("DEBUG: SystemTrayService initialization starting...");
+			if (!SystemParameters.IsTabletPC)
+			{
+				Console.WriteLine("DEBUG: System tray should be available (not tablet PC)");
+				File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] System tray should be available" + Environment.NewLine);
+			}
+			else
+			{
+				Console.WriteLine("DEBUG: WARNING: Running on tablet PC - system tray may not be available");
+				File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] WARNING: Tablet PC detected" + Environment.NewLine);
+			}
+			_mainWindow = mainWindow;
+			_notifyIcon = new TaskbarIcon
+			{
+				ToolTipText = "TaggJack - Flow Mode"
+			};
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] TaskbarIcon created without icon first" + Environment.NewLine);
+			try
+			{
+				string text2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon.png");
+				File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Looking for icon at: {text2}" + Environment.NewLine);
+				if (File.Exists(text2))
+				{
+					_notifyIcon.IconSource = new BitmapImage(new Uri(text2, UriKind.Absolute));
+					Console.WriteLine("DEBUG: Icon loaded from path: " + text2);
+					File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Icon loaded from: {text2}" + Environment.NewLine);
+				}
+				else
+				{
+					Console.WriteLine("DEBUG: Icon file not found at: " + text2);
+					File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Icon file not found at: {text2}" + Environment.NewLine);
+					_notifyIcon.IconSource = new BitmapImage(new Uri("pack://application:,,,/icon.png"));
+					Console.WriteLine("DEBUG: Using pack URI for icon");
+					File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Using pack URI for icon" + Environment.NewLine);
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("DEBUG: Icon loading error: " + ex.Message);
+				File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Icon error: {ex.Message}" + Environment.NewLine);
+			}
+			Console.WriteLine("DEBUG: TaskbarIcon created with logo");
+			_notifyIcon.ContextMenu = new ContextMenu();
+			_notifyIcon.TrayContextMenuOpen += delegate
+			{
+				RefreshContextMenu();
+			};
+			_notifyIcon.TrayMouseDoubleClick += OnTrayIconDoubleClick;
+			_notifyIcon.Visibility = Visibility.Visible;
+			Console.WriteLine("DEBUG: SystemTrayService initialization completed - tray icon should be visible");
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] SystemTrayService initialization completed - tray icon should be visible" + Environment.NewLine);
+		}
+		catch (Exception ex2)
+		{
+			Console.WriteLine("DEBUG: SystemTrayService error: " + ex2.Message);
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR: {ex2.Message}" + Environment.NewLine);
+			throw;
+		}
+	}
 
-            // Add Template
-            var addTemplate = new MenuItem { Header = "Add Template..." };
-            addTemplate.Click += (s, e) => AddTemplate();
-            contextMenu.Items.Add(addTemplate);
+	private ContextMenu CreateContextMenu()
+	{
+		ContextMenu contextMenu = new ContextMenu();
+		MenuItem menuItem = new MenuItem
+		{
+			Header = "Open Designer",
+			FontWeight = FontWeights.Bold
+		};
+		menuItem.Click += delegate
+		{
+			ShowMainWindow();
+		};
+		contextMenu.Items.Add(menuItem);
+		contextMenu.Items.Add(new Separator());
+		MenuItem menuItem2 = new MenuItem
+		{
+			Header = "Add Template..."
+		};
+		menuItem2.Click += delegate
+		{
+			AddTemplate();
+		};
+		contextMenu.Items.Add(menuItem2);
+		MenuItem menuItem3 = new MenuItem
+		{
+			Header = "Loaded Templates"
+		};
+		UpdateTemplateMenuItems(menuItem3);
+		contextMenu.Items.Add(menuItem3);
+		MenuItem menuItem4 = new MenuItem
+		{
+			Header = "Remove Template"
+		};
+		UpdateRemoveTemplateMenuItems(menuItem4);
+		contextMenu.Items.Add(menuItem4);
+		contextMenu.Items.Add(new Separator());
+		MenuItem menuItem5 = new MenuItem
+		{
+			Header = "Run Now"
+		};
+		menuItem5.IsEnabled = !_scheduledPrinting.IsPrinting && !_useWindowsServiceControl;
+		menuItem5.Click += async delegate
+		{
+			await RunNowClicked();
+		};
+		contextMenu.Items.Add(menuItem5);
+		bool flag = (_useWindowsServiceControl ? (WindowsServiceControl.GetStatus(_serviceName) == ServiceControllerStatus.Running) : _scheduledPrinting.IsSchedulerActive);
+		if (flag)
+		{
+			MenuItem menuItem6 = new MenuItem
+			{
+				Header = "Stop Scheduler"
+			};
+			menuItem6.Click += delegate
+			{
+				StopScheduler();
+			};
+			contextMenu.Items.Add(menuItem6);
+		}
+		else
+		{
+			MenuItem menuItem7 = new MenuItem
+			{
+				Header = "Start Scheduler"
+			};
+			menuItem7.Click += delegate
+			{
+				StartScheduler();
+			};
+			contextMenu.Items.Add(menuItem7);
+		}
+		MenuItem newItem = new MenuItem
+		{
+			Header = "Status: " + (flag ? "Active" : "Stopped"),
+			IsEnabled = false
+		};
+		contextMenu.Items.Add(newItem);
+		MenuItem newItem2 = new MenuItem
+		{
+			Header = "Printing: " + (_scheduledPrinting.IsPrinting ? "In Progress" : "Idle"),
+			IsEnabled = false
+		};
+		contextMenu.Items.Add(newItem2);
+		MenuItem newItem3 = new MenuItem
+		{
+			Header = "Service control: " + (_useWindowsServiceControl ? "Enabled" : "Disabled"),
+			IsEnabled = false
+		};
+		contextMenu.Items.Add(newItem3);
+		if (_useWindowsServiceControl)
+		{
+			bool flag2 = WindowsServiceControl.IsServiceInstalled(_serviceName);
+			MenuItem newItem4 = new MenuItem
+			{
+				Header = "Service installed: " + (flag2 ? "Yes" : "No"),
+				IsEnabled = false
+			};
+			contextMenu.Items.Add(newItem4);
+			string text = WindowsServiceControl.GetStatus(_serviceName)?.ToString() ?? "Not Installed";
+			MenuItem newItem5 = new MenuItem
+			{
+				Header = "Service state: " + text,
+				IsEnabled = false
+			};
+			contextMenu.Items.Add(newItem5);
+		}
+		contextMenu.Items.Add(new Separator());
+		MenuItem menuItem8 = new MenuItem
+		{
+			Header = "Install Tray Autostart Task"
+		};
+		menuItem8.Click += delegate
+		{
+			InstallTrayAutostartTask();
+		};
+		contextMenu.Items.Add(menuItem8);
+		MenuItem menuItem9 = new MenuItem
+		{
+			Header = "Remove Tray Autostart Task"
+		};
+		menuItem9.Click += delegate
+		{
+			RemoveTrayAutostartTask();
+		};
+		contextMenu.Items.Add(menuItem9);
+		contextMenu.Items.Add(new Separator());
+		MenuItem menuItem10 = new MenuItem
+		{
+			Header = "View Logs..."
+		};
+		menuItem10.Click += delegate
+		{
+			ShowLogs();
+		};
+		contextMenu.Items.Add(menuItem10);
+		contextMenu.Items.Add(new Separator());
+		MenuItem menuItem11 = new MenuItem
+		{
+			Header = "Exit"
+		};
+		menuItem11.Click += delegate
+		{
+			QueueTrayAction(ExitApplication);
+		};
+		contextMenu.Items.Add(menuItem11);
+		contextMenu.Closed += OnTrayContextMenuClosed;
+		return contextMenu;
+	}
 
-            // Loaded Templates
-            var loadedTemplates = new MenuItem { Header = "Loaded Templates" };
-            UpdateTemplateMenuItems(loadedTemplates);
-            contextMenu.Items.Add(loadedTemplates);
+	private void UpdateTemplateMenuItems(MenuItem loadedTemplatesMenuItem)
+	{
+		loadedTemplatesMenuItem.Items.Clear();
+		List<LoadedTemplate> loadedTemplates = _templateManager.GetLoadedTemplates();
+		if (!loadedTemplates.Any())
+		{
+			MenuItem newItem = new MenuItem
+			{
+				Header = "No templates loaded",
+				IsEnabled = false
+			};
+			loadedTemplatesMenuItem.Items.Add(newItem);
+			return;
+		}
+		foreach (LoadedTemplate item in loadedTemplates)
+		{
+			MenuItem newItem2 = new MenuItem
+			{
+				Header = item.Name + " (" + item.Path + ")",
+				IsEnabled = false
+			};
+			loadedTemplatesMenuItem.Items.Add(newItem2);
+		}
+	}
 
-            // Remove Template
-            var removeTemplate = new MenuItem { Header = "Remove Template" };
-            UpdateRemoveTemplateMenuItems(removeTemplate);
-            contextMenu.Items.Add(removeTemplate);
+	private void UpdateRemoveTemplateMenuItems(MenuItem removeTemplateMenuItem)
+	{
+		removeTemplateMenuItem.Items.Clear();
+		List<LoadedTemplate> loadedTemplates = _templateManager.GetLoadedTemplates();
+		if (!loadedTemplates.Any())
+		{
+			MenuItem newItem = new MenuItem
+			{
+				Header = "No templates to remove",
+				IsEnabled = false
+			};
+			removeTemplateMenuItem.Items.Add(newItem);
+			return;
+		}
+		foreach (LoadedTemplate template in loadedTemplates)
+		{
+			MenuItem menuItem = new MenuItem
+			{
+				Header = template.Name
+			};
+			menuItem.Click += delegate
+			{
+				RemoveTemplate(template.Path);
+			};
+			removeTemplateMenuItem.Items.Add(menuItem);
+		}
+	}
 
-            contextMenu.Items.Add(new Separator());
+	private void QueueTrayAction(Action action)
+	{
+		_pendingTrayAction = action;
+	}
 
-            // Run Now
-            var runNow = new MenuItem { Header = "Run Now" };
-            runNow.Click += async (s, e) => await RunNowClicked();
-            contextMenu.Items.Add(runNow);
+	private void OnTrayContextMenuClosed(object? sender, EventArgs e)
+	{
+		Action? pendingTrayAction = _pendingTrayAction;
+		_pendingTrayAction = null;
+		pendingTrayAction?.Invoke();
+	}
 
-            // Start/Stop Scheduler (toggle based on current state)
-            if (_scheduledPrinting.IsSchedulerActive)
-            {
-                var stopScheduler = new MenuItem { Header = "Stop Scheduler" };
-                stopScheduler.Click += (s, e) => StopScheduler();
-                contextMenu.Items.Add(stopScheduler);
-            }
-            else
-            {
-                var startScheduler = new MenuItem { Header = "Start Scheduler" };
-                startScheduler.Click += (s, e) => StartScheduler();
-                contextMenu.Items.Add(startScheduler);
-            }
+	private static Window CreateDialogHelperWindow()
+	{
+		Window window = new Window();
+		window.Width = 1.0;
+		window.Height = 1.0;
+		window.Left = -20000.0;
+		window.Top = -20000.0;
+		window.WindowStyle = WindowStyle.None;
+		window.ShowInTaskbar = false;
+		window.ShowActivated = true;
+		window.Topmost = true;
+		window.Show();
+		return window;
+	}
 
-            // Scheduler Status (read-only indicator)
-            var schedulerStatus = new MenuItem 
-            { 
-                Header = $"Status: {(_scheduledPrinting.IsSchedulerActive ? "Active" : "Stopped")}",
-                IsEnabled = false
-            };
-            contextMenu.Items.Add(schedulerStatus);
+	private static bool? ShowOpenFileDialog(OpenFileDialog dialog)
+	{
+		Window window = CreateDialogHelperWindow();
+		try
+		{
+			return dialog.ShowDialog(window);
+		}
+		finally
+		{
+			window.Close();
+		}
+	}
 
-            contextMenu.Items.Add(new Separator());
+	private static MessageBoxResult ShowTrayMessageBox(string message, string title, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage icon = MessageBoxImage.None)
+	{
+		return DialogHelper.ShowMessageBox(message, title, buttons, icon);
+	}
 
-            // Logs
-            var logs = new MenuItem { Header = "View Logs..." };
-            logs.Click += (s, e) => ShowLogs();
-            contextMenu.Items.Add(logs);
+	private void AddTemplate()
+	{
+		QueueTrayAction(ShowAddTemplateDialog);
+	}
 
-            contextMenu.Items.Add(new Separator());
+	private void ShowAddTemplateDialog()
+	{
+		OpenFileDialog openFileDialog = new OpenFileDialog
+		{
+			Filter = "XML Templates (*.xml)|*.xml|All files (*.*)|*.*",
+			Title = "Select Template File"
+		};
+		if (ShowOpenFileDialog(openFileDialog) == true)
+		{
+			try
+			{
+				_templateManager.AddTemplate(openFileDialog.FileName);
+				ShowTrayMessageBox("Template '" + Path.GetFileNameWithoutExtension(openFileDialog.FileName) + "' added successfully.", "Template Added", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+			}
+			catch (Exception ex)
+			{
+				ShowTrayMessageBox("Failed to add template: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+			}
+		}
+	}
 
-            // Exit
-            var exit = new MenuItem { Header = "Exit" };
-            exit.Click += (s, e) => ExitApplication();
-            contextMenu.Items.Add(exit);
+	private void RemoveTemplate(string filePath)
+	{
+		QueueTrayAction(delegate
+		{
+			ShowRemoveTemplateDialog(filePath);
+		});
+	}
 
-            return contextMenu;
-        }
+	private void ShowRemoveTemplateDialog(string filePath)
+	{
+		try
+		{
+			string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+			if (ShowTrayMessageBox("Are you sure you want to remove template '" + fileNameWithoutExtension + "'?", "Confirm Removal", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+			{
+				_templateManager.RemoveTemplate(filePath);
+				ShowTrayMessageBox("Template '" + fileNameWithoutExtension + "' removed successfully.", "Template Removed", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+			}
+		}
+		catch (Exception ex)
+		{
+			ShowTrayMessageBox("Failed to remove template: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+		}
+	}
 
-        private void UpdateTemplateMenuItems(MenuItem loadedTemplatesMenuItem)
-        {
-            loadedTemplatesMenuItem.Items.Clear();
+	private void OnTrayIconDoubleClick(object sender, RoutedEventArgs e)
+	{
+		ShowMainWindow();
+	}
 
-            var templates = _templateManager.GetLoadedTemplates();
-            if (!templates.Any())
-            {
-                var noTemplates = new MenuItem 
-                { 
-                    Header = "No templates loaded",
-                    IsEnabled = false
-                };
-                loadedTemplatesMenuItem.Items.Add(noTemplates);
-                return;
-            }
+	private void ShowMainWindow()
+	{
+		try
+		{
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ShowMainWindow called{Environment.NewLine}");
+			Application current = Application.Current;
+			Window window = null;
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Total windows in app: {(current?.Windows?.Count).GetValueOrDefault()}{Environment.NewLine}");
+			if (current?.Windows != null && current.Windows.Count > 0)
+			{
+				int num = 0;
+				foreach (Window window4 in current.Windows)
+				{
+					File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Window {num}: Type={window4.GetType().Name}, Title={window4.Title ?? "(no title)"}{Environment.NewLine}");
+					num++;
+				}
+				foreach (Window window5 in current.Windows)
+				{
+					if (window5.GetType().Name == "MainWindow")
+					{
+						try
+						{
+							bool isVisible = window5.IsVisible;
+							File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Found MainWindow - IsVisible: {isVisible}{Environment.NewLine}");
+							window = window5;
+						}
+						catch (InvalidOperationException ex)
+						{
+							File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] MainWindow was closed: {ex.Message}{Environment.NewLine}");
+							continue;
+						}
+						break;
+					}
+				}
+			}
+			if (window != null)
+			{
+				File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Using existing window{Environment.NewLine}");
+				_mainWindow = window;
+				if (_mainWindow.IsVisible)
+				{
+					File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Window already visible, bringing to front{Environment.NewLine}");
+					if (_mainWindow.WindowState == WindowState.Minimized)
+					{
+						_mainWindow.WindowState = WindowState.Normal;
+					}
+					_mainWindow.Activate();
+					_mainWindow.Focus();
+				}
+				else
+				{
+					File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Window hidden, showing it{Environment.NewLine}");
+					try
+					{
+						_mainWindow.Show();
+						_mainWindow.WindowState = WindowState.Normal;
+						_mainWindow.Activate();
+					}
+					catch (InvalidOperationException exShow)
+					{
+						File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Show failed (window closed): {exShow.Message}{Environment.NewLine}");
+						_mainWindow = null;
+						CreateNewMainWindow();
+					}
+				}
+				return;
+			}
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] No existing window found in app.Windows{Environment.NewLine}");
+			if (_mainWindow != null)
+			{
+				try
+				{
+					_ = _mainWindow.IsVisible;
+					File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stored _mainWindow reference is still valid{Environment.NewLine}");
+					if (_mainWindow.IsVisible)
+					{
+						if (_mainWindow.WindowState == WindowState.Minimized)
+						{
+							_mainWindow.WindowState = WindowState.Normal;
+						}
+						_mainWindow.Activate();
+						_mainWindow.Focus();
+					}
+					else
+					{
+						try
+						{
+							_mainWindow.Show();
+							_mainWindow.WindowState = WindowState.Normal;
+							_mainWindow.Activate();
+						}
+						catch (InvalidOperationException)
+						{
+							_mainWindow = null;
+							CreateNewMainWindow();
+							return;
+						}
+					}
+					return;
+				}
+				catch (InvalidOperationException ex2)
+				{
+					File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stored _mainWindow was closed: {ex2.Message}{Environment.NewLine}");
+					_mainWindow = null;
+				}
+			}
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Creating new MainWindow{Environment.NewLine}");
+			CreateNewMainWindow();
+		}
+		catch (Exception ex3)
+		{
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR in ShowMainWindow: {ex3.Message}{Environment.NewLine}{ex3.StackTrace}{Environment.NewLine}");
+			MessageBox.Show("An error occurred while trying to show the designer window: " + ex3.Message, "TaggJack - Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+		}
+	}
 
-            foreach (var template in templates)
-            {
-                var templateItem = new MenuItem 
-                { 
-                    Header = $"{template.Name} ({template.Path})",
-                    IsEnabled = false
-                };
-                loadedTemplatesMenuItem.Items.Add(templateItem);
-            }
-        }
+	private void CreateNewMainWindow()
+	{
+		try
+		{
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] CreateNewMainWindow() called{Environment.NewLine}");
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stack trace:{Environment.NewLine}{Environment.StackTrace}{Environment.NewLine}");
+			_mainWindow = new MainWindow();
+			if (Application.Current != null)
+			{
+				Application.Current.MainWindow = _mainWindow;
+			}
+			_mainWindow.Show();
+			_mainWindow.WindowState = WindowState.Normal;
+			_mainWindow.Activate();
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Created new MainWindow instance{Environment.NewLine}");
+		}
+		catch (Exception ex)
+		{
+			File.AppendAllText("tray-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR creating new MainWindow: {ex.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}");
+			MessageBox.Show("Failed to create designer window: " + ex.Message, "TaggJack - Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+		}
+	}
 
-        private void UpdateRemoveTemplateMenuItems(MenuItem removeTemplateMenuItem)
-        {
-            removeTemplateMenuItem.Items.Clear();
+	public void HideToTray()
+	{
+		_mainWindow?.Hide();
+	}
 
-            var templates = _templateManager.GetLoadedTemplates();
-            if (!templates.Any())
-            {
-                var noTemplates = new MenuItem 
-                { 
-                    Header = "No templates to remove",
-                    IsEnabled = false
-                };
-                removeTemplateMenuItem.Items.Add(noTemplates);
-                return;
-            }
+	public void SetMainWindow(Window mainWindow)
+	{
+		_mainWindow = mainWindow;
+	}
 
-            foreach (var template in templates)
-            {
-                var templateItem = new MenuItem { Header = template.Name };
-                templateItem.Click += (s, e) => RemoveTemplate(template.Path);
-                removeTemplateMenuItem.Items.Add(templateItem);
-            }
-        }
+	private void ExitApplication()
+	{
+		if (!_scheduledPrinting.IsSchedulerActive || ShowTrayMessageBox("The scheduled printing service is currently active. Exiting the application will stop all scheduled print jobs.\n\nAre you sure you want to exit?", "TaggJack - Confirm Exit", MessageBoxButton.YesNo, MessageBoxImage.Exclamation) == MessageBoxResult.Yes)
+		{
+			_scheduledPrinting.Stop();
+			MainWindow mainWindow = (Application.Current.MainWindow as MainWindow) ?? Application.Current.Windows.OfType<MainWindow>().FirstOrDefault() ?? (_mainWindow as MainWindow);
+			if (mainWindow != null)
+			{
+				mainWindow.ExplicitExit();
+			}
+			else
+			{
+				Environment.Exit(0);
+			}
+		}
+	}
 
-        private void AddTemplate()
-        {
-            var openFileDialog = new OpenFileDialog
-            {
-                Filter = "XML Templates (*.xml)|*.xml|All files (*.*)|*.*",
-                Title = "Select Template File"
-            };
+	private async Task RunNowClicked()
+	{
+		try
+		{
+			RunNowDebugLog.WriteCycle("Run Now clicked");
+			List<LoadedTemplate> enabledTemplates = _templateManager.GetEnabledTemplates();
+			RunNowDebugLog.WriteCycle($"Found {enabledTemplates.Count} enabled templates");
+			if (enabledTemplates.Count == 0)
+			{
+				_notifyIcon?.ShowBalloonTip("TaggJack - Run Now", "No templates are loaded or enabled for printing. Please add templates using 'Add Template' from the tray menu.", BalloonIcon.Info);
+				RunNowDebugLog.WriteCycle("No templates available - showing balloon tip");
+				return;
+			}
+			_notifyIcon?.ShowBalloonTip("TaggJack - Run Now", $"Starting print cycle for {enabledTemplates.Count} template(s)...", BalloonIcon.Info);
+			RunNowDebugLog.WriteCycle($"Starting print cycle for {enabledTemplates.Count} templates");
+			await _scheduledPrinting.RunNow();
+			RunNowDebugLog.WriteCycle("Print cycle completed");
+			_notifyIcon?.ShowBalloonTip("TaggJack - Run Now", "Print cycle completed successfully.", BalloonIcon.Info);
+		}
+		catch (Exception ex)
+		{
+			RunNowDebugLog.WriteCycle("ERROR: " + ex.Message);
+			_notifyIcon?.ShowBalloonTip("TaggJack - Run Now", "Error during print cycle: " + ex.Message, BalloonIcon.Error);
+		}
+	}
 
-            if (openFileDialog.ShowDialog() == true)
-            {
-                try
-                {
-                    _templateManager.AddTemplate(openFileDialog.FileName);
-                    MessageBox.Show($"Template '{Path.GetFileNameWithoutExtension(openFileDialog.FileName)}' added successfully.", 
-                        "Template Added", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to add template: {ex.Message}", 
-                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-        }
+	private void StartScheduler()
+	{
+		try
+		{
+			if (_useWindowsServiceControl)
+			{
+				WindowsServiceControl.StartService(_serviceName, TimeSpan.FromSeconds(10L));
+			}
+			else
+			{
+				_scheduledPrinting.Start();
+			}
+			_notifyIcon?.ShowBalloonTip("TaggJack - Scheduler", "Scheduler started successfully.", BalloonIcon.Info);
+			RefreshContextMenu();
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show("Failed to start scheduler: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+		}
+	}
 
-        private void RemoveTemplate(string filePath)
-        {
-            try
-            {
-                var templateName = Path.GetFileNameWithoutExtension(filePath);
-                var result = MessageBox.Show($"Are you sure you want to remove template '{templateName}'?", 
-                    "Confirm Removal", MessageBoxButton.YesNo, MessageBoxImage.Question);
+	private void StopScheduler()
+	{
+		try
+		{
+			if (_useWindowsServiceControl)
+			{
+				WindowsServiceControl.StopService(_serviceName, TimeSpan.FromSeconds(10L));
+			}
+			else
+			{
+				_scheduledPrinting.Stop();
+			}
+			_notifyIcon?.ShowBalloonTip("TaggJack - Scheduler", "Scheduler stopped successfully.", BalloonIcon.Info);
+			RefreshContextMenu();
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show("Failed to stop scheduler: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+		}
+	}
 
-                if (result == MessageBoxResult.Yes)
-                {
-                    _templateManager.RemoveTemplate(filePath);
-                    MessageBox.Show($"Template '{templateName}' removed successfully.", 
-                        "Template Removed", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to remove template: {ex.Message}", 
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+	private void ShowLogs()
+	{
+		QueueTrayAction(ShowLogsWindow);
+	}
 
-        private void OnTrayIconDoubleClick(object sender, RoutedEventArgs e)
-        {
-            ShowMainWindow();
-        }
+	private void ShowLogsWindow()
+	{
+		try
+		{
+			new LogsWindow(_scheduledPrinting).Show();
+		}
+		catch (Exception ex)
+		{
+			ShowTrayMessageBox("Failed to open logs window: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+		}
+	}
 
-        private void ShowMainWindow()
-        {
-            try
-            {
-                File.AppendAllText("tray-debug.log", 
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ShowMainWindow called{Environment.NewLine}");
-                
-                // First, search for any existing MainWindow instances in the application
-                var app = System.Windows.Application.Current;
-                Window? existingWindow = null;
-                
-                File.AppendAllText("tray-debug.log", 
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Total windows in app: {app?.Windows?.Count ?? 0}{Environment.NewLine}");
-                
-                if (app?.Windows != null && app.Windows.Count > 0)
-                {
-                    // First pass: Log ALL windows for debugging
-                    int windowIndex = 0;
-                    foreach (Window window in app.Windows)
-                    {
-                        File.AppendAllText("tray-debug.log", 
-                            $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Window {windowIndex}: Type={window.GetType().Name}, Title={window.Title ?? "(no title)"}{Environment.NewLine}");
-                        windowIndex++;
-                    }
-                    
-                    // Second pass: Find MainWindow
-                    foreach (Window window in app.Windows)
-                    {
-                        if (window.GetType().Name == "MainWindow")
-                        {
-                            try
-                            {
-                                // Try to access a property to see if window is still alive
-                                var isVisible = window.IsVisible;
-                                File.AppendAllText("tray-debug.log", 
-                                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Found MainWindow - IsVisible: {isVisible}{Environment.NewLine}");
-                                existingWindow = window;
-                                break;
-                            }
-                            catch (InvalidOperationException ex)
-                            {
-                                // This window was closed, continue searching
-                                File.AppendAllText("tray-debug.log", 
-                                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] MainWindow was closed: {ex.Message}{Environment.NewLine}");
-                                continue;
-                            }
-                        }
-                    }
-                }
-                
-                // If we found an existing window, use it
-                if (existingWindow != null)
-                {
-                    File.AppendAllText("tray-debug.log", 
-                        $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Using existing window{Environment.NewLine}");
-                    
-                    _mainWindow = existingWindow;
-                    
-                    if (_mainWindow.IsVisible)
-                    {
-                        // Just bring to front if already visible
-                        File.AppendAllText("tray-debug.log", 
-                            $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Window already visible, bringing to front{Environment.NewLine}");
-                        
-                        if (_mainWindow.WindowState == WindowState.Minimized)
-                        {
-                            _mainWindow.WindowState = WindowState.Normal;
-                        }
-                        _mainWindow.Activate();
-                        _mainWindow.Focus();
-                    }
-                    else
-                    {
-                        // Show the window if it's hidden
-                        File.AppendAllText("tray-debug.log", 
-                            $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Window hidden, showing it{Environment.NewLine}");
-                        
-                        _mainWindow.Show();
-                        _mainWindow.WindowState = WindowState.Normal;
-                        _mainWindow.Activate();
-                    }
-                    return;
-                }
-                
-                File.AppendAllText("tray-debug.log", 
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] No existing window found in app.Windows{Environment.NewLine}");
-                
-                // Check if we have a stored reference that might still be valid
-                if (_mainWindow != null)
-                {
-                    try
-                    {
-                        // Try to access a property to see if window is still alive
-                        var _ = _mainWindow.IsVisible;
-                        
-                        File.AppendAllText("tray-debug.log", 
-                            $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stored _mainWindow reference is still valid{Environment.NewLine}");
-                        
-                        // Window is still alive, show it
-                        if (_mainWindow.IsVisible)
-                        {
-                            if (_mainWindow.WindowState == WindowState.Minimized)
-                            {
-                                _mainWindow.WindowState = WindowState.Normal;
-                            }
-                            _mainWindow.Activate();
-                            _mainWindow.Focus();
-                        }
-                        else
-                        {
-                            _mainWindow.Show();
-                            _mainWindow.WindowState = WindowState.Normal;
-                            _mainWindow.Activate();
-                        }
-                        return;
-                    }
-                    catch (InvalidOperationException ex)
-                    {
-                        // Window was closed, need to create a new one
-                        File.AppendAllText("tray-debug.log", 
-                            $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stored _mainWindow was closed: {ex.Message}{Environment.NewLine}");
-                        _mainWindow = null;
-                    }
-                }
+	private void InstallTrayAutostartTask()
+	{
+		try
+		{
+			string text = Environment.ProcessPath ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TaggJack.exe");
+			if (!File.Exists(text))
+			{
+				throw new FileNotFoundException("Could not locate TaggJack executable for autostart task.", text);
+			}
+			string value = "TaggJack Tray Autostart";
+			string value2 = "\"" + text + "\" --tray --minimized";
+			string arguments = $"/Create /TN \"{value}\" /SC ONLOGON /TR \"{value2}\" /F /RL LIMITED /DELAY 0000:05";
+			RunProcessChecked("schtasks.exe", arguments);
+			_notifyIcon?.ShowBalloonTip("TaggJack - Tray Autostart", "Tray autostart task installed successfully.", BalloonIcon.Info);
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show("Failed to install tray autostart task: " + ex.Message, "Autostart Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+		}
+	}
 
-                // No existing window found - create a new one only if necessary
-                File.AppendAllText("tray-debug.log", 
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Creating new MainWindow{Environment.NewLine}");
-                CreateNewMainWindow();
-            }
-            catch (Exception ex)
-            {
-                // Log the error and show a user-friendly message
-                File.AppendAllText("tray-debug.log", 
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR in ShowMainWindow: {ex.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}");
-                
-                MessageBox.Show(
-                    $"An error occurred while trying to show the designer window: {ex.Message}",
-                    "TaggJack - Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-        }
+	private void RemoveTrayAutostartTask()
+	{
+		try
+		{
+			string text = "TaggJack Tray Autostart";
+			string arguments = "/Delete /TN \"" + text + "\" /F";
+			RunProcessChecked("schtasks.exe", arguments);
+			_notifyIcon?.ShowBalloonTip("TaggJack - Tray Autostart", "Tray autostart task removed successfully.", BalloonIcon.Info);
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show("Failed to remove tray autostart task: " + ex.Message, "Autostart Error", MessageBoxButton.OK, MessageBoxImage.Hand);
+		}
+	}
 
-        private void CreateNewMainWindow()
-        {
-            try
-            {
-                File.AppendAllText("tray-debug.log", 
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] CreateNewMainWindow() called{Environment.NewLine}");
-                File.AppendAllText("tray-debug.log", 
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Stack trace:{Environment.NewLine}{Environment.StackTrace}{Environment.NewLine}");
-                
-                // Create a new MainWindow instance (using fully qualified name)
-                _mainWindow = new EvoDesigner.MainWindow();
-                
-                // Set it as the application's main window
-                if (System.Windows.Application.Current != null)
-                {
-                    System.Windows.Application.Current.MainWindow = _mainWindow;
-                }
-                
-                // Show the new window
-                _mainWindow.Show();
-                _mainWindow.WindowState = WindowState.Normal;
-                _mainWindow.Activate();
-                
-                File.AppendAllText("tray-debug.log", 
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Created new MainWindow instance{Environment.NewLine}");
-            }
-            catch (Exception ex)
-            {
-                File.AppendAllText("tray-debug.log", 
-                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR creating new MainWindow: {ex.Message}{Environment.NewLine}{ex.StackTrace}{Environment.NewLine}");
-                
-                MessageBox.Show(
-                    $"Failed to create designer window: {ex.Message}",
-                    "TaggJack - Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-            }
-        }
+	private static void RunProcessChecked(string fileName, string arguments)
+	{
+		using Process process = Process.Start(new ProcessStartInfo
+		{
+			FileName = fileName,
+			Arguments = arguments,
+			UseShellExecute = false,
+			RedirectStandardOutput = true,
+			RedirectStandardError = true,
+			CreateNoWindow = true
+		}) ?? throw new InvalidOperationException("Failed to start process: " + fileName);
+		string text = process.StandardOutput.ReadToEnd();
+		string text2 = process.StandardError.ReadToEnd();
+		process.WaitForExit();
+		if (process.ExitCode != 0)
+		{
+			string value = (string.IsNullOrWhiteSpace(text2) ? text : text2);
+			throw new InvalidOperationException($"{fileName} failed ({process.ExitCode}): {value}".Trim());
+		}
+	}
 
-        public void HideToTray()
-        {
-            _mainWindow?.Hide();
-        }
+	private void OnTemplateAdded(object? sender, TemplateManagerEventArgs e)
+	{
+		RefreshContextMenu();
+	}
 
-        /// <summary>
-        /// Set the main window reference if it wasn't available during initialization
-        /// </summary>
-        public void SetMainWindow(Window mainWindow)
-        {
-            _mainWindow = mainWindow;
-        }
+	private void OnTemplateRemoved(object? sender, TemplateManagerEventArgs e)
+	{
+		RefreshContextMenu();
+	}
 
-        private void ExitApplication()
-        {
-            // Check if scheduler is active and warn user
-            if (_scheduledPrinting.IsSchedulerActive)
-            {
-                var result = MessageBox.Show(
-                    "The scheduled printing service is currently active. Exiting the application will stop all scheduled print jobs.\n\n" +
-                    "Are you sure you want to exit?",
-                    "TaggJack - Confirm Exit",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning,
-                    MessageBoxResult.No);
+	private void OnPrintingStateChanged(object? sender, bool isPrinting)
+	{
+		RefreshContextMenu();
+	}
 
-                if (result != MessageBoxResult.Yes)
-                {
-                    return; // User cancelled exit
-                }
-            }
+	private void RefreshContextMenu()
+	{
+		try
+		{
+			Application current = Application.Current;
+			if (current?.Dispatcher == null)
+			{
+				return;
+			}
+			if (!current.Dispatcher.CheckAccess())
+			{
+				current.Dispatcher.InvokeAsync(RefreshContextMenu);
+				return;
+			}
+			if (_notifyIcon == null)
+			{
+				return;
+			}
+			_notifyIcon.ContextMenu = CreateContextMenu();
+		}
+		catch (InvalidOperationException)
+		{
+			// Ignore if the tray icon or a window is already closed/disposed (e.g. during shutdown or background Linx completion).
+		}
+	}
 
-            // Try to call the MainWindow's ExplicitExit method for proper save prompts
-            if (_mainWindow is MainWindow mainWindow)
-            {
-                mainWindow.ExplicitExit();
-            }
-            else
-            {
-                // If we can't find the MainWindow, search for it
-                var app = System.Windows.Application.Current;
-                if (app?.MainWindow is MainWindow mainWin)
-                {
-                    mainWin.ExplicitExit();
-                }
-                else
-                {
-                    // Try to find MainWindow in all windows
-                    var windows = app?.Windows;
-                    if (windows != null)
-                    {
-                        foreach (Window window in windows)
-                        {
-                            if (window is MainWindow mw)
-                            {
-                                mw.ExplicitExit();
-                                return;
-                            }
-                        }
-                    }
-                    // Fallback to immediate shutdown if no MainWindow found
-                    Application.Current.Shutdown();
-                }
-            }
-        }
-
-        private async Task RunNowClicked()
-        {
-            try
-            {
-                File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Run Now clicked" + Environment.NewLine);
-                
-                // Check if there are any enabled templates
-                var enabledTemplates = _templateManager.GetEnabledTemplates();
-                File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Found {enabledTemplates.Count} enabled templates" + Environment.NewLine);
-                
-                if (enabledTemplates.Count == 0)
-                {
-                    // Show notification that no templates are available
-                    _notifyIcon?.ShowBalloonTip("TaggJack - Run Now", 
-                        "No templates are loaded or enabled for printing. Please add templates using 'Add Template' from the tray menu.", 
-                        Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
-                    File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] No templates available - showing balloon tip" + Environment.NewLine);
-                    return;
-                }
-
-                // Show notification that printing has started
-                _notifyIcon?.ShowBalloonTip("TaggJack - Run Now", 
-                    $"Starting print cycle for {enabledTemplates.Count} template(s)...", 
-                    Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
-                File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Starting print cycle for {enabledTemplates.Count} templates" + Environment.NewLine);
-
-                // Run the print cycle
-                await _scheduledPrinting.RunNow();
-                File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Print cycle completed" + Environment.NewLine);
-
-                // Show completion notification
-                _notifyIcon?.ShowBalloonTip("TaggJack - Run Now", 
-                    "Print cycle completed successfully.", 
-                    Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
-            }
-            catch (Exception ex)
-            {
-                File.AppendAllText("run-now-debug.log", $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR: {ex.Message}" + Environment.NewLine);
-                // Show error notification
-                _notifyIcon?.ShowBalloonTip("TaggJack - Run Now", 
-                    $"Error during print cycle: {ex.Message}", 
-                    Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Error);
-            }
-        }
-
-        private void StartScheduler()
-        {
-            try
-            {
-                _scheduledPrinting.Start();
-                
-                // Show notification
-                _notifyIcon?.ShowBalloonTip("TaggJack - Scheduler", 
-                    "Scheduler started successfully.", 
-                    Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
-                
-                // Refresh menu to update status
-                RefreshContextMenu();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to start scheduler: {ex.Message}", 
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void StopScheduler()
-        {
-            try
-            {
-                _scheduledPrinting.Stop();
-                
-                // Show notification
-                _notifyIcon?.ShowBalloonTip("TaggJack - Scheduler", 
-                    "Scheduler stopped successfully.", 
-                    Hardcodet.Wpf.TaskbarNotification.BalloonIcon.Info);
-                
-                // Refresh menu to update status
-                RefreshContextMenu();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to stop scheduler: {ex.Message}", 
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void ShowLogs()
-        {
-            try
-            {
-                // Create and show the logs window
-                var logsWindow = new EvoDesigner.UI.LogsWindow(_scheduledPrinting);
-                logsWindow.Show();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to open logs window: {ex.Message}", 
-                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void OnTemplateAdded(object? sender, TemplateManagerEventArgs e)
-        {
-            // Refresh context menu
-            RefreshContextMenu();
-        }
-
-        private void OnTemplateRemoved(object? sender, TemplateManagerEventArgs e)
-        {
-            // Refresh context menu
-            RefreshContextMenu();
-        }
-
-        private void RefreshContextMenu()
-        {
-            if (_notifyIcon != null)
-            {
-                // Always create/recreate the menu to ensure current state
-                _notifyIcon.ContextMenu = CreateContextMenu();
-            }
-        }
-
-        public void Dispose()
-        {
-            // Unsubscribe from events
-            _templateManager.TemplateAdded -= OnTemplateAdded;
-            _templateManager.TemplateRemoved -= OnTemplateRemoved;
-
-            // Dispose NotifyIcon
-            _notifyIcon?.Dispose();
-            _notifyIcon = null;
-        }
-    }
+	public void Dispose()
+	{
+		_templateManager.TemplateAdded -= OnTemplateAdded;
+		_templateManager.TemplateRemoved -= OnTemplateRemoved;
+		_scheduledPrinting.PrintingStateChanged -= OnPrintingStateChanged;
+		_notifyIcon?.Dispose();
+		_notifyIcon = null;
+	}
 }

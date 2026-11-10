@@ -1,7 +1,10 @@
-# EvoDesigner Licensing System Design
+# TaggJack Licensing System Design
+
+> **Current implementation:** Portal licensing at `admin.evolabs.co` with product code **`TAGGJACK`**.  
+> See [LICENSE_ACTIVATION_GUIDE.md](LICENSE_ACTIVATION_GUIDE.md). Content below is historical (offline TJ11 / AES) and no longer used for customer activation.
 
 ## Overview
-This document outlines the licensing system for EvoDesigner to control deployment and track installations across different machines.
+This document outlines the licensing system for TaggJack to control deployment and track installations across different machines.
 
 ## Licensing Models
 
@@ -73,7 +76,7 @@ ED11-ST01-A5F3-B2C8-7D4E
 │    │    │              └─ Checksum
 │    │    └─ Random data + hardware binding
 │    └─ License type (ST=Standard, PR=Professional, EN=Enterprise)
-└─ Product (ED11 = EvoDesigner 1.1)
+└─ Product (ED11 = TaggJack 1.1)
 ```
 
 ## Hardware Fingerprinting
@@ -161,7 +164,7 @@ string machineId = SHA256(CPU_ID + MB_SERIAL + MAC_ADDRESS + WINDOWS_ID)
 
 ## License File Structure
 
-**Location:** `%APPDATA%\EvoDesigner\license.dat`
+**Location:** `%APPDATA%\TaggJack\license.dat`
 
 **Contents (Encrypted):**
 ```json
@@ -351,7 +354,7 @@ For fastest implementation:
 
 **Time to Implement:** 2-3 days
 
-## Recommended Approach for EvoDesigner
+## Recommended Approach for TaggJack
 
 Given your current state, I recommend:
 

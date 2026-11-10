@@ -12,7 +12,7 @@ User clicks "Exit" from tray menu
     ↓
 ⚠️ Warning Dialog Appears:
     ┌────────────────────────────────────────────┐
-    │  EvoDesigner - Confirm Exit          [X]   │
+    │  TaggJack - Confirm Exit          [X]   │
     ├────────────────────────────────────────────┤
     │  ⚠️                                        │
     │  The scheduled printing service is         │
@@ -81,7 +81,7 @@ Application exits immediately (no warning)
 ## User Instructions
 
 **To exit when scheduler is active:**
-1. Right-click the EvoDesigner tray icon
+1. Right-click the TaggJack tray icon
 2. Click "Exit"
 3. Read the warning message
 4. Click "Yes" to confirm exit

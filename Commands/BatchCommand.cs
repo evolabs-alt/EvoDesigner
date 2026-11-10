@@ -1,33 +1,32 @@
 using System.Collections.Generic;
 
-namespace EvoDesigner.Commands
+namespace TaggJack.Commands;
+
+public class BatchCommand : ICommand
 {
-    public class BatchCommand : ICommand
-    {
-        private readonly List<ICommand> _commands;
-        public string Description { get; }
+	private readonly List<ICommand> _commands;
 
-        public BatchCommand(List<ICommand> commands, string description = "Batch operation")
-        {
-            _commands = commands;
-            Description = description;
-        }
+	public string Description { get; }
 
-        public void Execute()
-        {
-            foreach (var command in _commands)
-            {
-                command.Execute();
-            }
-        }
+	public BatchCommand(List<ICommand> commands, string description = "Batch operation")
+	{
+		_commands = commands;
+		Description = description;
+	}
 
-        public void Undo()
-        {
-            // Undo in reverse order
-            for (int i = _commands.Count - 1; i >= 0; i--)
-            {
-                _commands[i].Undo();
-            }
-        }
-    }
+	public void Execute()
+	{
+		foreach (ICommand command in _commands)
+		{
+			command.Execute();
+		}
+	}
+
+	public void Undo()
+	{
+		for (int num = _commands.Count - 1; num >= 0; num--)
+		{
+			_commands[num].Undo();
+		}
+	}
 }

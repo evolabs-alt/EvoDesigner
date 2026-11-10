@@ -5,7 +5,7 @@
 ### Debugging Steps:
 
 1. **Check if you have configured a template with a DataSource**
-   - Open EvoDesigner
+   - Open TaggJack
    - Load or create a template
    - Click "Data Source" menu
    - Fill in MySQL connection details
@@ -32,7 +32,7 @@
    - Check the notification
 
 5. **Check the debug logs**
-   - Look in the EvoDesigner folder for these files:
+   - Look in the TaggJack folder for these files:
      * `run-now-debug.log` - Scheduled printing logs
      * `print-service-debug.log` - Print service logs
    

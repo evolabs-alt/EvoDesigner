@@ -2,7 +2,7 @@
 
 ## What Was Done
 
-Successfully integrated `icon.png` as both the **application icon** and **system tray icon** for EvoDesigner.
+Successfully integrated `icon.png` as both the **application icon** and **system tray icon** for TaggJack.
 
 ## Changes Made
 
@@ -12,12 +12,12 @@ Successfully integrated `icon.png` as both the **application icon** and **system
 - ✅ **ICON-INTEGRATION.md** - Complete documentation
 
 ### 2. Files Modified
-- ✅ **EvoDesigner.csproj** - Added ApplicationIcon and icon.png resources
+- ✅ **TaggJack.csproj** - Added ApplicationIcon and icon.png resources
 - ✅ **Services/SystemTrayService.cs** - Changed from Logo.png to icon.png
 
 ### 3. Configuration Updates
 
-**EvoDesigner.csproj:**
+**TaggJack.csproj:**
 ```xml
 <ApplicationIcon>icon.ico</ApplicationIcon>  <!-- Application window icon -->
 

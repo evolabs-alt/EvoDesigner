@@ -33,7 +33,7 @@ private void ExitApplication()
         var result = MessageBox.Show(
             "The scheduled printing service is currently active. Exiting the application will stop all scheduled print jobs.\n\n" +
             "Are you sure you want to exit?",
-            "EvoDesigner - Confirm Exit",
+            "TaggJack - Confirm Exit",
             MessageBoxButton.YesNo,
             MessageBoxImage.Warning,
             MessageBoxResult.No);
@@ -59,7 +59,7 @@ private void ExitApplication()
 When user clicks "Exit" from the system tray menu and the scheduler is running:
 
 1. **Warning Dialog Appears:**
-   - **Title:** "EvoDesigner - Confirm Exit"
+   - **Title:** "TaggJack - Confirm Exit"
    - **Icon:** Warning (⚠️)
    - **Message:** 
      ```
@@ -118,7 +118,7 @@ When user clicks "Exit" and the scheduler is already stopped:
 ### Visual Elements
 
 - **Icon:** `MessageBoxImage.Warning` - Yellow warning triangle
-- **Title:** "EvoDesigner - Confirm Exit" - Clear context
+- **Title:** "TaggJack - Confirm Exit" - Clear context
 - **Default:** `MessageBoxResult.No` - Prevents accidental exits
 
 ## Trigger Conditions

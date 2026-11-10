@@ -1,4 +1,4 @@
-# EvoDesigner Issue Resolution Guide
+# TaggJack Issue Resolution Guide
 
 ## Issues Diagnosed:
 1. **Text Alignment not working in print preview/print**

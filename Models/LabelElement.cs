@@ -1,81 +1,69 @@
-using System.Windows;
+using System.Xml.Serialization;
 
-namespace EvoDesigner.Models
+namespace TaggJack.Models;
+
+public class LabelElement
 {
-    public enum LabelElementType 
-    { 
-        Text, 
-        Image, 
-        LinkedImage,  // URL-based image that loads from web/database
-        QRCode,
-        // Drawing Tools
-        Line,
-        Rectangle,
-        Ellipse,
-        // Retail Checkout
-        EAN13,
-        EAN8, 
-        UPCA,
-        UPCE,
-        // Logistics
-        Code128,
-        Code39,
-        // Mobile/Consumer  
-        Aztec,
-        // Healthcare/Industrial
-        DataMatrix,
-        GS1DataBar,
-        // Government
-        PDF417,
-        // Legacy (for backward compatibility)
-        Barcode13,
-        Barcode8,
-        Barcode
-    }
+	[XmlElement]
+	public LabelElementType Type { get; set; }
 
-    public class LabelElement
-    {
-    [System.Xml.Serialization.XmlElement]
-    public LabelElementType Type { get; set; }
-    [System.Xml.Serialization.XmlElement]
-    public double X { get; set; }
-    [System.Xml.Serialization.XmlElement]
-    public double Y { get; set; }
-    [System.Xml.Serialization.XmlElement]
-    public double Width { get; set; }
-    [System.Xml.Serialization.XmlElement]
-    public double Height { get; set; }
-    [System.Xml.Serialization.XmlElement]
-    public string Content { get; set; } // Text, image path, barcode data, etc.
-    [System.Xml.Serialization.XmlElement]
-    public string BarcodeType { get; set; } // EAN13, EAN8, etc.
-    [System.Xml.Serialization.XmlElement]
-    public string FontFamily { get; set; }
-    [System.Xml.Serialization.XmlElement]
-    public double FontSize { get; set; } = 12; // Default font size
-    [System.Xml.Serialization.XmlElement]
-    public string FontWeight { get; set; }
-    [System.Xml.Serialization.XmlElement]
-    public string FontStyle { get; set; }
-    [System.Xml.Serialization.XmlElement]
-    public string Foreground { get; set; }
-    [System.Xml.Serialization.XmlElement]
-    public string? TextDecorations { get; set; } // Underline, Strikethrough, etc.
-    [System.Xml.Serialization.XmlElement]
-    public string? ImageData { get; set; } // Base64 encoded image data for portability
-    [System.Xml.Serialization.XmlElement]
-    public double Rotation { get; set; } = 0; // Rotation angle in degrees (0-360)
-    [System.Xml.Serialization.XmlElement]
-    public string? TextAlignment { get; set; } = "Left"; // Left, Center, Right
-    [System.Xml.Serialization.XmlElement]
-    public string? VerticalAlignment { get; set; } = "Top"; // Top, Center, Bottom
-    [System.Xml.Serialization.XmlElement]
-    public double BorderWidth { get; set; } = 1; // Border thickness for lines and rectangles
-    [System.Xml.Serialization.XmlElement]
-    public string? BorderColor { get; set; } = "Black"; // Border color for lines and rectangles
-    [System.Xml.Serialization.XmlElement]
-    public bool HasRoundedCorners { get; set; } = false; // Whether rectangle has rounded corners
-    [System.Xml.Serialization.XmlElement]
-    public double CornerRadius { get; set; } = 10; // Radius of rounded corners in pixels
-    }
+	[XmlElement]
+	public double X { get; set; }
+
+	[XmlElement]
+	public double Y { get; set; }
+
+	[XmlElement]
+	public double Width { get; set; }
+
+	[XmlElement]
+	public double Height { get; set; }
+
+	[XmlElement]
+	public string Content { get; set; }
+
+	[XmlElement]
+	public string BarcodeType { get; set; }
+
+	[XmlElement]
+	public string FontFamily { get; set; }
+
+	[XmlElement]
+	public double FontSize { get; set; } = 12.0;
+
+	[XmlElement]
+	public string FontWeight { get; set; }
+
+	[XmlElement]
+	public string FontStyle { get; set; }
+
+	[XmlElement]
+	public string Foreground { get; set; }
+
+	[XmlElement]
+	public string? TextDecorations { get; set; }
+
+	[XmlElement]
+	public string? ImageData { get; set; }
+
+	[XmlElement]
+	public double Rotation { get; set; }
+
+	[XmlElement]
+	public string? TextAlignment { get; set; } = "Left";
+
+	[XmlElement]
+	public string? VerticalAlignment { get; set; } = "Top";
+
+	[XmlElement]
+	public double BorderWidth { get; set; } = 1.0;
+
+	[XmlElement]
+	public string? BorderColor { get; set; } = "Black";
+
+	[XmlElement]
+	public bool HasRoundedCorners { get; set; }
+
+	[XmlElement]
+	public double CornerRadius { get; set; } = 10.0;
 }

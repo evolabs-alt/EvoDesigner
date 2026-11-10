@@ -1,4 +1,4 @@
-# EvoDesigner Advanced Installer Script
+# TaggJack Advanced Installer Script
 # Creates MSI installer using WiX Toolset
 
 param(
@@ -7,7 +7,7 @@ param(
 )
 
 Write-Host "===========================================" -ForegroundColor Green
-Write-Host "EvoDesigner Advanced MSI Installer Script" -ForegroundColor Green
+Write-Host "TaggJack Advanced MSI Installer Script" -ForegroundColor Green
 Write-Host "===========================================" -ForegroundColor Green
 Write-Host ""
 
@@ -36,7 +36,7 @@ New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 # Generate heat file for components
 $heatArgs = @(
     "dir", "publish",
-    "-cg", "EvoDesignerComponents",
+    "-cg", "TaggJackComponents",
     "-dr", "INSTALLFOLDER", 
     "-gg", "-sf", "-srd",
     "-out", "$OutputDir\Components.wxs"
@@ -48,10 +48,10 @@ $wixContent = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" 
-           Name="EvoDesigner" 
+           Name="TaggJack" 
            Language="1033" 
            Version="$Version" 
-           Manufacturer="EvoDesigner" 
+           Manufacturer="TaggJack" 
            UpgradeCode="{12345678-1234-1234-1234-123456789012}">
            
     <Package InstallerVersion="200" 
@@ -62,29 +62,29 @@ $wixContent = @"
     <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <MediaTemplate EmbedCab="yes" />
 
-    <Feature Id="ProductFeature" Title="EvoDesigner" Level="1">
-      <ComponentGroupRef Id="EvoDesignerComponents" />
+    <Feature Id="ProductFeature" Title="TaggJack" Level="1">
+      <ComponentGroupRef Id="TaggJackComponents" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
-        <Directory Id="INSTALLFOLDER" Name="EvoDesigner" />
+        <Directory Id="INSTALLFOLDER" Name="TaggJack" />
       </Directory>
       <Directory Id="ProgramMenuFolder">
-        <Directory Id="ApplicationProgramsFolder" Name="EvoDesigner"/>
+        <Directory Id="ApplicationProgramsFolder" Name="TaggJack"/>
       </Directory>
     </Directory>
 
     <DirectoryRef Id="ApplicationProgramsFolder">
       <Component Id="ApplicationShortcut" Guid="{ABCDEFGH-1234-1234-1234-123456789012}">
         <Shortcut Id="ApplicationStartMenuShortcut"
-                  Name="EvoDesigner"
-                  Target="[INSTALLFOLDER]EvoDesigner.exe"
+                  Name="TaggJack"
+                  Target="[INSTALLFOLDER]TaggJack.exe"
                   WorkingDirectory="INSTALLFOLDER" />
         <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
         <RegistryValue Root="HKCU" 
-                       Key="Software\EvoDesigner\Installed" 
+                       Key="Software\TaggJack\Installed" 
                        Name="installed" 
                        Type="integer" 
                        Value="1" 
@@ -95,7 +95,7 @@ $wixContent = @"
 </Wix>
 "@
 
-$wixContent | Out-File -FilePath "$OutputDir\EvoDesigner.wxs" -Encoding UTF8
+$wixContent | Out-File -FilePath "$OutputDir\TaggJack.wxs" -Encoding UTF8
 
 Write-Host "Step 3: Compiling installer..." -ForegroundColor Cyan
 
@@ -103,7 +103,7 @@ Write-Host "Step 3: Compiling installer..." -ForegroundColor Cyan
 $candleArgs = @(
     "-ext", "WixUIExtension",
     "-out", "$OutputDir\",
-    "$OutputDir\EvoDesigner.wxs",
+    "$OutputDir\TaggJack.wxs",
     "$OutputDir\Components.wxs"
 )
 & candle.exe @candleArgs
@@ -117,8 +117,8 @@ if ($LASTEXITCODE -ne 0) {
 $lightArgs = @(
     "-ext", "WixUIExtension",
     "-ext", "WixUtilExtension",
-    "-out", "$OutputDir\EvoDesigner-$Version.msi",
-    "$OutputDir\EvoDesigner.wixobj",
+    "-out", "$OutputDir\TaggJack-$Version.msi",
+    "$OutputDir\TaggJack.wixobj",
     "$OutputDir\Components.wixobj"
 )
 & light.exe @lightArgs
@@ -130,5 +130,5 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "===========================================" -ForegroundColor Green
 Write-Host "MSI Installer created successfully!" -ForegroundColor Green
-Write-Host "Location: $OutputDir\EvoDesigner-$Version.msi" -ForegroundColor Yellow
+Write-Host "Location: $OutputDir\TaggJack-$Version.msi" -ForegroundColor Yellow
 Write-Host "===========================================" -ForegroundColor Green

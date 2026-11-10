@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="TaggJack.UI.Gs1SettingsWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="GS1 Settings" Height="680" Width="560" WindowStartupLocation="CenterOwner" xmlns:ui="clr-namespace:TaggJack.UI">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Grid Margin="20">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <TextBlock Text="API URL" Margin="0,0,0,4" />
+      <TextBox x:Name="ApiUrlBox" Grid.Row="1" Height="28" Margin="0,0,0,12" />
+      <TextBlock Grid.Row="2" Text="Bearer Token" Margin="0,0,0,4" />
+      <PasswordBox x:Name="BearerTokenBox" Grid.Row="3" Height="28" Margin="0,0,0,12" />
+      <TextBlock Grid.Row="4" Text="Default Batch" Margin="0,0,0,4" />
+      <TextBox x:Name="DefaultBatchBox" Grid.Row="5" Height="28" Margin="0,0,0,12" />
+      <CheckBox x:Name="UseTodayBox" Grid.Row="6" Content="Use today for production date" Margin="0,0,0,8" />
+      <TextBlock Grid.Row="7" Text="Default Production Date (if not using today)" Margin="0,0,0,4" />
+      <DatePicker x:Name="ProductionDatePicker" Grid.Row="8" Height="28" Margin="0,0,0,12" />
+      <TextBlock Grid.Row="9" Text="Default Expiry Date" Margin="0,0,0,4" />
+      <DatePicker x:Name="ExpiryDatePicker" Grid.Row="10" Height="28" Margin="0,0,0,12" />
+      <TextBlock Grid.Row="11" Text="From GLN" Margin="0,0,0,4" />
+      <TextBox x:Name="FromGlnBox" Grid.Row="12" Height="28" Margin="0,0,0,12" />
+      <TextBlock Grid.Row="13" Text="To GLN" Margin="0,0,0,4" />
+      <TextBox x:Name="ToGlnBox" Grid.Row="14" Height="28" Margin="0,0,0,12" />
+      <TextBlock Grid.Row="15" Text="Default Order Number" Margin="0,0,0,4" />
+      <TextBox x:Name="DefaultOrderNumberBox" Grid.Row="16" Height="28" Margin="0,0,0,16" />
+      <TextBlock Grid.Row="17" Text="Default template / printer (used as initial values on Generate form)" FontWeight="SemiBold" Margin="0,0,0,8" />
+      <Grid Grid.Row="18" Margin="0,0,0,16">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="70" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Level 1" VerticalAlignment="Center" />
+        <TextBox x:Name="Level1TemplateBox" Grid.Column="1" Height="28" Margin="4,0,4,8" />
+        <Button Grid.Column="2" Content="..." Width="30" Height="28" Margin="0,0,4,8" Click="BrowseLevel1Template_Click" />
+        <ComboBox x:Name="Level1PrinterCombo" Grid.Column="3" Height="28" Margin="0,0,0,8" />
+        <TextBlock Grid.Row="1" Text="Level 2" VerticalAlignment="Center" />
+        <TextBox x:Name="Level2TemplateBox" Grid.Row="1" Grid.Column="1" Height="28" Margin="4,0,4,8" />
+        <Button Grid.Row="1" Grid.Column="2" Content="..." Width="30" Height="28" Margin="0,0,4,8" Click="BrowseLevel2Template_Click" />
+        <ComboBox x:Name="Level2PrinterCombo" Grid.Row="1" Grid.Column="3" Height="28" Margin="0,0,0,8" />
+        <TextBlock Grid.Row="2" Text="Level 3" VerticalAlignment="Center" />
+        <TextBox x:Name="Level3TemplateBox" Grid.Row="2" Grid.Column="1" Height="28" Margin="4,0,4,0" />
+        <Button Grid.Row="2" Grid.Column="2" Content="..." Width="30" Height="28" Margin="0,0,4,0" Click="BrowseLevel3Template_Click" />
+        <ComboBox x:Name="Level3PrinterCombo" Grid.Row="2" Grid.Column="3" Height="28" />
+      </Grid>
+      <StackPanel Grid.Row="19" Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="Cancel" Width="90" Height="32" Margin="0,0,8,0" Click="Cancel_Click" />
+        <Button Content="Save" Width="90" Height="32" IsDefault="True" Click="Save_Click" />
+      </StackPanel>
+    </Grid>
+  </ScrollViewer>
+</Window>

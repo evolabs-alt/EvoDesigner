@@ -1,0 +1,93 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>TaggJack</AssemblyName>
+    <RootNamespace>TaggJack</RootNamespace>
+    <Product>TaggJack</Product>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    
+    <!-- Application Metadata for Installer -->
+    <AssemblyTitle>TaggJack</AssemblyTitle>
+    <AssemblyDescription>Professional Label Design Application for Printable Labels</AssemblyDescription>
+    <AssemblyCompany>Evolabs IT Solutions Ltd</AssemblyCompany>
+    <AssemblyProduct>TaggJack</AssemblyProduct>
+    <AssemblyCopyright>Copyright © 2025 Evolabs IT Solutions Ltd</AssemblyCopyright>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+    
+    <!-- Installer Properties -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishTrimmed>false</PublishTrimmed>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
+    <PackageReference Include="Material.Icons.WPF" Version="2.4.1" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.1" />
+    <PackageReference Include="MySql.Data" Version="9.4.0" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="System.Data.Odbc" Version="9.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.8" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1" />
+    <PackageReference Include="System.Management" Version="9.0.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.0" />
+    <PackageReference Include="ZXing.Net" Version="0.16.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Logo.png" />
+    <Resource Include="icon.png" />
+    <Content Include="Logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="Resources\keys\license-public.pem">
+      <LogicalName>TaggJack.Resources.keys.license-public.pem</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <!-- Exclude reference / temp trees from compile -->
+  <ItemGroup>
+    <Compile Remove="_decompiled-transfer\**" />
+    <Compile Remove="_decompiled-transfer2\**" />
+    <Compile Remove="_transfer-extract\**" />
+    <Compile Remove="_baml-converter\**" />
+    <Compile Remove="publish\**" />
+    <Page Remove="_decompiled-transfer\**" />
+    <Page Remove="_decompiled-transfer2\**" />
+    <Page Remove="_transfer-extract\**" />
+    <Page Remove="_baml-converter\**" />
+    <EmbeddedResource Remove="_decompiled-transfer\**" />
+    <EmbeddedResource Remove="_transfer-extract\**" />
+    <None Remove="_decompiled-transfer\**" />
+    <None Remove="_transfer-extract\**" />
+    <None Remove="_baml-converter\**" />
+  </ItemGroup>
+
+  <!-- Do not compile leftover baml as content incorrectly; XAML pages are used instead -->
+  <ItemGroup>
+    <None Remove="ui\**\*.baml" />
+    <None Remove="tools\**\*.baml" />
+    <EmbeddedResource Remove="ui\**\*.baml" />
+    <EmbeddedResource Remove="tools\**\*.baml" />
+  </ItemGroup>
+
+</Project>

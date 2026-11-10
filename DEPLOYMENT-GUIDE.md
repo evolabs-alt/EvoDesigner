@@ -1,18 +1,18 @@
-# EvoDesigner - Installation and Deployment Guide
+# TaggJack - Installation and Deployment Guide
 
 ## 📦 Ready-to-Deploy Package
 
-Your EvoDesigner application has been successfully compiled and packaged! 
+Your TaggJack application has been successfully compiled and packaged! 
 
 ### ✅ What's Been Created
 
-1. **Self-Contained Executable** (`publish/EvoDesigner.exe` - 168MB)
+1. **Self-Contained Executable** (`publish/TaggJack.exe` - 168MB)
    - Includes .NET 9.0 runtime
    - No additional software installation required
    - Works on Windows 10/11 x64
 
 2. **Professional Installer Scripts**
-   - Inno Setup script (`EvoDesigner-Setup.iss`)
+   - Inno Setup script (`TaggJack-Setup.iss`)
    - WiX MSI script (`create-msi.ps1`)
    - Automated build script (`build-installer.bat`)
 
@@ -28,7 +28,7 @@ Your EvoDesigner application has been successfully compiled and packaged!
 
 **Steps:**
 1. Copy the entire `publish/` folder to target computer
-2. Run `EvoDesigner.exe`
+2. Run `TaggJack.exe`
 3. Application starts immediately!
 
 **File Size:** ~168MB (includes everything needed)
@@ -42,7 +42,7 @@ Your EvoDesigner application has been successfully compiled and packaged!
    - Download and install Inno Setup 6.x
 
 2. **Create Installer:**
-   - Open `EvoDesigner-Setup.iss` with Inno Setup
+   - Open `TaggJack-Setup.iss` with Inno Setup
    - Click "Build" menu → "Compile"
    - Installer will be created in `installer/` folder
 
@@ -105,7 +105,7 @@ dotnet publish --configuration Release --runtime win-x64 --self-contained true -
 
 1. **Portable Version:**
    - Extract files to desired location
-   - Double-click `EvoDesigner.exe`
+   - Double-click `TaggJack.exe`
    - Start designing labels!
 
 2. **Installed Version:**
@@ -134,7 +134,7 @@ dotnet publish --configuration Release --runtime win-x64 --self-contained true -
 
 **Application Files:**
 - Portable: `[extract-location]/`
-- Installed: `C:\Program Files\EvoDesigner\`
+- Installed: `C:\Program Files\TaggJack\`
 
 **Template Files:**
 - Created templates: Same folder as executable
@@ -146,7 +146,7 @@ dotnet publish --configuration Release --runtime win-x64 --self-contained true -
 
 ## 🎉 Features Overview
 
-**EvoDesigner v1.0.0 includes:**
+**TaggJack v1.0.0 includes:**
 
 ✅ **Label Design Tools**
 - Drag & drop text elements
@@ -187,8 +187,8 @@ dotnet publish --configuration Release --runtime win-x64 --self-contained true -
 ## 📞 Support
 
 For issues or questions:
-- GitHub Issues: https://github.com/ehtearena/EvoDesigner/issues
-- Project Repository: https://github.com/ehtearena/EvoDesigner
+- GitHub Issues: https://github.com/ehtearena/TaggJack/issues
+- Project Repository: https://github.com/ehtearena/TaggJack
 
 ---
 

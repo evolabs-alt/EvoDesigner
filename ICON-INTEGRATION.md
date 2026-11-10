@@ -1,13 +1,13 @@
 # Icon Integration Guide
 
 ## Overview
-EvoDesigner now uses `icon.png` as both the **application icon** and **system tray icon**, providing consistent branding across all visual elements.
+TaggJack now uses `icon.png` as both the **application icon** and **system tray icon**, providing consistent branding across all visual elements.
 
 ## Icon Files
 
 ### icon.png
 - **Purpose**: Source image for icons
-- **Location**: Root directory (`E:\Repos\EvoDesigner\icon.png`)
+- **Location**: Root directory (`E:\Repos\TaggJack\icon.png`)
 - **Usage**:
   - System tray icon (displayed in taskbar notification area)
   - Source for ICO conversion
@@ -15,7 +15,7 @@ EvoDesigner now uses `icon.png` as both the **application icon** and **system tr
 
 ### icon.ico
 - **Purpose**: Windows application icon
-- **Location**: Root directory (`E:\Repos\EvoDesigner\icon.ico`)
+- **Location**: Root directory (`E:\Repos\TaggJack\icon.ico`)
 - **Sizes included**: 16×16, 32×32, 48×48, 128×128 pixels
 - **Usage**:
   - Application window icon
@@ -28,7 +28,7 @@ EvoDesigner now uses `icon.png` as both the **application icon** and **system tr
 
 ### 1. Application Icon (icon.ico)
 
-**Updated in `EvoDesigner.csproj`:**
+**Updated in `TaggJack.csproj`:**
 ```xml
 <PropertyGroup>
   <ApplicationIcon>icon.ico</ApplicationIcon>
@@ -83,7 +83,7 @@ else
 </Border>
 
 <!-- Application Name -->
-<TextBlock Grid.Row="1" Text="EvoDesigner" FontSize="28" FontWeight="Bold" 
+<TextBlock Grid.Row="1" Text="TaggJack" FontSize="28" FontWeight="Bold" 
            Foreground="#0078d4" HorizontalAlignment="Center" Margin="0,0,0,4"/>
 ```
 
@@ -143,7 +143,7 @@ powershell -ExecutionPolicy Bypass -File convert-icon.ps1
 3. **Alt+Tab switcher** - Application thumbnail
 4. **Start menu** - Pinned or in app list
 5. **Desktop shortcut** - If created
-6. **File explorer** - EvoDesigner.exe icon
+6. **File explorer** - TaggJack.exe icon
 7. **Task Manager** - Process list
 
 ### System Tray Icon (icon.png)
@@ -183,7 +183,7 @@ powershell -ExecutionPolicy Bypass -File convert-icon.ps1
 
 ### Application icon not showing
 - Verify `icon.ico` exists in project root
-- Check `EvoDesigner.csproj` has `<ApplicationIcon>icon.ico</ApplicationIcon>`
+- Check `TaggJack.csproj` has `<ApplicationIcon>icon.ico</ApplicationIcon>`
 - Rebuild solution: `dotnet clean` then `dotnet build`
 - Clear Windows icon cache (see below)
 
@@ -232,16 +232,16 @@ Published executable in `publish\` folder will have icon embedded.
 
 ### Inno Setup Integration
 
-Update `EvoDesigner-Setup.iss` to use icon:
+Update `TaggJack-Setup.iss` to use icon:
 
 ```iss
 [Setup]
 SetupIconFile=icon.ico
-UninstallDisplayIcon={app}\EvoDesigner.exe
+UninstallDisplayIcon={app}\TaggJack.exe
 
 [Icons]
-Name: "{autoprograms}\EvoDesigner"; Filename: "{app}\EvoDesigner.exe"; IconFilename: "{app}\icon.png"
-Name: "{autodesktop}\EvoDesigner"; Filename: "{app}\EvoDesigner.exe"; IconFilename: "{app}\icon.png"
+Name: "{autoprograms}\TaggJack"; Filename: "{app}\TaggJack.exe"; IconFilename: "{app}\icon.png"
+Name: "{autodesktop}\TaggJack"; Filename: "{app}\TaggJack.exe"; IconFilename: "{app}\icon.png"
 ```
 
 ### MSI Integration
@@ -259,7 +259,7 @@ After icon integration, verify these files exist:
 - ✅ `icon.png` - Source PNG image
 - ✅ `icon.ico` - Converted ICO file (4 sizes)
 - ✅ `convert-icon.ps1` - Conversion script
-- ✅ `EvoDesigner.csproj` - Updated with icon references
+- ✅ `TaggJack.csproj` - Updated with icon references
 - ✅ `Services/SystemTrayService.cs` - Updated to use icon.png
 - ✅ `UI/AboutWindow.xaml` - Updated to use icon.png
 
@@ -276,14 +276,14 @@ After icon integration, verify these files exist:
 - `Logo.png` - Splash screen logo (can be different from icon)
 - `UI/SplashScreen.xaml` - Uses Logo.png for startup screen
 - `Services/SystemTrayService.cs` - System tray icon loader
-- `EvoDesigner.csproj` - Project configuration
+- `TaggJack.csproj` - Project configuration
 
 ## Summary
 
-Your `icon.png` now serves as the unified icon source for EvoDesigner, providing:
+Your `icon.png` now serves as the unified icon source for TaggJack, providing:
 - Professional branding across Windows UI elements
 - Consistent visual identity
 - High-quality display in both application and system tray
 - Easy updates via PNG replacement and conversion script
 
-The icon appears everywhere users interact with EvoDesigner! 🎨
+The icon appears everywhere users interact with TaggJack! 🎨

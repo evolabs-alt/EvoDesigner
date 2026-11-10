@@ -28,8 +28,8 @@ Title="About TaggJack"
            RenderOptions.BitmapScalingMode="HighQuality"/>
 </Border>
 
-<TextBlock Grid.Row="1" Text="EvoDesigner" FontSize="28"/>
-Title="About EvoDesigner"
+<TextBlock Grid.Row="1" Text="TaggJack" FontSize="28"/>
+Title="About TaggJack"
 ```
 
 ## Visual Improvements
@@ -46,8 +46,8 @@ Title="About EvoDesigner"
    - Professional presentation matching logo
 
 3. **Corrected Application Name**
-   - Window title: "About TaggJack" → "About EvoDesigner"
-   - Application name: "TaggJack" → "EvoDesigner"
+   - Window title: "About TaggJack" → "About TaggJack"
+   - Application name: "TaggJack" → "TaggJack"
    - Proper branding consistency
 
 ## Icon Usage Throughout Application
@@ -75,7 +75,7 @@ Users can view the About window (with the new icon) via:
 ✅ **High Quality** - Vector-quality rendering  
 ✅ **Larger Size** - More prominent display (100×100)  
 ✅ **Clean Design** - No background box clutter  
-✅ **Correct Names** - EvoDesigner throughout  
+✅ **Correct Names** - TaggJack throughout  
 
 ## Testing
 

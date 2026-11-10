@@ -1,9 +1,10 @@
-namespace EvoDesigner.Commands
+namespace TaggJack.Commands;
+
+public interface ICommand
 {
-    public interface ICommand
-    {
-        void Execute();
-        void Undo();
-        string Description { get; }
-    }
+	string Description { get; }
+
+	void Execute();
+
+	void Undo();
 }

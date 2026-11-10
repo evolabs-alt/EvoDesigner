@@ -1,4 +1,4 @@
-# EvoDesigner v1.1.0 - Distribution Guide
+# TaggJack v1.1.0 - Distribution Guide
 
 ## 📦 Publication Summary
 
@@ -40,10 +40,10 @@
 
 ### Option 1: Portable Distribution (Recommended for Quick Testing)
 
-**Location:** `E:\Repos\EvoDesigner\publish\`
+**Location:** `E:\Repos\TaggJack\publish\`
 
 **Contents:**
-- `EvoDesigner.exe` (212 MB) - Main executable with embedded .NET runtime
+- `TaggJack.exe` (212 MB) - Main executable with embedded .NET runtime
 - `config.json` - Application configuration
 - `Logo.png` - Application logo
 - `icon.png` - Application icon
@@ -51,7 +51,7 @@
 
 **How to Use:**
 1. Copy the entire `publish` folder to any location
-2. Run `EvoDesigner.exe` - no installation needed!
+2. Run `TaggJack.exe` - no installation needed!
 3. All user data (templates, settings) stored in user's AppData folder
 
 **Pros:**
@@ -77,16 +77,16 @@
 #### Build Steps:
 ```bash
 # Option A: Automatic build (if Inno Setup CLI is in PATH)
-cd E:\Repos\EvoDesigner
+cd E:\Repos\TaggJack
 .\build-installer.bat
 
 # Option B: Manual build
 1. Open Inno Setup
-2. File → Open → Select "EvoDesigner-Setup.iss"
+2. File → Open → Select "TaggJack-Setup.iss"
 3. Build → Compile
 ```
 
-**Output Location:** `E:\Repos\EvoDesigner\installer\EvoDesigner-Setup-v1.1.0.exe`
+**Output Location:** `E:\Repos\TaggJack\installer\TaggJack-Setup-v1.1.0.exe`
 
 **Installer Features:**
 - ✅ Start Menu shortcuts
@@ -98,22 +98,22 @@ cd E:\Repos\EvoDesigner
 - ✅ Professional user experience
 
 **Distribution:**
-- Share the single `EvoDesigner-Setup-v1.1.0.exe` file (~210 MB)
+- Share the single `TaggJack-Setup-v1.1.0.exe` file (~210 MB)
 - Users double-click to install
-- Installs to: `C:\Program Files\EvoDesigner\`
+- Installs to: `C:\Program Files\TaggJack\`
 
 ## 🚀 Quick Start for End Users
 
 ### Portable Version:
 ```
 1. Extract the publish folder
-2. Double-click EvoDesigner.exe
+2. Double-click TaggJack.exe
 3. Start designing labels!
 ```
 
 ### Installed Version:
 ```
-1. Run EvoDesigner-Setup-v1.1.0.exe
+1. Run TaggJack-Setup-v1.1.0.exe
 2. Follow installation wizard
 3. Launch from Start Menu
 ```
@@ -139,8 +139,8 @@ cd E:\Repos\EvoDesigner
 
 ### Installed Application:
 ```
-C:\Program Files\EvoDesigner\
-├── EvoDesigner.exe          (Main application)
+C:\Program Files\TaggJack\
+├── TaggJack.exe          (Main application)
 ├── config.json              (Global configuration)
 ├── Logo.png                 (Application logo)
 ├── icon.png                 (Application icon)
@@ -149,7 +149,7 @@ C:\Program Files\EvoDesigner\
 
 ### User Data:
 ```
-%APPDATA%\EvoDesigner\
+%APPDATA%\TaggJack\
 ├── templates\               (User-created label templates)
 ├── logs\                    (Application logs)
 └── settings.json            (User preferences)
@@ -158,7 +158,7 @@ C:\Program Files\EvoDesigner\
 ## 🔐 Configuration
 
 ### Initial Setup:
-1. Launch EvoDesigner
+1. Launch TaggJack
 2. Configure database connection (if needed):
    - Menu: Data → Configure Data Source
    - Enter MySQL connection details
@@ -181,7 +181,7 @@ C:\Program Files\EvoDesigner\
 ## 🛠️ Troubleshooting
 
 ### Application Won't Start:
-- **Issue:** EvoDesigner.exe doesn't launch
+- **Issue:** TaggJack.exe doesn't launch
 - **Solution:** 
   - Check Windows Event Viewer for errors
   - Run as Administrator
@@ -283,4 +283,4 @@ Built with:
 
 **Ready to Deploy! 🚀**
 
-Choose your distribution method and share EvoDesigner with your users!
+Choose your distribution method and share TaggJack with your users!

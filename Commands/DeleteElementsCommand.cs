@@ -3,50 +3,52 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace EvoDesigner.Commands
+namespace TaggJack.Commands;
+
+public class DeleteElementsCommand : ICommand
 {
-    public class DeleteElementsCommand : ICommand
-    {
-        private readonly Canvas _canvas;
-        private readonly List<ElementState> _elementStates;
+	private struct ElementState
+	{
+		public UIElement Element;
 
-        public string Description { get; }
+		public double Left;
 
-        private struct ElementState
-        {
-            public UIElement Element;
-            public double Left;
-            public double Top;
-        }
+		public double Top;
+	}
 
-        public DeleteElementsCommand(Canvas canvas, IEnumerable<UIElement> elements, string description = "Delete elements")
-        {
-            _canvas = canvas;
-            _elementStates = elements.Select(e => new ElementState
-            {
-                Element = e,
-                Left = Canvas.GetLeft(e),
-                Top = Canvas.GetTop(e)
-            }).ToList();
-            Description = description;
-        }
+	private readonly Canvas _canvas;
 
-        public void Execute()
-        {
-            foreach (var state in _elementStates)
-            {
-                _canvas.Children.Remove(state.Element);
-            }
-        }
+	private readonly List<ElementState> _elementStates;
 
-        public void Undo()
-        {
-            foreach (var state in _elementStates)
-            {
-                Canvas.SetLeft(state.Element, state.Left);
-                Canvas.SetTop(state.Element, state.Top);
-                _canvas.Children.Add(state.Element);
-            }
-        }
-    }
+	public string Description { get; }
+
+	public DeleteElementsCommand(Canvas canvas, IEnumerable<UIElement> elements, string description = "Delete elements")
+	{
+		_canvas = canvas;
+		_elementStates = elements.Select((UIElement e) => new ElementState
+		{
+			Element = e,
+			Left = Canvas.GetLeft(e),
+			Top = Canvas.GetTop(e)
+		}).ToList();
+		Description = description;
+	}
+
+	public void Execute()
+	{
+		foreach (ElementState elementState in _elementStates)
+		{
+			_canvas.Children.Remove(elementState.Element);
+		}
+	}
+
+	public void Undo()
+	{
+		foreach (ElementState elementState in _elementStates)
+		{
+			Canvas.SetLeft(elementState.Element, elementState.Left);
+			Canvas.SetTop(elementState.Element, elementState.Top);
+			_canvas.Children.Add(elementState.Element);
+		}
+	}
 }

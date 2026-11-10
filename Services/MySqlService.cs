@@ -1,29 +1,28 @@
-using MySql.Data.MySqlClient;
 using System.Data;
+using MySql.Data.MySqlClient;
 
-namespace EvoDesigner.Services
+namespace TaggJack.Services;
+
+public class MySqlService
 {
-    public class MySqlService
-    {
-        public string ConnectionString { get; set; }
+	public string ConnectionString { get; set; }
 
-        public DataTable ExecuteQuery(string query)
-        {
-            using var conn = new MySqlConnection(ConnectionString);
-            using var cmd = new MySqlCommand(query, conn);
-            var dt = new DataTable();
-            conn.Open();
-            using var reader = cmd.ExecuteReader();
-            dt.Load(reader);
-            return dt;
-        }
+	public DataTable ExecuteQuery(string query)
+	{
+		using MySqlConnection mySqlConnection = new MySqlConnection(ConnectionString);
+		using MySqlCommand mySqlCommand = new MySqlCommand(query, mySqlConnection);
+		DataTable dataTable = new DataTable();
+		mySqlConnection.Open();
+		using MySqlDataReader reader = mySqlCommand.ExecuteReader();
+		dataTable.Load(reader);
+		return dataTable;
+	}
 
-        public int ExecuteNonQuery(string query)
-        {
-            using var conn = new MySqlConnection(ConnectionString);
-            using var cmd = new MySqlCommand(query, conn);
-            conn.Open();
-            return cmd.ExecuteNonQuery();
-        }
-    }
+	public int ExecuteNonQuery(string query)
+	{
+		using MySqlConnection mySqlConnection = new MySqlConnection(ConnectionString);
+		using MySqlCommand mySqlCommand = new MySqlCommand(query, mySqlConnection);
+		mySqlConnection.Open();
+		return mySqlCommand.ExecuteNonQuery();
+	}
 }

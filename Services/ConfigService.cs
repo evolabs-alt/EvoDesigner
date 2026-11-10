@@ -1,58 +1,69 @@
 using System;
 using System.IO;
 using System.Text.Json;
-using EvoDesigner.Models;
+using TaggJack.Models;
 
-namespace EvoDesigner.Services
+namespace TaggJack.Services;
+
+public static class ConfigService
 {
-    public static class ConfigService
-    {
-        private static readonly string ConfigFilePath = Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory,
-            "config.json"
-        );
+	private static string? _activeConfigFilePath;
 
-        public static AppConfig LoadConfig()
-        {
-            try
-            {
-                if (File.Exists(ConfigFilePath))
-                {
-                    var json = File.ReadAllText(ConfigFilePath);
-                    var config = JsonSerializer.Deserialize<AppConfig>(json);
-                    return config ?? new AppConfig();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error loading config: {ex.Message}");
-            }
+	private static readonly JsonSerializerOptions ReadOptions = new JsonSerializerOptions
+	{
+		PropertyNameCaseInsensitive = true
+	};
 
-            return new AppConfig();
-        }
+	private static readonly JsonSerializerOptions WriteOptions = new JsonSerializerOptions
+	{
+		WriteIndented = true
+	};
 
-        public static void SaveConfig(AppConfig config)
-        {
-            try
-            {
-                var directory = Path.GetDirectoryName(ConfigFilePath);
-                if (directory != null && !Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
+	public static string GetConfigFilePath()
+	{
+		if (!string.IsNullOrEmpty(_activeConfigFilePath))
+		{
+			return _activeConfigFilePath;
+		}
+		string text = Path.Combine(AppContext.BaseDirectory, "config.json");
+		if (File.Exists(text))
+		{
+			return text;
+		}
+		return AppPaths.GetSharedDataPath("config.json");
+	}
 
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
+	public static AppConfig LoadConfig()
+	{
+		string path = (_activeConfigFilePath = GetConfigFilePath());
+		try
+		{
+			if (File.Exists(path))
+			{
+				return JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(path), ReadOptions) ?? new AppConfig();
+			}
+		}
+		catch (Exception)
+		{
+		}
+		return new AppConfig();
+	}
 
-                var json = JsonSerializer.Serialize(config, options);
-                File.WriteAllText(ConfigFilePath, json);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error saving config: {ex.Message}");
-            }
-        }
-    }
+	public static void SaveConfig(AppConfig config)
+	{
+		string path = (_activeConfigFilePath = GetConfigFilePath());
+		try
+		{
+			string directoryName = Path.GetDirectoryName(path);
+			if (directoryName != null && !Directory.Exists(directoryName))
+			{
+				Directory.CreateDirectory(directoryName);
+			}
+			string contents = JsonSerializer.Serialize(config, WriteOptions);
+			File.WriteAllText(path, contents);
+		}
+		catch (Exception)
+		{
+		}
+	}
 }

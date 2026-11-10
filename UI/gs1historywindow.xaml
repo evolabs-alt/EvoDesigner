@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window x:Class="TaggJack.UI.Gs1HistoryWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="GS1 Serial History" Height="650" Width="1000" WindowStartupLocation="CenterScreen" xmlns:ui="clr-namespace:TaggJack.UI">
+  <Window.Resources>
+    <ResourceDictionary>
+      <Style x:Key="ModernDataGridStyle" TargetType="{x:Type DataGrid}">
+        <Setter Property="Background" Value="#FFFFFFFF" />
+        <Setter Property="BorderBrush" Value="#d1d2d3" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="DataGrid.GridLinesVisibility" Value="Horizontal" />
+        <Setter Property="DataGrid.AutoGenerateColumns" Value="False" />
+        <Setter Property="DataGrid.IsReadOnly" Value="True" />
+        <Setter Property="DataGrid.SelectionMode" Value="Single" />
+        <Setter Property="DataGrid.AlternatingRowBackground" Value="#faf9f8" />
+        <Setter Property="DataGrid.RowHeight" Value="32" />
+      </Style>
+    </ResourceDictionary>
+  </Window.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Border Background="#f3f2f1" BorderBrush="#d1d2d3" BorderThickness="0,0,0,1" Padding="20,16">
+      <TextBlock Text="GS1 Serial History" FontSize="20" FontWeight="SemiBold" />
+    </Border>
+    <DataGrid x:Name="JobsGrid" Grid.Row="1" Margin="20,12,20,8" Style="{StaticResource ModernDataGridStyle}" SelectionChanged="JobsGrid_SelectionChanged">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Date" Width="160" Binding="{Binding CreatedAt}" />
+        <DataGridTextColumn Header="Item" Width="100" Binding="{Binding ItemCode}" />
+        <DataGridTextColumn Header="Description" Width="*" MinWidth="150" Binding="{Binding Description}" />
+        <DataGridTextColumn Header="Qty" Width="80" Binding="{Binding Quantity}" />
+        <DataGridTextColumn Header="L1" Width="60" Binding="{Binding Level1Count}" />
+        <DataGridTextColumn Header="L2" Width="60" Binding="{Binding Level2Count}" />
+        <DataGridTextColumn Header="L3" Width="60" Binding="{Binding Level3Count}" />
+        <DataGridTextColumn Header="Batch" Width="100" Binding="{Binding Batch}" />
+      </DataGrid.Columns>
+    </DataGrid>
+    <DataGrid x:Name="SerialsGrid" Grid.Row="2" Margin="20,0,20,12" Style="{StaticResource ModernDataGridStyle}">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Level" Width="60" Binding="{Binding Level}" />
+        <DataGridTextColumn Header="Serial" Width="*" MinWidth="200" Binding="{Binding Serial}" />
+        <DataGridTextColumn Header="Parent" Width="180" Binding="{Binding ParentSerial}" />
+        <DataGridTextColumn Header="SSCC" Width="180" Binding="{Binding Sscc}" />
+      </DataGrid.Columns>
+    </DataGrid>
+    <Border Grid.Row="3" Background="#f3f2f1" BorderBrush="#d1d2d3" BorderThickness="0,1,0,0" Padding="20,12">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="Reprint All Levels" Width="140" Height="32" Margin="0,0,8,0" Click="ReprintAll_Click" />
+        <Button Content="Reprint Level 1" Width="120" Height="32" Margin="0,0,8,0" Click="ReprintLevel1_Click" />
+        <Button Content="Reprint Level 2" Width="120" Height="32" Margin="0,0,8,0" Click="ReprintLevel2_Click" />
+        <Button Content="Reprint Level 3" Width="120" Height="32" Margin="0,0,8,0" Click="ReprintLevel3_Click" />
+        <Button Content="Close" Width="80" Height="32" Click="Close_Click" />
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

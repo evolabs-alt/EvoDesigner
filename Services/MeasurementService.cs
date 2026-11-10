@@ -1,77 +1,51 @@
-using System;
+namespace TaggJack.Services;
 
-namespace EvoDesigner.Services
+public static class MeasurementService
 {
-    public static class MeasurementService
-    {
-        // Constants for DPI conversion
-        public const double SCREEN_DPI = 96.0; // Standard Windows DPI
-        public const double PRINT_DPI = 204.0; // Common thermal printer DPI
-        public const double MM_TO_INCH = 1.0 / 25.4; // 25.4 mm per inch
-        
-        // Pixels per millimeter at screen resolution
-        public const double PIXELS_PER_MM_SCREEN = SCREEN_DPI * MM_TO_INCH;
-        
-        // Pixels per millimeter at print resolution
-        public const double PIXELS_PER_MM_PRINT = PRINT_DPI * MM_TO_INCH;
-        
-        // Scale factor from screen to print
-        public const double PRINT_SCALE_FACTOR = PRINT_DPI / SCREEN_DPI;
+	public const double SCREEN_DPI = 96.0;
 
-        /// <summary>
-        /// Convert millimeters to screen pixels
-        /// </summary>
-        public static double MmToScreenPixels(double mm)
-        {
-            return mm * PIXELS_PER_MM_SCREEN;
-        }
+	public const double PRINT_DPI = 204.0;
 
-        /// <summary>
-        /// Convert screen pixels to millimeters
-        /// </summary>
-        public static double ScreenPixelsToMm(double pixels)
-        {
-            return pixels / PIXELS_PER_MM_SCREEN;
-        }
+	public const double MM_TO_INCH = 0.03937007874015748;
 
-        /// <summary>
-        /// Convert millimeters to print pixels
-        /// </summary>
-        public static double MmToPrintPixels(double mm)
-        {
-            return mm * PIXELS_PER_MM_PRINT;
-        }
+	public const double PIXELS_PER_MM_SCREEN = 3.779527559055118;
 
-        /// <summary>
-        /// Convert print pixels to millimeters
-        /// </summary>
-        public static double PrintPixelsToMm(double pixels)
-        {
-            return pixels / PIXELS_PER_MM_PRINT;
-        }
+	public const double PIXELS_PER_MM_PRINT = 8.031496062992126;
 
-        /// <summary>
-        /// Convert screen pixels to print pixels
-        /// </summary>
-        public static double ScreenToPrintPixels(double screenPixels)
-        {
-            return screenPixels * PRINT_SCALE_FACTOR;
-        }
+	public const double PRINT_SCALE_FACTOR = 2.125;
 
-        /// <summary>
-        /// Convert print pixels to screen pixels
-        /// </summary>
-        public static double PrintToScreenPixels(double printPixels)
-        {
-            return printPixels / PRINT_SCALE_FACTOR;
-        }
+	public static double MmToScreenPixels(double mm)
+	{
+		return mm * 3.779527559055118;
+	}
 
-        /// <summary>
-        /// Format millimeters for display (with appropriate precision)
-        /// </summary>
-        public static string FormatMm(double mm)
-        {
-            return $"{mm:F1} mm";
-        }
-    }
+	public static double ScreenPixelsToMm(double pixels)
+	{
+		return pixels / 3.779527559055118;
+	}
+
+	public static double MmToPrintPixels(double mm)
+	{
+		return mm * 8.031496062992126;
+	}
+
+	public static double PrintPixelsToMm(double pixels)
+	{
+		return pixels / 8.031496062992126;
+	}
+
+	public static double ScreenToPrintPixels(double screenPixels)
+	{
+		return screenPixels * 2.125;
+	}
+
+	public static double PrintToScreenPixels(double printPixels)
+	{
+		return printPixels / 2.125;
+	}
+
+	public static string FormatMm(double mm)
+	{
+		return $"{mm:F1} mm";
+	}
 }

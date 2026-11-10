@@ -1,7 +1,7 @@
 # Splash Screen Feature
 
 ## Overview
-Added a professional splash screen that displays the EvoDesigner logo and loading status during application startup.
+Added a professional splash screen that displays the TaggJack logo and loading status during application startup.
 
 ## Visual Design
 
@@ -21,7 +21,7 @@ Added a professional splash screen that displays the EvoDesigner logo and loadin
    - 60-pixel margin for breathing room
 
 2. **Application Name**
-   - "EvoDesigner" in bold 32pt font
+   - "TaggJack" in bold 32pt font
    - Blue color (#2196F3) matching brand
    - Centered below logo
 
